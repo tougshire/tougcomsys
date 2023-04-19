@@ -1,2 +1,2 @@
 # tougcomsys
-A content management sysgtem
+A content management system
