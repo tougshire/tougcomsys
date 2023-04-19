@@ -1,0 +1,102 @@
+{% extends './_base.html' %}
+
+{% block content %}
+    <div id="tougcomsys" class="list">
+        <div id="columns">
+            {% for p in places %}
+                {% if forloop.first %}
+                    <div id="column_first" class="column">
+                        {% for post in p.posts %}
+                            <div class="post">
+                                {% if post.list_image %}
+                                    <div class="listimage">
+                                        <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
+                                    </div>
+                                {% endif %}
+                                <div class="title post_title">
+                                    <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
+                                </div>
+                                {% if p.show_author or p.show_created %}
+                                    <div class="post_meta">
+                                        {% if post.show_author %}
+                                            {{ post.author|default_if_none:'&nbsp;' }}
+                                        {% endif %}
+                                        {% if p.show_author and p.show_created %} - {% endif %}
+                                        {% if post.show_created %}  
+                                            {{ post.created|default_if_none:'&nbsp;' }} 
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="summary post_summary">
+                                    {{ post.summary | safe }}
+                                </div>
+                            </div>
+                        {% endfor %}        
+                    </div>
+                {% else %}
+                    {% if p.count  %}
+                        <div id="columns_{ forloop.counter0}" class="column">
+                            <div class="title columns_title">
+                                <h2>{{ p.title }}</h2>
+                            </div>
+                            {% for post in p.posts %}
+                                <div class="post">
+                                    {% if post.list_image %}
+                                        <div class="listimage">
+                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="title post_title">
+                                        <h3><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h3>
+                                    </div>
+                                    {% if p.show_author or p.show_created %}
+                                        <div class="meta post_meta">
+                                            {% if post.show_author %}
+                                                {{ post.author|default_if_none:'&nbsp;' }}
+                                            {% endif %}
+                                            {% if post.show_author and post.show_created %} - {% endif %}
+                                            {% if post.show_created %} 
+                                                {{ post.created|date:'M d Y'|default_if_none:'&nbsp;' }} 
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="summary post_summary">
+                                        {{ post.summary | safe }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>        
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if tougcomsys.SHOW_EVENTS %}
+                <div id="columns_{ forloop.counter0}" class="column">
+                    <div class="title columns_title">
+                        <h2>Events</h2>
+                    </div>
+                    {% for event_date, values in event_dates.items %}
+                        <div class = "event_date">
+                            <div class="title event_date_date">
+                                <h3>
+                                    {{ values.whenday|date:'D d M Y' }}
+                                </h3>
+                            </div>
+                            {% for event in values.events %}  
+                                <div class="event_title">
+                                    <h4>
+                                        {{ event.starttime|default_if_none:'' }} 
+                                        <a href="{% url 'tougcomsys:event' event.slug %}">
+                                            {{ event.title }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div class="event_summary">{{ event.summary | safe }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}            
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

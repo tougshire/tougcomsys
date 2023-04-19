@@ -1,0 +1,47 @@
+{% extends './_base.html' %}
+{% block content %}
+<div id="page_detail" class="detail">
+    <div class="title post_title">
+        <h2>
+            {{ page.title }}
+        </h2>
+    </div>
+    {% if page.above_content_image %}
+        <div class="content_image">
+            {% if page.above_content_image_link %}
+                <a href="{{ page.above_content_image_link }}"{% if page.above_content_link_attributes %} {{ page.above_content_link_attributes }}{% endif %} >
+                    <img class="content_image" src="{{ page.above_content_image.url }}"{% if page.above_content_image_attributes %} {{ page.above_content_image_attributes|safe }}{% endif %}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ page.above_content_image.url }}"{% if page.above_content_image_attributes %} {{ page.above_content_image_attributes|safe }}{% endif %}>     
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if page.show_author or page.show_created %}
+        <div class="meta post_meta">
+            {% if page.show_author %}
+                {{ page.author|default_if_none:'&nbsp;' }}
+            {% endif %}
+            {% if page.show_author and page.show_created %} - {% endif %}
+            {% if page.show_created %} 
+                {{ page.created|default_if_none:'&nbsp;' }} 
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="content post_content">
+        {{ page.content | safe }} 
+    </div>
+    {% if page.below_content_image %}
+        <div class="content_image">
+            {% if page.below_content_image_link %}
+                <a href="{{ page.below_content_image_link }}"{% if page.below_content_link_attributes %} {{ page.below_content_link_attributes }}{% endif %} >
+                    <img class="content_image" src="{{ page.below_content_image.url }}"{% if page.below_content_image_attributes %} {{ page.below_content_image_attributes|safe }}{% endif %}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ page.below_content_image.url }}"{% if page.below_content_image_attributes %} {{ page.below_content_image_attributes|safe }}{% endif %}>     
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

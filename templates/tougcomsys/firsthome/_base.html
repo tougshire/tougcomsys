@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Suffolk Democratic Committe, Virginia</title>
+        <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys.css' %}">
+        {% if tougcomsys.COLORSCHEME %}
+            {% with tougcomsys.COLORSCHEME as colorscheme %}
+                <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys_' %}{{ tougcomsys.COLORSCHEME }}.css">
+            {% endwith %}
+        {% endif %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          
+    </head>
+    <body>
+        <div id="head">
+            <a href="{% url 'tougcomsys:homepage' %}"><img src="{{ tougcomsys.BANNER_IMAGE }}"></a>
+        </div>
+        <div id="menubar">
+            <a href="{% url 'tougcomsys:homepage'  %}">Home</a> 
+            <a href="{% url 'tougcomsys:page' 'executive-committee' %}">Executive Committee</a> 
+            <a href="{% url 'tougcomsys:page' 'join-us' %}">Join Us</a> 
+            <a href="{% url 'tougcomsys:page' 'contact-us' %}">Contact Us</a> 
+        </div>
+        <div id="mainstage">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div id="footer">
+            {{ tougcomsys.FOOTER_CONTENT }}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
+
+@media only screen and (max-width: 600px) {
+    /* Global */
+
+    body {
+        border-top:2px solid black;
+    }
+
+    #menubar {
+        border-top: solid black;
+        border-bottom: solid black;
+
+    }
+    
+    #menubar a {
+        color:#000;
+    }
+
+    /* list */
+    div.list div.post, div.list div.event_date {
+        border-bottom: 1px solid #808080;
+    }
+    
+    div.list div.title h2 {
+        color:white;
+        background-color:#303030;
+
+    }
+    div.list div.title h2 a {
+        color:white;
+    }
+
+    div.list div.title h3 {
+        color:#808080;
+    }
+
+    div.list div.title h3 a {
+        color:#808080;
+    }
+
+    /* detail */
+    .detail .title h2 {
+        color:white;
+        background-color:#303030;
+
+    }
+    .detail .title h2 a {
+        color:white;
+    }
+
+    .detail .title h3 {
+        color:#808080;
+    }
+
+    .detail .title h3 a {
+        color:#808080;
+    }
+
+    #footer {
+        background-color:#303030;
+        color:white;
+    }
+}
+
+@media screen and (min-width:601px) {
+    /* Global */
+
+    body {
+        border-top:2px solid black;
+    }
+
+    #menubar {
+        border-top: solid black;
+        border-bottom: solid black;
+
+    }
+    
+    #menubar a {
+        color:#000;
+    }
+
+
+    div.list #columns .column  {
+        border-left: 1px solid black;
+    }
+
+    /* list */
+
+    div.list div.post, div.list div.event_date {
+        border-bottom: 1px solid #808080;
+    }
+
+    div.list div.title h2 {
+        color:white;
+        background-color:#303030;
+    }
+    div.list div.title h2 a {
+        color:white;
+    }
+
+    div.list div.title h3 {
+        color:#808080;
+    }
+
+    div.list div.title h3 a {
+        color:#808080;
+    }
+
+    /* detail */
+
+    .detail .title h2 {
+
+        color:white;
+        background-color:#303030;
+
+    }
+    .detail .title h2 a {
+        color:white;
+    }
+
+    .detail .title h3 {
+        color:#808080;
+    }
+
+    .detail .title h3 a {
+        color:#808080;
+    }
+
+    #footer {
+        background-color:#000;
+        color:white;
+    }
+}

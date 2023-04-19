@@ -1,2 +1,2 @@
 # tougcomsys
-A content management system
+A Django app with posts, pages and events 
