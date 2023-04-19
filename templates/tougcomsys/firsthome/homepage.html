@@ -16,12 +16,12 @@
                                 <div class="title post_title">
                                     <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
                                 </div>
-                                {% if p.show_author or p.show_created %}
+                                {% if post.show_author or post.show_created %}
                                     <div class="post_meta">
                                         {% if post.show_author %}
                                             {{ post.author|default_if_none:'&nbsp;' }}
                                         {% endif %}
-                                        {% if p.show_author and p.show_created %} - {% endif %}
+                                        {% if post.show_author and post.show_created %} - {% endif %}
                                         {% if post.show_created %}  
                                             {{ post.created|default_if_none:'&nbsp;' }} 
                                         {% endif %}
@@ -49,7 +49,7 @@
                                     <div class="title post_title">
                                         <h3><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h3>
                                     </div>
-                                    {% if p.show_author or p.show_created %}
+                                    {% if post.show_author or post.show_created %}
                                         <div class="meta post_meta">
                                             {% if post.show_author %}
                                                 {{ post.author|default_if_none:'&nbsp;' }}
