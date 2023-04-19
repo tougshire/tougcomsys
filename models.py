@@ -58,6 +58,12 @@ class Image(models.Model):
 
 
 class Placement(models.Model):
+    SHOW_NO = 0
+    SHOW_YES = 1
+    SHOW_CHOICES = [
+        (SHOW_NO, "No"),
+        (SHOW_YES, "Yes"),
+    ]
 
     title=models.CharField(
         'title',
@@ -68,14 +74,15 @@ class Placement(models.Model):
     place_number = models.IntegerField(
         help_text="A number to help determine where posts of this placement appear the template."
     )
-    show_author = models.BooleanField(
+    show_author = models.IntegerField(
         'show author',
-        default=True,
+        choices = SHOW_CHOICES,
+        default=SHOW_NO,
         help_text="If the author should be shown in the list of posts. This is just a flag - the template has to be coded appropriately for this to work"
     )
-    show_created = models.BooleanField(
-        'show created',
-        default=True,
+    show_created = models.IntegerField(
+        choices = SHOW_CHOICES,
+        default=SHOW_NO,
         help_text="If the creation date should be shown in the list of posts. This is just a flag - the template has to be coded appropriately for this to work"
     )
 
@@ -89,6 +96,15 @@ class Post(models.Model):
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_ARCHIVED = 3
     DRAFT_STATUS_DRAFT = 0
+    SHOW_NO = 0
+    SHOW_YES = 1
+    SHOW_COMPLY = 2
+    SHOW_CHOICES = [
+        (SHOW_NO, "No"),
+        (SHOW_YES, "Yes"),
+        (SHOW_COMPLY, "Use Placement Choice")
+    ]
+
     title = models.CharField(
         'Title',
         max_length=100,
@@ -174,14 +190,16 @@ class Post(models.Model):
         default=False,
         help_text='If this post is stuck to the top. This is used before sortable date'
     )
-    show_author = models.BooleanField(
+    show_author = models.IntegerField(
         'show author',
-        default=True,
+        choices=SHOW_CHOICES,
+        default=SHOW_COMPLY,
         help_text="If the author should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
     )
-    show_created = models.BooleanField(
+    show_created = models.IntegerField(
         'show created',
-        default=True,
+        choices=SHOW_CHOICES,
+        default=SHOW_COMPLY,
         help_text="If the creation date should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
     )
     placement=models.ForeignKey(

@@ -49,6 +49,11 @@ class HomePage(TemplateView):
                     post.content = md.markdown(post.content, extensions=['markdown.extensions.fenced_code'])
                 if post.summary_format == 'markdown' or ( post.summary_format == 'same' and post.content_format == 'markdown' ):
                     post.summary = md.markdown(post.summary, extensions=['markdown.extensions.fenced_code'])
+
+                if post.show_author == Post.SHOW_COMPLY:
+                    post.show_author = place.show_author
+                if post.show_created == Post.SHOW_COMPLY:
+                    post.show_created = place.show_created
                 
             context_data['places'].append(place)
 
