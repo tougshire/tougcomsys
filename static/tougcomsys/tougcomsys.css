@@ -271,15 +271,11 @@
     div.list div.post, div.list div.event_date {
         border-bottom: 1px solid;
         margin: 1em;
-        display:grid;
-        grid-template-rows:1fr 1fr;
     }
 
     div.list div.post div.summary {
         width:80%;
         margin:0 auto;
-        grid-row: -1 / span 1;
-        grid-column: -1 / span 1;
     }
 
     div.list div.post div.title {
@@ -340,7 +336,6 @@
         grid-column: 2 / span 1;
         grid-row: 1 / span 1;
     }
-
 
     div.list div.post_yimg_ymet {
         display:grid;
