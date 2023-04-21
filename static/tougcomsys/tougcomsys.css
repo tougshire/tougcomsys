@@ -254,11 +254,11 @@
         display:flex;
     }
 
-    div.list .listimage {
+    div.list .list_image {
         width:100%;
     }
 
-    div.list div.listimage img {
+    div.list div.list_image img {
         max-width:100%;
     }
 
@@ -271,18 +271,22 @@
     div.list div.post, div.list div.event_date {
         border-bottom: 1px solid;
         margin: 1em;
-    }
-    
-    div.list div.summary {
-        width:80%;
-        margin:0 auto;
+        display:grid;
+        grid-template-rows:1fr 1fr;
     }
 
-    div.list div.title {
+    div.list div.post div.summary {
+        width:80%;
+        margin:0 auto;
+        grid-row: -1 / span 1;
+        grid-column: -1 / span 1;
+    }
+
+    div.list div.post div.title {
         width:100%;
     }
 
-    div.list div.title h2 {
+    div.list div.post div.title h2 {
         font-size:1.6em;
         margin-top:0;
         border-radius:.1em;
@@ -291,11 +295,11 @@
 
     }
 
-    div.list div.title h2 a {
+    div.list div.post div.title h2 a {
         text-decoration: none;        
     }
 
-    div.list div.title h3 {
+    div.list div.post div.title h3 {
         width:90%;
         font-size:1.2em;
         margin:0 auto 0 auto;
@@ -304,71 +308,64 @@
         text-align: center;
     }
 
-    div.list div.title h3 a {
+    div.list div.post div.title h3 a {
         text-decoration: none;
     }
 
-}
-
-
-
-
-
-
-/* -------------------------------------------------------------- 
-
-@media screen and (min-width:601px) {
-
-    body
-    #footer
-    #head
-    #head img 
-    #menubar
-    #menubar a
-    div.list #columns 
-    div.list .listimage
-    div.list .listimage img
-    div.list img 
-    div.list .column
-    div.list div.title 
-    div.list div.title h2
-    div.list div.title h2 a
-
-    div.list div.title h3 
-
-    div.list div.title h3 a 
-    div.list div.summary 
-    div.list div.meta 
-    /* detail 
-    .detail
-    .detail .content_image
-    .detail .content_image img 
-    .detail div.title
-    .detail .title h2
-    .detail .title h2 a
-    .detail .title h3
-    .detail .title h3 a
-    .detail .event_dates 
-    .detail .event_dates_stacked {
+    div.list div.post_nimg_nmet {
         display:block;
-        justify-content: space-around;
-        text-align: center;
     }
 
-    .detail .meta {
-        width:95%;
-        margin:0 auto;
-        text-align:right;
+    div.list div.post_nimg_ymet {
+        display:block;
     }
 
-    .detail .content {
-        width:90%;
-        margin:0 auto;
-        font-family: open sans,sans-serif;        
-        
+    div.list div.post_yimg_nmet {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
     }
 
-    #footer {
-        text-align:center;
+    div.list div.post_yimg_nmet div.list_image {
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 2;
     }
+
+    div.list div.post_yimg_nmet div.summary {
+        grid-column: 2 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    div.list div.post_yimg_nmet div.title {
+        grid-column: 2 / span 1;
+        grid-row: 1 / span 1;
+    }
+
+
+    div.list div.post_yimg_ymet {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 2fr 1fr 3fr;
+    }
+
+    div.list div.post_yimg_ymet div.list_image {
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 3;
+    }
+
+    div.list div.post_yimg_ymet div.summary {
+        grid-column: 2 / span 1;
+        grid-row: 3 / span 1;
+    }
+
+    div.list div.post_yimg_nmet div.meta {
+        grid-column: 2 / span 1;
+        grid-row: 2 / span 1;
+    }
+
+    div.list div.post_yimg_nmet div.title {
+        grid-column: 2 / span 1;
+        grid-row: 1 / span 1;
+    }
+    
 }
