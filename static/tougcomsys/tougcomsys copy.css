@@ -2,19 +2,21 @@
 @import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
 
 @media only screen and (max-width: 600px) {
-    /* Global */
-
     body {
         border-top:2px solid black;
     }
 
-    #head {
+    #footer {
+        text-align:center;
+    }
+
+    #head  {
         width:80%;
         margin: 0 auto;
         text-align:center;
     }
 
-    #head img {
+    #head img  {
         width:100%;
     }
 
@@ -32,28 +34,87 @@
     #menubar a {
         display:block;
         text-decoration: none;
-
     }
 
-    /* list */
-    div.list .listimage {
+    div.detail {
+        min-height: 900px;
+    }
+
+    div.detail div.content {
+        width:90%;
+        margin:0 auto;
+        font-family: open sans,sans-serif;   
+    }
+    
+    div.detail div.content_image {
         width:100%;
     }
 
-    div.list .listimage img {
+    div.detail div.content_image img {
         width:100%;
     }
 
-    div.list img {
-        max-width:100%;
+    div.detail div.meta {
+        width:95%;
+        margin:0 auto;
+        text-align:right;
     }
 
-    div.list .column {
+    div.detail div.title {
+        width:100%;
+    }
+
+    div.detail div.title h2 {
+        font-size:1.6em;
+        margin:0 auto 0 auto;
+        border-radius:.1em;
+        font-family: 'Merriweather', serif;
+        text-align: center;
+    }
+
+    div.detail div.title h2 a {
+        text-decoration: none;        
+    }
+
+    div.detail div.title h3  {
+        width:90%;
+        font-size:1.2em;
+        margin:0 auto 0 auto;
+        border-radius:.1em;
+        font-family: 'Merriweather', serif;
+        text-align: center;
+    }
+
+    div.detail div.title h3 a  {
+        text-decoration: none;        
+    }
+
+    div.list div.column {
         border: 0;
     }
 
-    div.list div.post, div.list div.event_dat   e {
-        border-bottom: 1px solid #00a7e0;
+    div.list .list_image {
+        width:100%;
+    }
+
+    div.list .list_image img {
+        width:100%;
+    }
+
+    div.list div.meta {
+        width:90%;
+        margin:0 auto;
+        text-align:right;
+    }
+
+    div.list div.post, div.list div.event_date {
+        border-bottom: 1px solid;
+        margin: 1em;
+    }
+
+    div.list div.summary {
+        width:80%;
+        margin:0 auto;
     }
 
     div.list div.title {
@@ -66,7 +127,6 @@
         border-radius:.1em;
         font-family: 'Merriweather', serif;
         text-align: center;
-
     }
 
     div.list div.title h2 a {
@@ -81,87 +141,20 @@
         font-family: 'Merriweather', serif;
         text-align: center;
     }
-
+    
     div.list div.title h3 a {
         text-decoration: none;        
     }
 
-    div.list div.summary {
-        width:80%;
-        margin:0 auto;
-    }
+}
 
-    div.list div.meta {
-        width:90%;
-        margin:0 auto;
-        text-align:right;
-    }
-
-    /* detail */
-    .detail {
-        min-height: 900px;
-    }
-
-    .detail .listimage {
-        width:100%;
-    }
-
-    .detail .listimage img {
-        width:100%;
-    }
-
-    .detail div.title {
-        width:100%;
-    }
-
-    .detail .title h2 {
-        font-size:1.6em;
-        margin:0 auto 0 auto;
-        border-radius:.1em;
-        font-family: 'Merriweather', serif;
-        text-align: center;
-
-    }
-    .detail .title h2 a {
-        text-decoration: none;        
-    }
-
-detail .title h3 {
-        width:90%;
-        font-size:1.2em;
-        margin:0 auto 0 auto;
-        border-radius:.1em;
-        font-family: 'Merriweather', serif;
-        text-align: center;
-    }
-
-    .detail .title h3 a {
-        text-decoration: none;        
-    }
-
-    .detail .content {
-        width:90%;
-        margin:0 auto;
-        font-family: open sans,sans-serif;
-        
-    }
-
-    .detail .meta {
-        width:95%;
-        margin:0 auto;
-        text-align:right;
+@media only screen and (min-width: 600px) {
+    body {
+        border-top:2px solid black;
     }
 
     #footer {
         text-align:center;
-    }
-}
-
-@media screen and (min-width:601px) {
-    /* Global */
-
-    body {
-        border-top:2px solid black;
     }
 
     #head {
@@ -184,20 +177,69 @@ detail .title h3 {
         padding: .5ex .5ex;
         border-top: solid black;
         border-bottom: solid black;
-
     }
     
     #menubar a {
         display:block;
         text-decoration: none;
-
     }
 
-    div.list #columns {
-        display:flex;
+    div.detail {
+        min-height: 900px;
     }
 
-    div.list #columns #column_first.column {
+    div.detail div.content {
+        width:90%;
+        margin:0 auto;
+        font-family: open sans,sans-serif;        
+    }
+
+    div.detail div.content_image {
+        width:100%;
+        text-align: center;
+    }
+
+    div.detail div.content_image img {
+        width:80%;
+        margin:0 auto;
+    }
+
+    div.detail div.meta {
+        width:95%;
+        margin:0 auto;
+        text-align:right;
+    }
+
+    div.detail div.title {
+        width:100%;
+    }
+
+    div.detail div.title h2 {
+        font-size:1.6em;
+        margin:0 auto 0 auto;
+        border-radius:.1em;
+        font-family: 'Merriweather', serif;
+        text-align: center;
+    }
+    
+    div.detail div.title h2 a {
+        text-decoration: none;        
+    }
+
+    div.detail div.title h3 {
+        width:90%;
+        font-size:1.2em;
+        margin:0 auto 0 auto;
+        border-radius:.1em;
+        font-family: 'Merriweather', serif;
+        text-align: center;
+    }
+
+    div.detail div.title h3 a {
+        text-decoration: none;        
+    }
+
+    div.list div.columns #column_first.column {
         flex: 3;
         border-left: none;
     }
@@ -208,25 +250,32 @@ detail .title h3 {
         padding: .5em 1em 1em 1em;
     }
 
-    /* list */
-    div.list .listimage {
+    div.list div.columns {
+        display:flex;
+    }
+
+    div.list .list_image {
         width:100%;
     }
 
-    div.list .listimage img {
-        width:100%;
-    }
-
-    div.list img {
+    div.list div.list_image img {
         max-width:100%;
     }
 
-    div.list .column {
-        border: 0;
+    div.list div.meta {
+        width:90%;
+        margin:0 auto;
+        text-align:right;
     }
 
     div.list div.post, div.list div.event_date {
-        border-bottom: 1px solid #00a7e0;
+        border-bottom: 1px solid;
+        margin: 1em;
+    }
+    
+    div.list div.summary {
+        width:80%;
+        margin:0 auto;
     }
 
     div.list div.title {
@@ -241,6 +290,7 @@ detail .title h3 {
         text-align: center;
 
     }
+
     div.list div.title h2 a {
         text-decoration: none;        
     }
@@ -255,89 +305,7 @@ detail .title h3 {
     }
 
     div.list div.title h3 a {
-        text-decoration: none;        
+        text-decoration: none;
     }
 
-    div.list div.summary {
-        width:80%;
-        margin:0 auto;
-    }
-
-    div.list div.meta {
-        width:90%;
-        margin:0 auto;
-        text-align:right;
-    }
-
-    /* detail */
-    .detail {
-        min-height: 900px;
-    }
-
-    .detail .content_image {
-        width:100%;
-        text-align: center;
-    }
-
-    .detail .content_image img {
-        width:80%;
-        margin:0 auto;
-    }
-
-    .detail div.title {
-        width:100%;
-    }
-
-    .detail .title h2 {
-        font-size:1.6em;
-        margin:0 auto 0 auto;
-        border-radius:.1em;
-        font-family: 'Merriweather', serif;
-        text-align: center;
-    }
-    .detail .title h2 a {
-        text-decoration: none;        
-    }
-
-    .detail .title h3 {
-        width:90%;
-        font-size:1.2em;
-        margin:0 auto 0 auto;
-        border-radius:.1em;
-        font-family: 'Merriweather', serif;
-        text-align: center;
-    }
-
-    .detail .title h3 a {
-        text-decoration: none;        
-    }
-
-    .detail .event_dates {
-        display:flex;
-        justify-content: space-around;
-        text-align: center;
-    }
-
-    .detail .event_dates_stacked {
-        display:block;
-        justify-content: space-around;
-        text-align: center;
-    }
-
-    .detail .meta {
-        width:95%;
-        margin:0 auto;
-        text-align:right;
-    }
-
-    .detail .content {
-        width:90%;
-        margin:0 auto;
-        font-family: open sans,sans-serif;        
-        
-    }
-
-    #footer {
-        text-align:center;
-    }
 }

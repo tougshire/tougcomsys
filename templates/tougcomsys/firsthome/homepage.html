@@ -7,30 +7,71 @@
                 {% if forloop.first %}
                     <div id="column_first" class="column">
                         {% for post in p.posts %}
-                            <div class="post{% if post.list_image %} post_with_image{% else %} post_without_image{% endif %}">
-                                {% if post.list_image %}
-                                    <div class="listimage">
-                                        <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
-                                    </div>
-                                {% endif %}
-                                <div class="title post_title">
-                                    <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
-                                </div>
+                            {% if post.list_image %}
                                 {% if post.show_author or post.show_created %}
-                                    <div class="post_meta">
-                                        {% if post.show_author %}
-                                            {{ post.author|default_if_none:'&nbsp;' }}
-                                        {% endif %}
-                                        {% if post.show_author and post.show_created %} - {% endif %}
-                                        {% if post.show_created %}  
-                                            {{ post.created|default_if_none:'&nbsp;' }} 
-                                        {% endif %}
+                                    <div class="post post_yimg_ymet">
+                                        <div class="list_image">
+                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
+                                        </div>
+                                        <div class="title post_title">
+                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
+                                        </div>
+                                        <div class="post_meta">
+                                            {% if post.show_author %}
+                                                {{ post.author|default_if_none:'&nbsp;' }}
+                                            {% endif %}
+                                            {% if post.show_author and post.show_created %} - {% endif %}
+                                            {% if post.show_created %}  
+                                                {{ post.created|default_if_none:'&nbsp;' }} 
+                                            {% endif %}
+                                        </div>
+                                        <div class="summary post_summary">
+                                            {{ post.summary | safe }}
+                                        </div>        
+                                    </div>
+                                {% else %}
+                                    <div class="post post_yimg_nmet">
+                                        <div class="list_image">
+                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
+                                        </div>
+                                        <div class="title post_title">
+                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
+                                        </div>
+                                        <div class="summary post_summary">
+                                            {{ post.summary | safe }}
+                                        </div>        
                                     </div>
                                 {% endif %}
-                                <div class="summary post_summary">
-                                    {{ post.summary | safe }}
-                                </div>
-                            </div>
+                            {% else %}
+                                {% if post.show_author or post.show_created %}
+                                    <div class="post post_nimg_ymet">
+                                        <div class="title post_title">
+                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
+                                        </div>
+                                        <div class="post_meta">
+                                            {% if post.show_author %}
+                                                {{ post.author|default_if_none:'&nbsp;' }}
+                                            {% endif %}
+                                            {% if post.show_author and post.show_created %} - {% endif %}
+                                            {% if post.show_created %}  
+                                                {{ post.created|default_if_none:'&nbsp;' }} 
+                                            {% endif %}
+                                        </div>
+                                        <div class="summary post_summary">
+                                            {{ post.summary | safe }}
+                                        </div>        
+                                    </div>
+                                {% else %}
+                                    <div class="post post_nimg_nmet">
+                                        <div class="title post_title">
+                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
+                                        </div>
+                                        <div class="summary post_summary">
+                                            {{ post.summary | safe }}
+                                        </div>        
+                                    </div>
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}        
                     </div>
                 {% else %}
@@ -42,7 +83,7 @@
                             {% for post in p.posts %}
                                 <div class="post">
                                     {% if post.list_image %}
-                                        <div class="listimage">
+                                        <div class="list_image">
                                             <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
                                         </div>
                                     {% endif %}
