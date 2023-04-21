@@ -21,7 +21,7 @@
 
     /* list */
     div.list div.post, div.list div.event_date {
-        border-bottom: 1px solid #00a7e0;
+        border-color: #00a7e0;
     }
 
     /* div.list div.title h2 {
@@ -112,7 +112,7 @@
 
     /* list */
     div.list div.post, div.list div.event_date {
-        border-bottom: 1px solid #00a7e0;
+        border-color: #00a7e0;
     }
 
     /* div.list div.title h2 {
