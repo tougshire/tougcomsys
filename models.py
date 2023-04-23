@@ -92,7 +92,8 @@ class Placement(models.Model):
     class Meta:
         ordering = ('place_number',)
     
-class Post(models.Model):
+#     
+class Article(models.Model):
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_ARCHIVED = 3
     DRAFT_STATUS_DRAFT = 0
@@ -104,110 +105,16 @@ class Post(models.Model):
         (SHOW_YES, "Yes"),
         (SHOW_COMPLY, "Use Placement Choice")
     ]
-
-    title = models.CharField(
-        'Title',
+    headline = models.CharField(
+        'Headline',
         max_length=100,
-        help_text="The title of the thread"
+        help_text="The title or headline of the article"
     )
-    list_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
+    subheadline = models.CharField(
+        'Headline',
+        max_length=100,
         blank=True,
-        help_text='The image to display above the title, and to use for social media graphs'
-    )
-    above_content_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text='The image to display above the content, and to use for social media graphs',
-        related_name="post_above_content_image"
-    )
-    above_content_image_attributes = models.CharField(
-        "above content image attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for the image displayed above content',
-    )
-    above_content_image_link = models.URLField(
-        "above content image link",
-        blank=True,
-        help_text='The link for the image displayed above content',
-    )
-    above_content_link_attributes = models.CharField(
-        "above content link attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed above content',
-    )
-    below_content_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text='The image to display below the content, and to use for social media graphs if no above_content image is set',
-        related_name="post_below_content_image"
-    )
-    below_content_image_attributes = models.CharField(
-        "below content image attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for the image displayed below content',
-    )
-    below_content_image_link = models.URLField(
-        "below content image link",
-        blank=True,
-        help_text='The link for the image displayed below content',
-    )
-    below_content_link_attributes = models.CharField(
-        "below content link attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed below content',
-    )
-    author=models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text="The user who created ths thread"
-    )
-    created=models.DateTimeField(
-        'created',
-        auto_now_add=True,
-        help_text="The date/time this therad was created"
-    )
-    sortable_date=models.DateTimeField(
-        'sortable date',
-        default=datetime.now,
-        null=True,
-        help_text="The modifiable date used for sorting. This is the created date by default. To move a post up, select a future date."
-    )
-    sticky=models.BooleanField(
-        'sticky',
-        default=False,
-        help_text='If this post is stuck to the top. This is used before sortable date'
-    )
-    show_author = models.IntegerField(
-        'show author',
-        choices=SHOW_CHOICES,
-        default=SHOW_COMPLY,
-        help_text="If the author should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
-    )
-    show_created = models.IntegerField(
-        'show created',
-        choices=SHOW_CHOICES,
-        default=SHOW_COMPLY,
-        help_text="If the creation date should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
-    )
-    placement=models.ForeignKey(
-        Placement,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text="The place on the home page"
+        help_text="The optional subtitle or subheadline of the article"
     )
     content_format = models.CharField(
         'content format',
@@ -240,6 +147,46 @@ class Post(models.Model):
         blank=True,
         help_text="A shorter version of the content"
     )
+    author=models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="The user who created ths article"
+    )
+    show_author = models.IntegerField(
+        'show author',
+        choices=SHOW_CHOICES,
+        default=SHOW_COMPLY,
+        help_text="If the author should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
+    )
+    show_updated = models.IntegerField(
+        'show updated',
+        choices=SHOW_CHOICES,
+        default=SHOW_COMPLY,
+        help_text="If the updated date should be shown in the detail view. This is just a flag - the template has to be coded appropriately for this to work"
+    )
+    created_date=models.DateTimeField(
+        'created',
+        auto_now_add=True,
+        help_text="The date/time this article was created"
+    )
+    updated_date=models.DateTimeField(
+        'updated',
+        auto_now=True,
+        help_text="The date/time this article was created"
+    )
+    sortable_date=models.DateTimeField(
+        'sortable date',
+        default=datetime.now,
+        null=True,
+        help_text="The modifiable date used for sorting, normally used only if this is a post, and in the admin panel for pages.  Later dates normally appear list earlier dates"
+    )
+    sticky=models.BooleanField(
+        'sticky',
+        default=False,
+        help_text='If this post is stuck to the top. This is used before sortable date'
+    )
     draft_status = models.IntegerField(
         "draft status",
         choices = [
@@ -250,9 +197,10 @@ class Post(models.Model):
         default=0,
         help_text="If this post is a draft, which only displays in preview mode"
     )
+
     slug = models.SlugField(
-        unique=True,
-        help_text="The code that provides a character based ID for this page"
+        "slug",
+        help_text = "The slug used to refer to this article"
     )
 
     def get_absolute_url(self): 
@@ -260,311 +208,140 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):   
         if not self.slug > "":
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.headline)
         super().save(*args, **kwargs) 
 
     def __str__(self):
-        return self.title
+        return self.headline
     
     class Meta:
         ordering = ('-sticky', '-sortable_date',)
-    
-class Event(models.Model):
-    DRAFT_STATUS_PUBLISHED = 7
-    DRAFT_STATUS_ARCHIVED = 3
-    DRAFT_STATUS_DRAFT = 0
 
-    title = models.CharField(
-        'title',
-        max_length=100,
-        help_text="The title of the thread"
+class ArticleImage(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        help_text='The article to which the image is attached'
     )
-    list_image = models.ForeignKey(
+    image = models.ForeignKey(
         Image,
-        on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        help_text='The image to display above the title, and to use for social media graphs'
-    )
-    above_content_image = models.ForeignKey(
-        Image,
         on_delete=models.SET_NULL,
-        null=True,
+        help_text = 'The image to add to the article'
+    )
+    shown_on_list = models.BooleanField(
+        'shown on list',
+        default=False,
+        help_text='If this image should be displayed with this article\'s headline and summary on a list of articles'
+    )
+    shown_above_content = models.BooleanField(
+        'shown above content',
+        default=False,
+        help_text='If this image should be displayed above the content in a detail view of the articles'
+    )
+    shown_below_content = models.BooleanField(
+        'shown below content',
+        default=False,
+        help_text='If this image should be displayed below the content in a detail view of the articles'
+    )
+    is_featured = models.BooleanField(
+        'is featured',
+        default=False,
+        help_text='If this image should be featured, for use in Social Media links'
+    )
+    list_image_attributes = models.CharField(
+        "list image attributes",
+        max_length=200,
         blank=True,
-        help_text='The image to display above the content, and to use for social media graphs',
-        related_name="event_above_content_image"
+        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed list content',
+    )
+    list_image_link = models.URLField(
+        "list image link",
+        blank=True,
+        help_text='The link for the image if/when displayed list content',
+    )
+    list_image_link_attributes = models.CharField(
+        "list image link attributes",
+        max_length=70,
+        blank=True,
+        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content',
+    )
+
+    above_content_image_attributes = models.CharField(
+        "above content image attributes",
+        max_length=200,
+        blank=True,
+        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed in a list',
     )
     above_content_image_link = models.URLField(
         "above content image link",
         blank=True,
-        help_text='The link for the image displayed above content',
-    )
-    above_content_image_attributes = models.CharField(
-        "above content image attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for the image displayed above content',
+        help_text='The link for the image if/when displayed list content',
     )
     above_content_link_attributes = models.CharField(
         "above content link attributes",
         max_length=70,
         blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed above content',
-    )
-    below_content_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text='The image to display below the content, and to use for social media graphs if no above_content image is set',
-        related_name="event_below_content_image"
+        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content',
     )
     below_content_image_attributes = models.CharField(
         "below content image attributes",
-        max_length=70,
+        max_length=200,
         blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for the image displayed below content',
+        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed below content',
     )
-
     below_content_image_link = models.URLField(
         "below content image link",
         blank=True,
-        help_text='The link for the image displayed below content',
+        help_text='The link for the image if/when displayed below content',
     )
     below_content_link_attributes = models.CharField(
         "below content link attributes",
         max_length=70,
         blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed below content',
+        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed below content',
     )
-    starttime = models.TimeField(
-        'starting',
+
+class ArticlePlacement(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        help_text="The article which is to be placed on the site"
+    )
+    placement=models.ForeignKey(
+        Placement,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="The placement on the home page"
+    )
+
+class ArticleEventdate(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        help_text="If the article is an event, the article to which this event date belongs"
+    )
+    whendate = models.DateField(
+        'date',
+        help_text="If the article is an event, the date of the event"
+    )
+    whentime = models.TimeField(
+        'time',
         blank=True,
         null=True,
         help_text='The start time of the event'
     )
-    lenmin = models.IntegerField(
+    timelen = models.IntegerField(
         'length(minutes)',
-        blank=True,
         default=0,
-        help_text='How long the event lasts (0 indicates indefinite or unkown)'
+        help_text = 'The length of time for the event in minutes'
     )
-    content_format = models.CharField(
-        'content format',
-        max_length=20,
-        choices=(
-            ('markdown', 'markdown'),
-            ('html','html'),
-        ),
-        default='markdown',
-        help_text="The format (or markup method) used for the content"
-    )
-    content = models.TextField(
-        "content",
-        blank=True,
-        help_text="The content of the post"
-    )
-    summary_format = models.CharField(
-        'content format',
-        max_length=20,
-        choices=(
-            ('same', 'same as content'),
-            ('markdown', 'markdown'),
-            ('html','html'),
-        ),
-        default='same',
-        help_text="The format (or markup method) used for the summary"
-    )
-    summary = models.TextField(
-        "summary",
-        blank=True,
-        help_text="A shorter version of the content"
-    )
-    post = models.ForeignKey(
-        Post,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text = 'The post to use as the content and summary.  If selected, the post content and summary will be used instead of the event\'s content and summary'
-    )
-    draft_status = models.IntegerField(
-        "draft status",
-        choices = [
-            (DRAFT_STATUS_PUBLISHED, 'published'),
-            (DRAFT_STATUS_ARCHIVED, 'archived'),
-            (DRAFT_STATUS_DRAFT, 'draft'),
-        ],
-        default=0,
-        help_text="If this post is a draft, which only displays in preview mode"
-    )
-    slug = models.SlugField(
-        unique=True,
-        help_text="The code that provides a character based ID for this page"
-    )
-
-    def get_absolute_url(self): 
-        return reverse("event_detail", kwargs={"slug": self.slug}) 
-    
-    def save(self, *args, **kwargs):   
-        if not self.slug > "":
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs) 
 
     def __str__(self):
-        return self.title
+        return '{} -> {}'.format(self.article, self.whendate)
 
     class Meta:
-        ordering=['starttime', 'lenmin']    
+        ordering = ('-whendate', '-whentime', 'article')
 
-class EventDate(models.Model):
-    event = models.ForeignKey(
-        Event,
-        on_delete=models.CASCADE,
-        help_text="The event to which this date belongs"
-    )
-    whenday = models.DateField(
-        'date',
-        help_text="The date of the event"
-    )
-
-    def __str__(self):
-        return '{} -> {}'.format(self.event, self.whenday)
-
-    class Meta:
-        ordering = ('whenday','event')
-
-class Page(models.Model):
-    DRAFT_STATUS_PUBLISHED = 7
-    DRAFT_STATUS_ARCHIVED = 3
-    DRAFT_STATUS_DRAFT = 0
-    title = models.CharField(
-        'Title',
-        max_length=100,
-        help_text="The title of the thread"
-    )
-    above_content_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text='The image to display above the content, and to use for social media graphs',
-        related_name="page_above_content_image"
-    )
-    above_content_image_link = models.URLField(
-        "above content image link",
-        blank=True,
-        help_text='The link for the image displayed above content',
-    )
-    above_content_link_attributes = models.CharField(
-        "above content attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed above content',
-    )
-    below_content_image = models.ForeignKey(
-        Image,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text='The image to display below the content, and to use for social media graphs if no above_content image is set',
-        related_name="page_below_content_image"
-    )
-    below_content_image_link = models.URLField(
-        "below content image link",
-        blank=True,
-        help_text='The link for the image displayed below content',
-    )
-    below_content_link_attributes = models.CharField(
-        "below content attributes",
-        max_length=70,
-        blank=True,
-        help_text='The attributes (ie target="_blank") for the link for the image displayed below content',
-    )
-
-    slug = models.SlugField(
-        unique=True,
-        help_text="The code that provides a character based ID for this page"
-    )
-    author=models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text="The user who created ths thread"
-    )
-    created=models.DateTimeField(
-        'created',
-        auto_now_add=True,
-        help_text="The date/time this therad was created"
-    )
-    content_format = models.CharField(
-        'content format',
-        max_length=20,
-        choices=(
-            ('markdown', 'markdown'),
-            ('html','html'),
-        ),
-        default='markdown',
-        help_text="The format (or markup method) used for the content"
-    )
-    content = models.TextField(
-        "content",
-        blank=True,
-        help_text="The content of the post"
-    )
-    list_order = models.CharField(
-        max_length=1,
-        blank=True,
-        default='~',
-        help_text="A character to determine the place on the list. Numbers are higher than capital letters, which are higher than small letters"
-    )
-    draft_status = models.IntegerField(
-        "draft status",
-        choices = [
-            (DRAFT_STATUS_PUBLISHED, 'published'),
-            (DRAFT_STATUS_ARCHIVED, 'archived'),
-            (DRAFT_STATUS_DRAFT, 'draft'),
-        ],
-        default=0,
-        help_text="If this page is a draft, which only displays in preview mode"
-    )
-
-    def __str__(self):
-        return self.title
-    
-    def get_absolute_url(self): 
-        return reverse("page_detail", kwargs={"slug": self.slug}) 
-    
-    def save(self, *args, **kwargs):   
-        if not self.slug > "":
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs) 
-
-    class Meta:
-        ordering = ('list_order', '-created',)
-
-class PostImage(models.Model):
-    post = models.ForeignKey(
-        Post,
-        on_delete=models.CASCADE,
-        help_text="The post which includes the image"
-    )
-    image = models.ForeignKey(
-        Image,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        help_text = "The image included in the post.  Optional if URL is set"
-    )
-    url = models.URLField(
-        "URL",
-        blank=True,
-        help_text = "The URL of the image. Leave blank to use the Image field. URL will override the image field if URL is not blank"
-    )
-    slug = models.SlugField(
-        "slug",
-        help_text = "The slug used to refer to the image in this post (refer to the image with {{ img:my-image }}) if my-image is the slug"
-    )
-
-    def __str__(self):
-        return self.slug

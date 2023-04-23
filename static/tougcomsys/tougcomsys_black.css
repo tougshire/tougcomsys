@@ -19,42 +19,42 @@
     }
 
     /* list */
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-bottom: 1px solid #808080;
     }
     
-    div.list div.title h2 {
+    div.list div.headline h2 {
         color:white;
         background-color:#303030;
 
     }
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         color:white;
     }
 
-    div.list div.title h3 {
+    div.list div.headline h3 {
         color:#808080;
     }
 
-    div.list div.title h3 a {
+    div.list div.headline h3 a {
         color:#808080;
     }
 
     /* detail */
-    .detail .title h2 {
+    .detail .headline h2 {
         color:white;
         background-color:#303030;
 
     }
-    .detail .title h2 a {
+    .detail .headline h2 a {
         color:white;
     }
 
-    .detail .title h3 {
+    .detail .headline h3 {
         color:#808080;
     }
 
-    .detail .title h3 a {
+    .detail .headline h3 a {
         color:#808080;
     }
 
@@ -88,43 +88,43 @@
 
     /* list */
 
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-bottom: 1px solid #808080;
     }
 
-    div.list div.title h2 {
+    div.list div.headline h2 {
         color:white;
         background-color:#303030;
     }
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         color:white;
     }
 
-    div.list div.title h3 {
+    div.list div.headline h3 {
         color:#808080;
     }
 
-    div.list div.title h3 a {
+    div.list div.headline h3 a {
         color:#808080;
     }
 
     /* detail */
 
-    .detail .title h2 {
+    .detail .headline h2 {
 
         color:white;
         background-color:#303030;
 
     }
-    .detail .title h2 a {
+    .detail .headline h2 a {
         color:white;
     }
 
-    .detail .title h3 {
+    .detail .headline h3 {
         color:#808080;
     }
 
-    .detail .title h3 a {
+    .detail .headline h3 a {
         color:#808080;
     }
 

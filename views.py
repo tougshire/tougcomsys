@@ -11,7 +11,8 @@ from datetime import datetime, date
 
 import markdown as md
 
-from tougcomsys.models import Event, EventDate, Page, Placement, Post
+# from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement
 
 class HomePage(TemplateView):
 
@@ -24,53 +25,54 @@ class HomePage(TemplateView):
         context_data = super().get_context_data(**kwargs)
 
         if do_preview:
-            placements = Placement.objects.annotate(published_qty=Count("post", filter=( Q(post__draft_status=Post.DRAFT_STATUS_PUBLISHED) | Q(post__draft_status=Post.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1)
+            placements = Placement.objects.annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1)
         else:
-            placements = Placement.objects.annotate(published_qty=Count("post", filter=(Q(post__draft_status=Post.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1)
+            placements = Placement.objects.annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1)
 
-        context_data['places'] = []
-        for place in placements:
+        context_data['placements'] = []
+        for placement in placements:
 
 
             if do_preview:
-                place.count = place.post_set.filter(Q(draft_status=Post.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Post.DRAFT_STATUS_DRAFT)).count()
-                place.posts = place.post_set.all().filter(Q(draft_status=Post.DRAFT_STATUS_PUBLISHED) )
+                placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
+                placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
             else:
-                place.count = place.post_set.filter(draft_status=Post.DRAFT_STATUS_PUBLISHED).count()
-                place.posts = place.post_set.all().filter(draft_status=Post.DRAFT_STATUS_PUBLISHED)
+                placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
+                placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
-            for post in place.posts:
+            for articleplacement in placement.articleplacements:
                 
-                if post.summary == '':
-                    post.summary = post.content
-                if post.summary == '__none__':
-                    post.summary = ''
-                if post.content_format == 'markdown':
-                    post.content = md.markdown(post.content, extensions=['markdown.extensions.fenced_code'])
-                if post.summary_format == 'markdown' or ( post.summary_format == 'same' and post.content_format == 'markdown' ):
-                    post.summary = md.markdown(post.summary, extensions=['markdown.extensions.fenced_code'])
+                if articleplacement.article.summary == '':
+                    articleplacement.article.summary = articleplacement.article.content
+                if articleplacement.article.summary == '__none__':
+                    articleplacement.article.summary = ''
+                if articleplacement.article.content_format == 'markdown':
+                    articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
+                if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
+                    articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
 
-                if post.show_author == Post.SHOW_COMPLY:
-                    post.show_author = place.show_author
-                if post.show_created == Post.SHOW_COMPLY:
-                    post.show_created = place.show_created
+                if articleplacement.article.show_author == Article.SHOW_COMPLY:
+                    articleplacement.article.show_author = placement.show_author
+                if articleplacement.article.show_updated == Article.SHOW_COMPLY:
+                    articleplacement.article.show_updates = placement.show_created
                 
-            context_data['places'].append(place)
+                for articleimage in articleplacement.article.articleimage_set.all():
+                    if articleimage.shown_on_list:
+                        articleplacement.article.list_image = articleimage
+                        print('tp234n917', articleplacement.article.list_image)
+                        print('tp234n918', articleplacement.article.list_image.list_image_attributes)
+
+            context_data['placements'].append(placement)
 
         if do_preview:
-            event_dates = EventDate.objects.filter(whenday__gte=date.today()).filter(Q(event__draft_status=Event.DRAFT_STATUS_PUBLISHED) | Q(event__draft_status=Event.DRAFT_STATUS_DRAFT) )
+            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=article.DRAFT_STATUS_DRAFT) )
         else:
-            event_dates = EventDate.objects.filter(whenday__gte=date.today()).filter(event__draft_status=Event.DRAFT_STATUS_PUBLISHED)
+            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
-        collated_event_dates={}
-        for event_date in event_dates:
+        collated_article_event_dates={}
+        for article_event_date in article_event_dates:
 
-            event = event_date.event
-            if event.post:
-                if event.summary == '':
-                    event.summary = event.post.summary
-                if event.content == '':
-                    event.content = event.post.content
+            event = article_event_date.article
 
             if event.summary == '':
                 event.summary = event.content
@@ -81,119 +83,106 @@ class HomePage(TemplateView):
             if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
                 event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
 
-            isokey = event_date.whenday.isoformat()
-            if isokey in collated_event_dates:
-                collated_event_dates[isokey]['events'].append(event)
+            isokey = article_event_date.whendate.isoformat()
+            if isokey in collated_article_event_dates:
+                collated_article_event_dates[isokey]['events'].append(event)
             else:
-                collated_event_dates[isokey]={}
-                collated_event_dates[isokey]['whenday'] = event_date.whenday
-                collated_event_dates[isokey]['events'] = [ event ]
+                collated_article_event_dates[isokey]={}
+                collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
+                collated_article_event_dates[isokey]['events'] = [ event ]
 
 
-        context_data['event_dates'] = collated_event_dates
-
-        context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
+        context_data['event_dates'] = collated_article_event_dates
 
         return context_data
     
-class PostDetail(DetailView):
-    model=Post
-    template_name = '{}/post.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-    context_object_name = 'post'
 
-    def get_context_data(self, **kwargs):
-
-        context_data = super().get_context_data(**kwargs)
-        post = self.get_object()
-
-        print('tp234e800')
-        if post.postimage_set.count() > 0:
-            print('tp234d759', post.title)
-
-        if post.summary == '':
-            post.summary = post.content
-        if post.summary == '__none__':
-            post.summary = ''
-
-        if post.content_format == 'markdown':
-            post.content = md.markdown(post.content, extensions=['markdown.extensions.fenced_code'])
-
-        if post.summary_format == 'markdown' or ( post.summary_format == 'same' and post.content_format == 'markdown' ):
-            post.summary = md.markdown(post.summary, extensions=['markdown.extensions.fenced_code'])
-
-        context_data['post'] = post
-
-
-
-        context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
-
-        return context_data
-
-class EventDetail(DetailView):
-    model=Event
-    template_name = '{}/event.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-    context_object_name = 'event'
+class ArticleDetail(DetailView):
+    model=Article
+    template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
+    context_object_name = 'article'
 
     def get_context_data(self, **kwargs):
 
         context_data = super().get_context_data(**kwargs)
 
-        event = self.get_object()
+        article = self.get_object()
 
-        event_dates = {
+        article_event_dates = {
             'past':[],
             'future':[],
             'only':False,
         }   
-        for event_date in event.eventdate_set.all():
-            if event_date.whenday < date.today():
-                event_dates['past'].append(event_date.whenday)
+        for article_event_date in article.articleeventdate_set.all():
+            if article_event_date.whendate < date.today():
+                article_event_dates['past'].append(article_event_date.whendate)
             else:
-                event_dates['future'].append(event_date.whenday)
+                article_event_dates['future'].append(article_event_date.whendate)
 
-        if event_dates['future']:
-            event_dates['now_or_next'] = event_dates['future'].pop(0)
-        if event_dates['future']:
-            event_dates['next'] = event_dates['future'].pop(0)
-        if event_dates['past']:
-            event_dates['previous'] = event_dates['past'].pop()
+        if article_event_dates['future']:
+            article_event_dates['now_or_next'] = article_event_dates['future'].pop(0)
+        if article_event_dates['future']:
+            article_event_dates['next'] = article_event_dates['future'].pop(0)
+        if article_event_dates['past']:
+            article_event_dates['previous'] = article_event_dates['past'].pop()
 
 
-        context_data['event_dates'] = event_dates
-        
-        if event.post:
-            if event.summary == '':
-                event.summary = event.post.summary
-            if event.content == '':
-                event.content = event.post.content
- 
-        if event.summary == '':
-            event.summary = event.content
-        if event.summary == '__none__':
-            event.summary = ''
-        if event.content_format == 'markdown':
-            event.content = md.markdown(event.content, extensions=['markdown.extensions.fenced_code'])
-        if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
-            event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
-        context_data['event'] = event
+        context_data['event_dates'] = article_event_dates
 
-        context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
+        for articleimage in article.articleimage_set.all():
+            if articleimage.shown_above_content:
+                article.above_content_image = articleimage
+            if articleimage.shown_below_content:
+                article.below_content_image = articleimage
 
+
+        if article.summary == '':
+            article.summary = article.content
+        if article.summary == '__none__':
+            article.summary = ''
+        if article.content_format == 'markdown':
+            article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
+        if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
+            article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
+
+        context_data['article'] = article
         return context_data
 
-class PageDetail(DetailView):
-    model=Page
-    template_name = '{}/page.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-    context_object_name = 'page'
+# class xArticleDetail(DetailView):
+#     model=Article
+#     template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
+#     context_object_name = 'article'
 
-    def get_context_data(self, **kwargs):
+#     def get_context_data(self, **kwargs):
 
-        context_data = super().get_context_data(**kwargs)
-        page = self.get_object()
-        if page.content_format == 'markdown':
-            page.content = md.markdown(page.content, extensions=['markdown.extensions.fenced_code'])
-        context_data['page'] = page
+#         context_data = super().get_context_data(**kwargs)
+#         article = self.get_object()
 
-        context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
+#         article_event_dates = {
+#             'past':[],
+#             'future':[],
+#             'only':False,
+#         }   
 
-        return context_data
+#         print('tp234e800')
+#         if article.articleimage_set.count() > 0:
+#             print('tp234d759', article.title)
+
+#         if article.summary == '':
+#             article.summary = article.content
+#         if article.summary == '__none__':
+#             article.summary = ''
+
+#         if article.content_format == 'markdown':
+#             article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
+
+#         if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
+#             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
+
+#         context_data['article'] = article
+
+
+
+#         context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
+
+#         return context_data

@@ -20,65 +20,65 @@
     }
 
     /* list */
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-color: #00a7e0;
     }
 
-    /* div.list div.title h2 {
+    /* div.list div.headline h2 {
         color:white;
         background-color:#002e5c;
 
     } */
-    /* div.list div.title h2 a {
+    /* div.list div.headline h2 a {
         color:white;
     }
  */
 
-    div.list div.title h2 {
+    div.list div.headline h2 {
         color:#002e5c;
         background-color: #cdf;
     }
 
     
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         color:#002e5c;
     }
 
-    div.list div.title h3 {
+    div.list div.headline h3 {
         color:#00a7e0;
     }
 
-    div.list div.title h3 a {
+    div.list div.headline h3 a {
         color:#00a7e0;
     }
 
     /* detail */
-    /* div.list div.title h2 {
+    /* div.list div.headline h2 {
         color:white;
         background-color:#002e5c;
 
     } */
-    /* div.list div.title h2 a {
+    /* div.list div.headline h2 a {
         color:white;
     }
      */
 
-     div.detail div.title h2 {
+     div.detail div.headline h2 {
         color:#002e5c;
         background-color: #cdf;
 
     }
 
 
-    div.detail div.title h2 a {
+    div.detail div.headline h2 a {
     color:#002e5c;
     }
 
-    div.detail .title h3 {
+    div.detail .headline h3 {
         color:#00a7e0;
     }
 
-    div.detail .title h3 a {
+    div.detail .headline h3 a {
         color:#00a7e0;
     }
 
@@ -111,62 +111,62 @@
     }
 
     /* list */
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-color: #00a7e0;
     }
 
-    /* div.list div.title h2 {
+    /* div.list div.headline h2 {
         color:white;
         background-color:#002e5c;
 
     }
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         color:white;
 
     } */
 
-    div.list div.title h2 {
+    div.list div.headline h2 {
         color:#002e5c;
         background-color: #cdf;
     }
     
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         color:#002e5c;
     }
 
 
-    div.list div.title h3 {
+    div.list div.headline h3 {
         color:#00a7e0;
     }
 
-    div.list div.title h3 a {
+    div.list div.headline h3 a {
         color:#00a7e0;
     }
 
     /* detail */
-    /* .detail .title h2 {
+    /* .detail .headline h2 {
         color:white;
         background-color:#002e5c;
 
     }
-    .detail .title h2 a {
+    .detail .headline h2 a {
         color:white;
     } */
 
-    div.detail div.title h2 {
+    div.detail div.headline h2 {
         color:#002e5c;
         background-color: #cdf;
 
     }
-    div.detail div.title h2 a {
+    div.detail div.headline h2 a {
         color:#002e5c;
     }
 
-    .detail .title h3 {
+    .detail .headline h3 {
         color:#00a7e0;
     }
 
-    .detail .title h3 a {
+    .detail .headline h3 a {
         color:#00a7e0;
     }
 

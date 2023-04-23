@@ -1,16 +1,34 @@
 from django.contrib import admin
 
-from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
+# from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement
+
+class ArticleEventdateInline(admin.StackedInline):
+    model=ArticleEventdate
+    exta=1
+
+class ArticlePlacementInline(admin.StackedInline):
+    model=ArticlePlacement
+    exta=1
+
+class ArticleImageInline(admin.StackedInline):
+    model=ArticleImage
+    exta=1
+
 
 class PlacementAdmin(admin.ModelAdmin):
     list_display = ('title', 'place_number')
+    inlines = [ArticlePlacementInline]
 
 admin.site.register(Placement, PlacementAdmin)
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'draft_status', 'placement', )
-    ordering = ['placement'] + list(Post._meta.ordering)
-    prepopulated_fields={'slug': ["title"]}
+
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('headline', 'slug', 'draft_status', 'sortable_date',  )
+    ordering = list(Article._meta.ordering)
+    prepopulated_fields={'slug': ["headline"]}
+
+    inlines = [ArticleImageInline, ArticleEventdateInline, ArticlePlacementInline]
 
     def get_changeform_initial_data(self, request):
 
@@ -19,30 +37,7 @@ class PostAdmin(admin.ModelAdmin):
         return initial
 
 
-admin.site.register(Post, PostAdmin)
+admin.site.register(Article, ArticleAdmin)
 
-class PageAdmin(admin.ModelAdmin):
-    list_display = ('title', 'draft_status')
-
-    prepopulated_fields={'slug': ["title"]}
-
-
-admin.site.register(Page, PageAdmin)
-
-class EventDateInline(admin.StackedInline):
-    model=EventDate
-    exta=5
-
-class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'draft_status')
-    inlines = [EventDateInline,]
-
-    prepopulated_fields={'slug': ["title"]}
-
-
-admin.site.register(Event, EventAdmin)
-
-
-admin.site.register(EventDate)
 
 admin.site.register(Image)

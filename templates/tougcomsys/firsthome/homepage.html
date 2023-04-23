@@ -3,131 +3,104 @@
 {% block content %}
     <div id="tougcomsys" class="list">
         <div id="columns" class="columns">
-            {% for p in places %}
+            {% for placement in placements %}
                 {% if forloop.first %}
-                    <div id="column_first" class="column">
-                        {% for post in p.posts %}
-                            {% if post.list_image %}
-                                {% if post.show_author or post.show_created %}
-                                    <div class="post post_yimg_ymet">
-                                        <div class="list_image">
-                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
-                                        </div>
-                                        <div class="title post_title">
-                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
-                                        </div>
-                                        <div class="post_meta">
-                                            {% if post.show_author %}
-                                                {{ post.author|default_if_none:'&nbsp;' }}
-                                            {% endif %}
-                                            {% if post.show_author and post.show_created %} - {% endif %}
-                                            {% if post.show_created %}  
-                                                {{ post.created|default_if_none:'&nbsp;' }} 
-                                            {% endif %}
-                                        </div>
-                                        <div class="summary post_summary">
-                                            {{ post.summary | safe }}
-                                        </div>        
-                                    </div>
-                                {% else %}
-                                    <div class="post post_yimg_nmet">
-                                        <div class="list_image">
-                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
-                                        </div>
-                                        <div class="title post_title">
-                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
-                                        </div>
-                                        <div class="summary post_summary">
-                                            {{ post.summary | safe }}
-                                        </div>        
-                                    </div>
-                                {% endif %}
-                            {% else %}
-                                {% if post.show_author or post.show_created %}
-                                    <div class="post post_nimg_ymet">
-                                        <div class="title post_title">
-                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
-                                        </div>
-                                        <div class="post_meta">
-                                            {% if post.show_author %}
-                                                {{ post.author|default_if_none:'&nbsp;' }}
-                                            {% endif %}
-                                            {% if post.show_author and post.show_created %} - {% endif %}
-                                            {% if post.show_created %}  
-                                                {{ post.created|default_if_none:'&nbsp;' }} 
-                                            {% endif %}
-                                        </div>
-                                        <div class="summary post_summary">
-                                            {{ post.summary | safe }}
-                                        </div>        
-                                    </div>
-                                {% else %}
-                                    <div class="post post_nimg_nmet">
-                                        <div class="title post_title">
-                                            <h2><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h2>
-                                        </div>
-                                        <div class="summary post_summary">
-                                            {{ post.summary | safe }}
-                                        </div>        
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}        
-                    </div>
+                    <div id="column_first" class="column column_first">
                 {% else %}
-                    {% if p.count  %}
-                        <div id="columns_{ forloop.counter0}" class="column">
-                            <div class="title columns_title">
-                                <h2>{{ p.title }}</h2>
-                            </div>
-                            {% for post in p.posts %}
-                                <div class="post">
-                                    {% if post.list_image %}
-                                        <div class="list_image">
-                                            <a href="{% url 'tougcomsys:post' post.slug %}"><img src="{{ post.list_image.url }}"></a>
-                                        </div>
-                                    {% endif %}
-                                    <div class="title post_title">
-                                        <h3><a href="{% url 'tougcomsys:post' post.slug %}">{{ post.title }}</a></h3>
-                                    </div>
-                                    {% if post.show_author or post.show_created %}
-                                        <div class="meta post_meta">
-                                            {% if post.show_author %}
-                                                {{ post.author|default_if_none:'&nbsp;' }}
-                                            {% endif %}
-                                            {% if post.show_author and post.show_created %} - {% endif %}
-                                            {% if post.show_created %} 
-                                                {{ post.created|date:'M d Y'|default_if_none:'&nbsp;' }} 
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                    <div class="summary post_summary">
-                                        {{ post.summary | safe }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>        
-                    {% endif %}
+                    <div class="column">
                 {% endif %}
+                {% for articleplacement in placement.articleplacements %}
+                    {% if articleplacement.article.list_image %}
+                        {% if articleplacement.article.show_author or articleplacement.article.show_created %}
+                            <div class="article article_yimg_ymet">
+                                <div class="list_image">
+                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
+                                        <img src="{{ articleplacement.article.list_image.url }}" {{ articleplacement.article.list_image.list_image_attributes|safe }}>
+                                    </a>
+                                </div>
+                                <div class="headline article_headline">
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                </div>
+                                <div class="article_meta">
+                                    {% if articleplacement.article.show_author %}
+                                        {{ articleplacement.article.author|default_if_none:'&nbsp;' }}
+                                    {% endif %}
+                                    {% if articleplacement.article.show_author and articleplacement.article.show_created %} - {% endif %}
+                                    {% if articleplacement.article.show_created %}  
+                                        {{ articleplacement.article.created|default_if_none:'&nbsp;' }} 
+                                    {% endif %}
+                                </div>
+                                <div class="summary article_summary">
+                                    {{ articleplacement.article.summary | safe }}
+                                </div>        
+                            </div>
+                        {% else %}
+                            <div class="article article_yimg_nmet">
+                                <div class="list_image">
+                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
+                                        <img src="{{ articleplacement.article.list_image.image.url }}" {{ articleplacement.article.list_image.list_image_attributes|safe}}>
+                                    </a>
+                                </div>
+                                <div class="headline article_headline">
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                </div>
+                                <div class="summary article_summary">
+                                    {{ articleplacement.article.summary | safe }}
+                                </div>        
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        {% if articleplacement.article.show_author or articleplacement.article.show_created %}
+                            <div class="article article_nimg_ymet">
+                                <div class="headline article_headline">
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                </div>
+                                <div class="article_meta">
+                                    {% if articleplacement.article.show_author %}
+                                        {{ articleplacement.article.author|default_if_none:'&nbsp;' }}
+                                    {% endif %}
+                                    {% if articleplacement.article.show_author and articleplacement.article.show_created %} - {% endif %}
+                                    {% if articleplacement.article.show_created %}  
+                                        {{ articleplacement.article.created|default_if_none:'&nbsp;' }} 
+                                    {% endif %}
+                                </div>
+                                <div class="summary article_summary">
+                                    {{ articleplacement.article.summary | safe }}
+                                </div>        
+                            </div>
+                        {% else %}
+                            <div class="article article_nimg_nmet">
+                                <div class="headline article_headline">
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                </div>
+                                <div class="summary article_summary">
+                                    {{ articleplacement.article.summary | safe }}
+                                </div>        
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </div>
             {% endfor %}
+
             {% if tougcomsys.SHOW_EVENTS %}
                 <div id="columns_{ forloop.counter0}" class="column">
-                    <div class="title columns_title">
+                    <div class="headline columns_headline">
                         <h2>Events</h2>
                     </div>
                     {% for event_date, values in event_dates.items %}
                         <div class = "event_date">
-                            <div class="title event_date_date">
+                            <div class="headline event_date_date">
                                 <h3>
-                                    {{ values.whenday|date:'D d M Y' }}
+                                    {{ values.whendate|date:'D d M Y' }}
                                 </h3>
                             </div>
                             {% for event in values.events %}  
-                                <div class="event_title">
+                                <div class="event_headline">
                                     <h4>
                                         {{ event.starttime|default_if_none:'' }} 
-                                        <a href="{% url 'tougcomsys:event' event.slug %}">
-                                            {{ event.title }}
+                                        <a href="{% url 'tougcomsys:article' event.slug %}">
+                                            {{ event.headline }}
                                         </a>
                                     </h4>
                                 </div>

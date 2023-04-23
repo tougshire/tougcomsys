@@ -1,0 +1,70 @@
+{% extends './_base.html' %}
+{% block content %}
+
+<div id="article_detail" class="detail">
+    <div class="headline article_headline">
+        <h2>
+            {{ article.headline }}
+        </h2>
+    </div>
+    {% if article.above_content_image %}
+        <div class="content_image">
+            {% if article.above_content_image.above_content_image_link %}
+                <a href="{{ article.above_content_image.above_content_image_link }}" {{ article.above_content_image.above_content_link_attributes }}>
+                    <img class="content_image" src="{{ article.above_content_image.above_content_image.url }}" {{ article.above_content_image.above_content_image_attributes|safe }}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ article.above_content_image.image.url }}" {{ article.above_content_image.above_content_image_attributes|safe }}>    
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="event_dates">
+        {% if event_dates.previous %}
+            <div class="event_date event_date_previous" >{{ event_dates.previous }}</div>
+        {% endif %}
+        {% if event_dates.now_or_next %}
+            <div class="event_date event_date_now_or_next" >{{ event_dates.now_or_next }}</div>
+        {% endif %}
+        {% if event_dates.next %}
+            <div class="event_date event_date_next" >{{ event_dates.next }}</div>
+        {% endif %}
+    </div>
+    {% if event_dates.past or event_dates.future %}
+        <div class="event_dates">
+            <div class="event_date event_date_info">
+                [more dates below]
+            </div>
+        </div>
+    {% endif %}
+    {% if article.show_author or article.show_created %}
+        <div class="meta article_meta">
+            {% if article.show_author %}
+                {{ article.author|default_if_none:'&nbsp;' }}
+            {% endif %}
+            {% if article.show_author and article.show_created %} - {% endif %}
+            {% if article.show_created %} 
+                {{ article.created|default_if_none:'&nbsp;' }} 
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="content article_content">
+        {{ article.content | safe }} 
+    </div>
+    {% if article.below_content_image %}
+        <div class="content_image">
+            {% if article.below_content_image.below_content_image_link %}
+                <a href="{{ article.below_content_image.below_content_image_link }}" {{ article.below_content_image.below_content_link_attributes }}>
+                    <img class="content_image" src="{{ article.below_content_image.below_content_image.url }}" {{ article.below_content_image.below_content_image_attributes|safe }}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ article.below_content_image.image.url }}" {{ article.below_content_image.below_content_image_attributes|safe }}>    
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="event_dates event_dates_stacked">
+        {% for event_date in article.eventdate_set.all %}
+            <div class="event_date">{{ event_date.whenday }}</div>
+        {% endfor %}
+</div>
+
+{% endblock %}

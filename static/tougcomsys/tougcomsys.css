@@ -60,11 +60,11 @@
         text-align:right;
     }
 
-    div.detail div.title {
+    div.detail div.headline {
         width:100%;
     }
 
-    div.detail div.title h2 {
+    div.detail div.headline h2 {
         font-size:1.6em;
         margin:0 auto 0 auto;
         border-radius:.1em;
@@ -72,11 +72,11 @@
         text-align: center;
     }
 
-    div.detail div.title h2 a {
+    div.detail div.headline h2 a {
         text-decoration: none;        
     }
 
-    div.detail div.title h3  {
+    div.detail div.headline h3  {
         width:90%;
         font-size:1.2em;
         margin:0 auto 0 auto;
@@ -85,7 +85,7 @@
         text-align: center;
     }
 
-    div.detail div.title h3 a  {
+    div.detail div.headline h3 a  {
         text-decoration: none;        
     }
 
@@ -107,7 +107,7 @@
         text-align:right;
     }
 
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-bottom: 1px solid;
         margin: 1em;
     }
@@ -117,11 +117,11 @@
         margin:0 auto;
     }
 
-    div.list div.title {
+    div.list div.headline {
         width:100%;
     }
 
-    div.list div.title h2 {
+    div.list div.headline h2 {
         font-size:1.6em;
         margin-top:0;
         border-radius:.1em;
@@ -129,11 +129,11 @@
         text-align: center;
     }
 
-    div.list div.title h2 a {
+    div.list div.headline h2 a {
         text-decoration: none;        
     }
 
-    div.list div.title h3 {
+    div.list div.headline h3 {
         width:90%;
         font-size:1.2em;
         margin:0 auto 0 auto;
@@ -142,7 +142,7 @@
         text-align: center;
     }
     
-    div.list div.title h3 a {
+    div.list div.headline h3 a {
         text-decoration: none;        
     }
 
@@ -204,17 +204,23 @@
         margin:0 auto;
     }
 
+    div.detail div.event_dates {
+        width:100%;
+        display:flex;
+        justify-content: space-around;
+    }
+
     div.detail div.meta {
         width:95%;
         margin:0 auto;
         text-align:right;
     }
 
-    div.detail div.title {
+    div.detail div.headline {
         width:100%;
     }
 
-    div.detail div.title h2 {
+    div.detail div.headline h2 {
         font-size:1.6em;
         margin:0 auto 0 auto;
         border-radius:.1em;
@@ -222,11 +228,11 @@
         text-align: center;
     }
     
-    div.detail div.title h2 a {
+    div.detail div.headline h2 a {
         text-decoration: none;        
     }
 
-    div.detail div.title h3 {
+    div.detail div.headline h3 {
         width:90%;
         font-size:1.2em;
         margin:0 auto 0 auto;
@@ -235,7 +241,7 @@
         text-align: center;
     }
 
-    div.detail div.title h3 a {
+    div.detail div.headline h3 a {
         text-decoration: none;        
     }
 
@@ -268,21 +274,21 @@
         text-align:right;
     }
 
-    div.list div.post, div.list div.event_date {
+    div.list div.article, div.list div.event_date {
         border-bottom: 1px solid;
         margin: 1em;
     }
 
-    div.list div.post div.summary {
+    div.list div.article div.summary {
         width:80%;
         margin:0 auto;
     }
 
-    div.list div.post div.title {
+    div.list div.article div.headline {
         width:100%;
     }
 
-    div.list div.post div.title h2 {
+    div.list div.article div.headline h2 {
         font-size:1.6em;
         margin-top:0;
         border-radius:.1em;
@@ -291,11 +297,11 @@
 
     }
 
-    div.list div.post div.title h2 a {
+    div.list div.article div.headline h2 a {
         text-decoration: none;        
     }
 
-    div.list div.post div.title h3 {
+    div.list div.article div.headline h3 {
         width:90%;
         font-size:1.2em;
         margin:0 auto 0 auto;
@@ -304,63 +310,65 @@
         text-align: center;
     }
 
-    div.list div.post div.title h3 a {
+    div.list div.article div.headline h3 a {
         text-decoration: none;
     }
 
-    div.list div.post_nimg_nmet {
+    div.list div.article_nimg_nmet {
         display:block;
     }
 
-    div.list div.post_nimg_ymet {
+    div.list div.article_nimg_ymet {
         display:block;
     }
 
-    div.list div.post_yimg_nmet {
+    /* div.list  {
+    } */
+
+    div.list div.column_first div.article_yimg_nmet {
         display:grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: auto auto;
     }
 
-    div.list div.post_yimg_nmet div.list_image {
+
+    div.list div.column_first div.article_yimg_nmet div.list_image {
         grid-column: 1 / span 1;
         grid-row: 1 / span 2;
     }
 
-    div.list div.post_yimg_nmet div.summary {
+    div.list div.column_first div.article_yimg_nmet div.summary {
         grid-column: 2 / span 1;
         grid-row: 2 / span 1;
     }
 
-    div.list div.post_yimg_nmet div.title {
+    div.list div.column_first div.article_yimg_nmet div.headline {
+        margin-left: .5em;
+        margin-right: .5em;
         grid-column: 2 / span 1;
         grid-row: 1 / span 1;
     }
 
-    div.list div.post_yimg_ymet {
+    div.list div.column_first div.article_yimg_ymet {
         display:grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 2fr 1fr 3fr;
     }
 
-    div.list div.post_yimg_ymet div.list_image {
+    div.list div.column_first div.article_yimg_ymet div.list_image {
         grid-column: 1 / span 1;
         grid-row: 1 / span 3;
     }
 
-    div.list div.post_yimg_ymet div.summary {
+    div.list div.column_first div.article_yimg_ymet div.summary {
         grid-column: 2 / span 1;
         grid-row: 3 / span 1;
     }
 
-    div.list div.post_yimg_nmet div.meta {
+    div.list div.column_first div.article_yimg_nmet div.meta {
         grid-column: 2 / span 1;
         grid-row: 2 / span 1;
     }
 
-    div.list div.post_yimg_nmet div.title {
-        grid-column: 2 / span 1;
-        grid-row: 1 / span 1;
-    }
     
 }
