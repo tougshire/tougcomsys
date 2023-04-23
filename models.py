@@ -343,5 +343,5 @@ class ArticleEventdate(models.Model):
         return '{} -> {}'.format(self.article, self.whendate)
 
     class Meta:
-        ordering = ('-whendate', '-whentime', 'article')
+        ordering = ('whendate', '-whentime', 'article')
 

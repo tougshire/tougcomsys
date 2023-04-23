@@ -28,7 +28,7 @@ class ArticleAdmin(admin.ModelAdmin):
     ordering = list(Article._meta.ordering)
     prepopulated_fields={'slug': ["headline"]}
 
-    inlines = [ArticleImageInline, ArticleEventdateInline, ArticlePlacementInline]
+    inlines = [ArticlePlacementInline, ArticleImageInline, ArticleEventdateInline, ]
 
     def get_changeform_initial_data(self, request):
 
