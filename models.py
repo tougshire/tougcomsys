@@ -353,11 +353,25 @@ class Menu(models.Model):
         max_length=30,
         help_text='The name of the menu'
     )
+    sort_name = models.SlugField(
+        'sorting name',
+        blank=True,
+        help_text='A name for sorting.  The menu with the alphabetically earliest sort name is considered the main menu'
+    )
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):   
+        if not self.sort_name > "":
+            self.sort_name = slugify(self.name)
+        super().save(*args, **kwargs) 
+
+
 class MenuLink(models.Model):
     label = models.CharField(
         'label',
         max_length=100,
-        help_text="The title of the image"
+        help_text="The default label when added to menus"
     )
     article = models.ForeignKey(
         Article,
@@ -390,9 +404,13 @@ class MenuLink(models.Model):
 
         super().save(*args, **kwargs)
 
-        
-
 class Menuitem(models.Model):
+    label = models.CharField(
+        'label',
+        max_length=100,
+        blank=True,
+        help_text='The label of the menu item.  If left blank, the label of the link will be used'
+    )
     link = models.ForeignKey(
         MenuLink,
         null=True,
@@ -404,8 +422,18 @@ class Menuitem(models.Model):
         on_delete=models.CASCADE,
         help_text='The menu to which this item is attached'
     )
-    sort_number = models.IntegerField(
-        'Sort Number',
-        default=0,
-        help_text='A number used to determine the order of placement on a menu'
+    sort_name = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text='A name for sorting.  The item with the alphabetically earliest sort name is first'
     )
+    def __str__(self):
+        return '{}=>{}'.format(self.menu, self.label)
+    
+    def save(self, *args, **kwargs):   
+        if not self.label > "":
+            self.label = self.link.label
+        if not self.sort_name > "":
+            self.sort_name = slugify(self.label)
+
+        super().save(*args, **kwargs) 

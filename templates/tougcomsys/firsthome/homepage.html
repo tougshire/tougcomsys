@@ -110,6 +110,13 @@
                     {% endfor %}            
                 </div>
             {% endif %}
+            {% if menus.1 %}
+                <div id="sidemenu">
+                    {% for item in menus.1.menuitem_set.all %}
+                        <a href="{{ item.link.url }}">{{ item.label }}</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     </div>
 

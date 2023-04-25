@@ -46,18 +46,15 @@ admin.site.register(Image)
 
 class MenuAdmin(admin.ModelAdmin):
     inlines = [MenuitemInline]
-
-    def get_changeform_initial_data(self, request):
-
-        initial = super().get_changeform_initial_data(request)
-
-        print('tp234od21', self.get_formsets_with_inlines(request))
-        
-        return initial
+    prepopulated_fields={'sort_name': ['name']}
 
 
 admin.site.register(Menu, MenuAdmin)
 
 admin.site.register(MenuLink)
 
-admin.site.register(Menuitem)
+class MenuitemAdmin(admin.ModelAdmin):
+
+    prepopulated_fields={'sort_name': ['label']}
+
+admin.site.register(Menuitem, MenuitemAdmin)
