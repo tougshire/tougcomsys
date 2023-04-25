@@ -349,6 +349,16 @@ class ArticleEventdate(models.Model):
         ordering = ('whendate', '-whentime', 'article')
 
 class Menu(models.Model):
+    DRAFT_STATUS_PUBLISHED = 7
+    DRAFT_STATUS_NO_PREVIEW = 5
+    DRAFT_STATUS_DRAFT = 0
+    DRAFT_STATUS_CHOICES =[
+        ( DRAFT_STATUS_PUBLISHED, "Published" ),
+        ( DRAFT_STATUS_NO_PREVIEW, "No Preview" ),
+        ( DRAFT_STATUS_DRAFT, "Draft" )
+    ]
+
+
     name = models.CharField(
         max_length=30,
         help_text='The name of the menu'
@@ -358,6 +368,12 @@ class Menu(models.Model):
         blank=True,
         help_text='A name for sorting.  The menu with the alphabetically earliest sort name is considered the main menu'
     )
+    draft_status = models.IntegerField(
+        choices = DRAFT_STATUS_CHOICES,
+        default=DRAFT_STATUS_DRAFT,
+        help_text='The status of this menu.'
+    )
+
     def __str__(self):
         return self.name
     

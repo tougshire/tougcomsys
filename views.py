@@ -91,9 +91,9 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
-        context_data['menus']=Menu.objects.all()
+        context_data['menus']=Menu.objects.filter(draft_status=Menu.DRAFT_STATUS_PUBLISHED)
 
-        context_data['event_dates'] = collated_article_event_dates
+        context_data['event_dates'] = collated_article_event_dates                                      
 
         return context_data
     
