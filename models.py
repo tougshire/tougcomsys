@@ -213,7 +213,10 @@ class Article(models.Model):
 
     def __str__(self):
         return self.headline
-    
+
+    def get_absolute_url(self):
+        return reverse('tougcomsys:article', kwargs={'slug': self.slug})
+
     class Meta:
         ordering = ('-sticky', '-sortable_date',)
 
@@ -345,3 +348,64 @@ class ArticleEventdate(models.Model):
     class Meta:
         ordering = ('whendate', '-whentime', 'article')
 
+class Menu(models.Model):
+    name = models.CharField(
+        max_length=30,
+        help_text='The name of the menu'
+    )
+class MenuLink(models.Model):
+    label = models.CharField(
+        'label',
+        max_length=100,
+        help_text="The title of the image"
+    )
+    article = models.ForeignKey(
+        Article,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text='The article that this item links to - can be blank if URL is entered and no article needs to be chosen. Removed and replaced by URL of article when this link is saved.'
+    )
+    url = models.CharField(
+        'URL',
+        max_length=250,
+        blank=True,
+        help_text='The URL.  This will be overwritten if an article is chosen'
+    )
+
+    def __str__(self):
+        return self.label
+    
+    def save(self, *args, **kwargs):
+        update_url = False
+
+        if self.article:
+            update_url = True
+
+        super().save(*args, **kwargs)
+
+        if update_url:
+            self.url = self.article.get_absolute_url()
+            self.file = None
+
+        super().save(*args, **kwargs)
+
+        
+
+class Menuitem(models.Model):
+    link = models.ForeignKey(
+        MenuLink,
+        null=True,
+        on_delete=models.CASCADE,
+        help_text = 'The link that this menu item links to'
+    )
+    menu = models.ForeignKey(
+        Menu,
+        on_delete=models.CASCADE,
+        help_text='The menu to which this item is attached'
+    )
+    sort_number = models.IntegerField(
+        'Sort Number',
+        default=0,
+        help_text='A number used to determine the order of placement on a menu'
+    )

@@ -12,7 +12,7 @@ from datetime import datetime, date
 import markdown as md
 
 # from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu
 
 class HomePage(TemplateView):
 
@@ -91,6 +91,7 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
+        context_data['menus']=Menu.objects.all()
 
         context_data['event_dates'] = collated_article_event_dates
 

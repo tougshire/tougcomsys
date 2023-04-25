@@ -1,20 +1,23 @@
 from django.contrib import admin
 
 # from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement
 
 class ArticleEventdateInline(admin.StackedInline):
     model=ArticleEventdate
-    exta=1
+    extra=1
 
 class ArticlePlacementInline(admin.StackedInline):
     model=ArticlePlacement
-    exta=1
+    extra=1
 
 class ArticleImageInline(admin.StackedInline):
     model=ArticleImage
-    exta=1
+    extra=1
 
+class MenuitemInline(admin.StackedInline):
+    model=Menuitem
+    extra=1
 
 class PlacementAdmin(admin.ModelAdmin):
     list_display = ('title', 'place_number')
@@ -39,5 +42,22 @@ class ArticleAdmin(admin.ModelAdmin):
 
 admin.site.register(Article, ArticleAdmin)
 
-
 admin.site.register(Image)
+
+class MenuAdmin(admin.ModelAdmin):
+    inlines = [MenuitemInline]
+
+    def get_changeform_initial_data(self, request):
+
+        initial = super().get_changeform_initial_data(request)
+
+        print('tp234od21', self.get_formsets_with_inlines(request))
+        
+        return initial
+
+
+admin.site.register(Menu, MenuAdmin)
+
+admin.site.register(MenuLink)
+
+admin.site.register(Menuitem)

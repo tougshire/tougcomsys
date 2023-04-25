@@ -20,10 +20,13 @@
             <a href="{% url 'tougcomsys:homepage' %}"><img src="{{ tougcomsys.BANNER_IMAGE }}"></a>
         </div>
         <div id="menubar">
-            <a href="{% url 'tougcomsys:homepage'  %}">Home</a> 
-            <a href="{% url 'tougcomsys:article' 'executive-committee' %}">Executive Committee</a> 
-            <a href="{% url 'tougcomsys:article' 'join-us' %}">Join Us</a> 
-            <a href="{% url 'tougcomsys:article' 'contact-us' %}">Contact Us</a> 
+            {% for menu in menus %}
+                {% if forloop.first %}
+                    {% for item in menu.menuitem_set.all %}
+                        <a href="{{ item.link.url }}">{{ item.link.label }}</a>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
         </div>
         <div id="mainstage">
             {% block content %}
