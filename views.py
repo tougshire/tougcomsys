@@ -65,7 +65,7 @@ class HomePage(TemplateView):
             context_data['placements'].append(placement)
 
         if do_preview:
-            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=article.DRAFT_STATUS_DRAFT) )
+            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
         else:
             article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
@@ -91,7 +91,10 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
-        context_data['menus']=Menu.objects.filter(draft_status=Menu.DRAFT_STATUS_PUBLISHED)
+        if do_preview:
+            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
+        else:
+            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
         context_data['event_dates'] = collated_article_event_dates                                      
 
