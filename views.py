@@ -51,6 +51,12 @@ class HomePage(TemplateView):
                 if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
                     articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
 
+                articleplacement.article.readmore = ''
+                if articleplacement.article.summary != articleplacement.article.content:
+                    articleplacement.article.readmore = 'read more'
+
+
+
                 if articleplacement.article.show_author == Article.SHOW_COMPLY:
                     articleplacement.article.show_author = placement.show_author
                 if articleplacement.article.show_updated == Article.SHOW_COMPLY:
@@ -82,6 +88,10 @@ class HomePage(TemplateView):
                 event.content = md.markdown(event.content, extensions=['markdown.extensions.fenced_code'])
             if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
                 event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
+
+            event.readmore = ''
+            if event.summary != event.content:
+                event.readmore = 'read more'
 
             isokey = article_event_date.whendate.isoformat()
             if isokey in collated_article_event_dates:
@@ -148,6 +158,11 @@ class ArticleDetail(DetailView):
             article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
         if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
+
+        article.readmore = ''
+        if article.summary != article.content:
+            article.readmore = 'read more'
+
 
         context_data['article'] = article
         return context_data

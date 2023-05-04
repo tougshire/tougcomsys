@@ -261,7 +261,7 @@
 
     div.list #columns .column  {
         flex: 1;
-        border-left: 2px solid;
+        border-left: 1px solid;
         padding: .5em 1em 1em 1em;
     }
 
@@ -329,6 +329,12 @@
 
     div.list div.article_nimg_ymet {
         display:block;
+    }
+
+    div.list div.article_readmore {
+        display:block;
+        text-align:center;
+        font-size:.6em;
     }
 
     /* div.list  {

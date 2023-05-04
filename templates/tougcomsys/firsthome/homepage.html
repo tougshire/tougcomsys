@@ -32,7 +32,13 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
+                                    {% if articleplacement.article.readmore %}
+                                        <div class="readmore article_readmore">
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                        </div>        
+                                    {% endif %}
                                 </div>        
+
                             </div>
                         {% else %}
                             <div class="article article_yimg_nmet">
@@ -46,7 +52,13 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
-                                </div>        
+                                    {% if articleplacement.article.readmore %}
+                                        <div class="readmore article_readmore">
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                        </div>        
+                                    {% endif %}
+                                </div>
+        
                             </div>
                         {% endif %}
                     {% else %}
@@ -75,7 +87,13 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
+                                    {% if articleplacement.article.readmore %}
+                                        <div class="readmore article_readmore">
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                        </div>        
+                                    {% endif %}
                                 </div>        
+
                             </div>
                         {% endif %}
                     {% endif %}
