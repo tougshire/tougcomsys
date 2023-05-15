@@ -12,7 +12,7 @@ from datetime import datetime, date
 import markdown as md
 
 # from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu
 
 class HomePage(TemplateView):
 
@@ -51,6 +51,12 @@ class HomePage(TemplateView):
                 if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
                     articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
 
+                articleplacement.article.readmore = ''
+                if articleplacement.article.summary != articleplacement.article.content:
+                    articleplacement.article.readmore = 'read more'
+
+
+
                 if articleplacement.article.show_author == Article.SHOW_COMPLY:
                     articleplacement.article.show_author = placement.show_author
                 if articleplacement.article.show_updated == Article.SHOW_COMPLY:
@@ -65,7 +71,7 @@ class HomePage(TemplateView):
             context_data['placements'].append(placement)
 
         if do_preview:
-            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=article.DRAFT_STATUS_DRAFT) )
+            article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
         else:
             article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
@@ -83,6 +89,10 @@ class HomePage(TemplateView):
             if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
                 event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
 
+            event.readmore = ''
+            if event.summary != event.content:
+                event.readmore = 'read more'
+
             isokey = article_event_date.whendate.isoformat()
             if isokey in collated_article_event_dates:
                 collated_article_event_dates[isokey]['events'].append(event)
@@ -91,8 +101,12 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
+        if do_preview:
+            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
+        else:
+            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
-        context_data['event_dates'] = collated_article_event_dates
+        context_data['event_dates'] = collated_article_event_dates                                      
 
         return context_data
     
@@ -144,6 +158,11 @@ class ArticleDetail(DetailView):
             article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
         if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
+
+        article.readmore = ''
+        if article.summary != article.content:
+            article.readmore = 'read more'
+
 
         context_data['article'] = article
         return context_data

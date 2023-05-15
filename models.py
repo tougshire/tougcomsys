@@ -213,7 +213,10 @@ class Article(models.Model):
 
     def __str__(self):
         return self.headline
-    
+
+    def get_absolute_url(self):
+        return reverse('tougcomsys:article', kwargs={'slug': self.slug})
+
     class Meta:
         ordering = ('-sticky', '-sortable_date',)
 
@@ -343,5 +346,110 @@ class ArticleEventdate(models.Model):
         return '{} -> {}'.format(self.article, self.whendate)
 
     class Meta:
-        ordering = ('-whendate', '-whentime', 'article')
+        ordering = ('whendate', '-whentime', 'article')
 
+class Menu(models.Model):
+    DRAFT_STATUS_PUBLISHED = 7
+    DRAFT_STATUS_NO_PREVIEW = 5
+    DRAFT_STATUS_DRAFT = 0
+    DRAFT_STATUS_CHOICES =[
+        ( DRAFT_STATUS_PUBLISHED, "Published" ),
+        ( DRAFT_STATUS_NO_PREVIEW, "No Preview" ),
+        ( DRAFT_STATUS_DRAFT, "Draft" )
+    ]
+
+
+    name = models.CharField(
+        max_length=30,
+        help_text='The name of the menu'
+    )
+    sort_name = models.SlugField(
+        'sorting name',
+        blank=True,
+        help_text='A name for sorting.  The menu with the alphabetically earliest sort name is considered the main menu'
+    )
+    draft_status = models.IntegerField(
+        choices = DRAFT_STATUS_CHOICES,
+        default=DRAFT_STATUS_DRAFT,
+        help_text='The status of this menu.'
+    )
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):   
+        if not self.sort_name > "":
+            self.sort_name = slugify(self.name)
+        super().save(*args, **kwargs) 
+
+
+class MenuLink(models.Model):
+    label = models.CharField(
+        'label',
+        max_length=100,
+        help_text="The default label when added to menus"
+    )
+    article = models.ForeignKey(
+        Article,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text='The article that this item links to - can be blank if URL is entered and no article needs to be chosen. Removed and replaced by URL of article when this link is saved.'
+    )
+    url = models.CharField(
+        'URL',
+        max_length=250,
+        blank=True,
+        help_text='The URL.  This will be overwritten if an article is chosen'
+    )
+
+    def __str__(self):
+        return self.label
+    
+    def save(self, *args, **kwargs):
+        update_url = False
+
+        if self.article:
+            update_url = True
+
+        super().save(*args, **kwargs)
+
+        if update_url:
+            self.url = self.article.get_absolute_url()
+            self.file = None
+
+        super().save(*args, **kwargs)
+
+class Menuitem(models.Model):
+    label = models.CharField(
+        'label',
+        max_length=100,
+        blank=True,
+        help_text='The label of the menu item.  If left blank, the label of the link will be used'
+    )
+    link = models.ForeignKey(
+        MenuLink,
+        null=True,
+        on_delete=models.CASCADE,
+        help_text = 'The link that this menu item links to'
+    )
+    menu = models.ForeignKey(
+        Menu,
+        on_delete=models.CASCADE,
+        help_text='The menu to which this item is attached'
+    )
+    sort_name = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text='A name for sorting.  The item with the alphabetically earliest sort name is first'
+    )
+    def __str__(self):
+        return '{}=>{}'.format(self.menu, self.label)
+    
+    def save(self, *args, **kwargs):   
+        if not self.label > "":
+            self.label = self.link.label
+        if not self.sort_name > "":
+            self.sort_name = slugify(self.label)
+
+        super().save(*args, **kwargs) 

@@ -19,18 +19,21 @@
         <div id="head">
             <a href="{% url 'tougcomsys:homepage' %}"><img src="{{ tougcomsys.BANNER_IMAGE }}"></a>
         </div>
-        <div id="menubar">
-            <a href="{% url 'tougcomsys:homepage'  %}">Home</a> 
-            <a href="{% url 'tougcomsys:article' 'executive-committee' %}">Executive Committee</a> 
-            <a href="{% url 'tougcomsys:article' 'join-us' %}">Join Us</a> 
-            <a href="{% url 'tougcomsys:article' 'contact-us' %}">Contact Us</a> 
-        </div>
+        {% if menus.0 %}
+            <div id="menubar">
+                {% for item in menus.0.menuitem_set.all %}
+                    <a href="{{ item.link.url }}">{{ item.label }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div id="mainstage">
             {% block content %}
             {% endblock %}
         </div>
+
         <div id="footer">
-            {{ tougcomsys.FOOTER_CONTENT }}
+            {{ tougcomsys.FOOTER_CONTENT|safe }}
         </div>
     </body>
 </html>
