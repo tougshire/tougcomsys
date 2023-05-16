@@ -17,9 +17,16 @@
     </head>
     <body>
         <div id="head">
-            {% if tougcomsys.BANNER_IMAGE %}
-                <a href="{% url 'tougcomsys:homepage' %}"><img src="{{ tougcomsys.BANNER_IMAGE }}"></a>
-            {% endif %}
+            <a href="{% url 'tougcomsys:homepage' %}">
+                {% if tougcomsys.BANNER_IMAGE %}
+                    <img src="{{ tougcomsys.BANNER_IMAGE }}" alt="{{ tougcomsys.BANNER_ALT }}" />
+                {% endif %}
+                {% if tougcomsys.BANNER_TEXT %}
+                    <div id="bannertext">
+                        {{ tougcomsys.BANNER_TEXT }}
+                    </div>
+                {% endif %}
+            </a>
         </div>
         {% if menus.0 %}
             <div id="menubar">
