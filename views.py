@@ -51,9 +51,10 @@ class HomePage(TemplateView):
                 if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
                     articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
 
-                articleplacement.article.readmore = ''
-                if articleplacement.article.summary != articleplacement.article.content:
-                    articleplacement.article.readmore = 'read more'
+                if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
+                    articleplacement.article.show_readmore = True 
+                else:
+                    articleplacement.article.show_readmore = False
 
 
 
@@ -65,8 +66,6 @@ class HomePage(TemplateView):
                 for articleimage in articleplacement.article.articleimage_set.all():
                     if articleimage.shown_on_list:
                         articleplacement.article.list_image = articleimage
-                        print('tp234n917', articleplacement.article.list_image)
-                        print('tp234n918', articleplacement.article.list_image.list_image_attributes)
 
             context_data['placements'].append(placement)
 
@@ -89,9 +88,10 @@ class HomePage(TemplateView):
             if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
                 event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
 
-            event.readmore = ''
-            if event.summary != event.content:
-                event.readmore = 'read more'
+            if event.summary != event.content and event.readmore > '':
+                event.show_readmore = True 
+            else:
+                event.show_readmore = False
 
             isokey = article_event_date.whendate.isoformat()
             if isokey in collated_article_event_dates:
@@ -159,49 +159,6 @@ class ArticleDetail(DetailView):
         if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
 
-        article.readmore = ''
-        if article.summary != article.content:
-            article.readmore = 'read more'
-
-
         context_data['article'] = article
         return context_data
 
-# class xArticleDetail(DetailView):
-#     model=Article
-#     template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-#     context_object_name = 'article'
-
-#     def get_context_data(self, **kwargs):
-
-#         context_data = super().get_context_data(**kwargs)
-#         article = self.get_object()
-
-#         article_event_dates = {
-#             'past':[],
-#             'future':[],
-#             'only':False,
-#         }   
-
-#         print('tp234e800')
-#         if article.articleimage_set.count() > 0:
-#             print('tp234d759', article.title)
-
-#         if article.summary == '':
-#             article.summary = article.content
-#         if article.summary == '__none__':
-#             article.summary = ''
-
-#         if article.content_format == 'markdown':
-#             article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
-
-#         if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
-#             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
-
-#         context_data['article'] = article
-
-
-
-#         context_data['footer'] = settings.TOUGCOMSYS['FOOTER_CONTENT']
-
-#         return context_data

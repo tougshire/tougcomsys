@@ -147,6 +147,13 @@ class Article(models.Model):
         blank=True,
         help_text="A shorter version of the content"
     )
+    readmore = models.CharField(
+        'read more text',
+        max_length=30,
+        default = 'Read More', 
+        blank=True,
+        help_text='The text to use for the "read more" link '
+    )
     author=models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

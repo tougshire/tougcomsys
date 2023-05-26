@@ -32,9 +32,9 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
-                                    {% if articleplacement.article.readmore %}
+                                    {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
                                         <div class="readmore article_readmore">
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                         </div>        
                                     {% endif %}
                                 </div>        
@@ -52,11 +52,12 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
-                                    {% if articleplacement.article.readmore %}
+                                    {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
                                         <div class="readmore article_readmore">
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                         </div>        
                                     {% endif %}
+
                                 </div>
         
                             </div>
@@ -78,6 +79,12 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
+                                    {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
+                                        <div class="readmore article_readmore">
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                        </div>        
+                                    {% endif %}
+
                                 </div>        
                             </div>
                         {% else %}
@@ -87,9 +94,9 @@
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
-                                    {% if articleplacement.article.readmore %}
+                                    {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
                                         <div class="readmore article_readmore">
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                         </div>        
                                     {% endif %}
                                 </div>        
@@ -123,6 +130,12 @@
                                     </h4>
                                 </div>
                                 <div class="event_summary">{{ event.summary | safe }}</div>
+                                {% if event.show_readmore and event.readmore %}
+                                <div class="readmore article_readmore">
+                                    <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
+                                </div>        
+                                {% endif %}
+
                             {% endfor %}
                         </div>
                     {% endfor %}            
