@@ -8,11 +8,13 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
 from django.views.generic.list import ListView
 
 from datetime import datetime, date
+from ics import Calendar
+import requests
 
 import markdown as md
 
 # from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu, ICal, BlockedIcalEvent
 
 class HomePage(TemplateView):
 
@@ -75,6 +77,16 @@ class HomePage(TemplateView):
             article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
         collated_article_event_dates={}
+
+        ics_calendars = []
+        ics_supressors = []
+        for ics in ICal.objects.all():
+            calendar = Calendar(requests.get(ics.url).text)
+            ics_calendars.append( calendar )
+
+        for iscsupress in BlockedIcalEvent.objects.all():
+            ics_supressors.append(iscsupress.uuid)
+
         for article_event_date in article_event_dates:
 
             event = article_event_date.article
@@ -101,10 +113,32 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
+
+        for ics_calendar in ics_calendars:
+            for icalevent in list(ics_calendar.timeline):
+                if icalevent.uid not in ics_supressors:
+
+                    if icalevent.begin.date() >= date.today():
+                        isokey = icalevent.begin.date().isoformat()
+
+                        event_from_ical = {}
+                        event_from_ical['slug'] = 'test'
+                        event_from_ical['headline'] = icalevent.name
+                        event_from_ical['summary'] = icalevent.description
+
+                        if isokey in collated_article_event_dates:
+                            collated_article_event_dates[isokey]['events'].append(event_from_ical)
+                        else:
+                            collated_article_event_dates[isokey]={}
+                            collated_article_event_dates[isokey]['whendate'] = icalevent.begin.date()
+                            collated_article_event_dates[isokey]['events'] = [ event_from_ical ]
+        
+
         if do_preview:
             context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
         else:
             context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
+
 
         context_data['event_dates'] = collated_article_event_dates                                      
 

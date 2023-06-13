@@ -355,6 +355,39 @@ class ArticleEventdate(models.Model):
     class Meta:
         ordering = ('whendate', '-whentime', 'article')
 
+class ICal(models.Model):
+    name = models.CharField(
+        'name',
+        max_length=50,
+        blank=True,
+        help_text = 'An optional name to be given to this calendar.'
+    )
+    url = models.URLField(
+        'url',
+        help_text = 'The URL of the external calendar'
+    )
+
+    def __str__( self ):
+        return self.name if self.name > '' else self.url
+    
+class BlockedIcalEvent(models.Model):
+
+    name = models.CharField(
+        'name',
+        max_length=50,
+        blank=True,
+        help_text = 'An optional name to be given to this event.'
+    )
+
+    uuid = models.CharField(
+        'uuid',
+        max_length=264,
+        help_text = 'The UUID of the external event to be supressed'
+    )
+
+    def __str__( self ):
+        return self.name if self.name > '' else self.uuid
+
 class Menu(models.Model):
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_NO_PREVIEW = 5

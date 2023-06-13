@@ -1,7 +1,10 @@
 from django.contrib import admin
 
 # from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement, ICal, BlockedIcalEvent
+
+from ics import Calendar
+import requests
 
 class ArticleEventdateInline(admin.StackedInline):
     model=ArticleEventdate
@@ -48,7 +51,6 @@ class MenuAdmin(admin.ModelAdmin):
     inlines = [MenuitemInline]
     prepopulated_fields={'sort_name': ['name']}
 
-
 admin.site.register(Menu, MenuAdmin)
 
 admin.site.register(MenuLink)
@@ -58,3 +60,19 @@ class MenuitemAdmin(admin.ModelAdmin):
     prepopulated_fields={'sort_name': ['label']}
 
 admin.site.register(Menuitem, MenuitemAdmin)
+
+class ICalAdmin(admin.ModelAdmin):
+
+    readonly_fields = [ 'note', 'ICaltext' ]
+
+    def note( self, instance ):
+        return 'To prevent an event from displaying,  Copy a UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
+
+    def ICaltext( self, instance ):
+        
+        icaltext = requests.get( instance.url ).text
+        return icaltext
+
+admin.site.register(ICal, ICalAdmin)
+
+admin.site.register(BlockedIcalEvent)
