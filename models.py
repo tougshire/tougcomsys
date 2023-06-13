@@ -327,6 +327,9 @@ class ArticlePlacement(models.Model):
         help_text="The placement on the home page"
     )
 
+    class Meta:
+        ordering = ( 'article', )
+
 class ArticleEventdate(models.Model):
     article = models.ForeignKey(
         Article,
