@@ -20,6 +20,11 @@
                                 </div>
                                 <div class="headline article_headline">
                                     <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
+                                    {% if articleplacement.article.subheadline %}
+                                    <div class="subheadline article_subheadline">
+                                        <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                    </div>
+                                    {% endif %}    
                                 </div>
                                 <div class="article_meta">
                                     {% if articleplacement.article.show_author %}
@@ -49,6 +54,11 @@
                                 </div>
                                 <div class="headline article_headline">
                                     <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
+                                    {% if articleplacement.article.subheadline %}
+                                    <div class="headline article_headline">
+                                        <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
@@ -67,6 +77,11 @@
                             <div class="article article_nimg_ymet">
                                 <div class="headline article_headline">
                                     <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
+                                    {% if articleplacement.article.subheadline %}
+                                    <div class="headline article_headline">
+                                        <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="article_meta">
                                     {% if articleplacement.article.show_author %}
@@ -91,6 +106,11 @@
                             <div class="article article_nimg_nmet">
                                 <div class="headline article_headline">
                                     <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
+                                    {% if articleplacement.article.subheadline %}
+                                    <div class="headline article_headline">
+                                        <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
@@ -128,6 +148,16 @@
                                             {{ event.headline }}
                                         </a>
                                     </h4>
+                                    {% if event.subheadline %}
+                                    <div class="event_headline">
+                                        <h5>
+                                            {{ event.starttime|default_if_none:'' }} 
+                                            <a href="{% url 'tougcomsys:article' event.slug %}">
+                                                {{ event.subheadline }}
+                                            </a>
+                                        </h5>
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="event_summary">{{ event.summary | safe }}</div>
                                 {% if event.show_readmore and event.readmore %}
