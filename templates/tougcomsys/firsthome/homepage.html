@@ -19,7 +19,7 @@
                                     </a>
                                 </div>
                                 <div class="headline article_headline">
-                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                 </div>
                                 <div class="article_meta">
                                     {% if articleplacement.article.show_author %}
@@ -48,7 +48,7 @@
                                     </a>
                                 </div>
                                 <div class="headline article_headline">
-                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
@@ -66,7 +66,7 @@
                         {% if articleplacement.article.show_author or articleplacement.article.show_created %}
                             <div class="article article_nimg_ymet">
                                 <div class="headline article_headline">
-                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|save }}</a></h2>
                                 </div>
                                 <div class="article_meta">
                                     {% if articleplacement.article.show_author %}
@@ -90,7 +90,7 @@
                         {% else %}
                             <div class="article article_nimg_nmet">
                                 <div class="headline article_headline">
-                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline }}</a></h2>
+                                    <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                 </div>
                                 <div class="summary article_summary">
                                     {{ articleplacement.article.summary | safe }}
