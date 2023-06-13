@@ -111,7 +111,7 @@ class Article(models.Model):
         help_text="The title or headline of the article"
     )
     subheadline = models.CharField(
-        'Headline',
+        'Sub Headline',
         max_length=100,
         blank=True,
         help_text="The optional subtitle or subheadline of the article"
