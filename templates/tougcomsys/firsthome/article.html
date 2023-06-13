@@ -6,6 +6,13 @@
         <h2>
             {{ article.headline }}
         </h2>
+        {% if article.subheadline %}
+        <div class="subheadline article_subheadline">
+            <h3>
+                {{ article.subheadline }}
+            </h3>
+        </div>
+        {% endif %}
     </div>
     {% if article.above_content_image %}
         <div class="content_image">
