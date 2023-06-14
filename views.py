@@ -132,7 +132,14 @@ class HomePage(TemplateView):
                             collated_article_event_dates[isokey]={}
                             collated_article_event_dates[isokey]['whendate'] = icalevent.begin.date()
                             collated_article_event_dates[isokey]['events'] = [ event_from_ical ]
-        
+
+
+        sorted_collated_article_event_dates = (sorted( collated_article_event_dates.items() ))
+        collated_article_event_dates = {}
+
+        for event in sorted_collated_article_event_dates:
+            collated_article_event_dates[ event[0] ] = event[1]
+            print( 'tp236dg30', event[0], collated_article_event_dates[ event[0] ])
 
         if do_preview:
             context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
