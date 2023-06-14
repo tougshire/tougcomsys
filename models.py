@@ -28,6 +28,13 @@ class Image(models.Model):
         upload_to='gallery/',
         help_text='The file to be uploaded - can be blank if URL is entered and no file needs to be uploaded - Is removed once saved'
     )
+    alt_text = models.CharField(
+        'alt text',
+        max_length=255,
+        blank=True,
+        help_text = 'The alternet text for the image'
+    )
+
     url = models.URLField(
         'URL',
         blank=True,

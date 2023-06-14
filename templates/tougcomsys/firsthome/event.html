@@ -10,10 +10,10 @@
         <div class="content_image">
             {% if event.above_content_image_link %}
                 <a href="{{ event.above_content_image_link }}"{% if event.above_content_link_attributes %} {{ event.above_content_link_attributes }}{% endif %} >
-                    <img class="content_image" src="{{ event.above_content_image.url }}"{% if event.above_content_image_attributes %} {{ event.above_content_image_attributes|safe }}{% endif %}>     
+                    <img class="content_image" src="{{ event.above_content_image.url }}" alt="{{ event.above_content_image.alt_text }}" {% if event.above_content_image_attributes %} {{ event.above_content_image_attributes|safe }}{% endif %}>     
                 </a>
             {% else %}
-                <img class="content_image" src="{{ event.above_content_image.url }}"{% if event.above_content_image_attributes %} {{ event.above_content_image_attributes|safe }}{% endif %}>     
+                <img class="content_image" src="{{ event.above_content_image.url }}" alt="{{ event.above_content_image.alt_text }}" {% if event.above_content_image_attributes %} {{ event.above_content_image_attributes|safe }}{% endif %}>     
             {% endif %}
         </div>
     {% endif %}
@@ -53,10 +53,10 @@
         <div class="content_image">
             {% if event.below_content_image_link %}
                 <a href="{{ event.below_content_image_link }}"{% if event.below_content_link_attributes %} {{ event.below_content_link_attributes }}{% endif %} >
-                    <img class="content_image" src="{{ event.below_content_image.url }}"{% if event.below_content_image_attributes %} {{ event.below_content_image_attributes|safe }}{% endif %}>     
+                    <img class="content_image" src="{{ event.below_content_image.url }}" alt="{{ event.below_content_image.alt_text }}" {% if event.below_content_image_attributes %} {{ event.below_content_image_attributes|safe }}{% endif %}>     
                 </a>
             {% else %}
-                <img class="content_image" src="{{ event.below_content_image.url }}"{% if event.below_content_image_attributes %} {{ event.below_content_image_attributes|safe }}{% endif %}>     
+                <img class="content_image" src="{{ event.below_content_image.url }}" alt="{{ event.below_content_image.alt_text }}" {% if event.below_content_image_attributes %} {{ event.below_content_image_attributes|safe }}{% endif %}>     
             {% endif %}
         </div>
     {% endif %}

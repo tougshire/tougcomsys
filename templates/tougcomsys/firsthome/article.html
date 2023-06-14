@@ -18,10 +18,10 @@
         <div class="content_image">
             {% if article.above_content_image.above_content_image_link %}
                 <a href="{{ article.above_content_image.above_content_image_link }}" {{ article.above_content_image.above_content_link_attributes }}>
-                    <img class="content_image" src="{{ article.above_content_image.above_content_image.url }}" {{ article.above_content_image.above_content_image_attributes|safe }}>     
+                    <img class="content_image" src="{{ article.above_content_image.above_content_image.url }}" alt="{{ article.above_content_image.above_content_image.alt_text }}" {{ article.above_content_image.above_content_image_attributes|safe }}>     
                 </a>
             {% else %}
-                <img class="content_image" src="{{ article.above_content_image.image.url }}" {{ article.above_content_image.above_content_image_attributes|safe }}>    
+                <img class="content_image" src="{{ article.above_content_image.image.url }}" alt="{{ article.above_content_image.image.alt_text }}" {{ article.above_content_image.above_content_image_attributes|safe }}>    
             {% endif %}
         </div>
     {% endif %}
@@ -61,10 +61,10 @@
         <div class="content_image">
             {% if article.below_content_image.below_content_image_link %}
                 <a href="{{ article.below_content_image.below_content_image_link }}" {{ article.below_content_image.below_content_link_attributes }}>
-                    <img class="content_image" src="{{ article.below_content_image.below_content_image.url }}" {{ article.below_content_image.below_content_image_attributes|safe }}>     
+                    <img class="content_image" src="{{ article.below_content_image.below_content_image.url }}" alt="{{ article.below_content_image.below_content_image.alt_text }}" {{ article.below_content_image.below_content_image_attributes|safe }}>     
                 </a>
             {% else %}
-                <img class="content_image" src="{{ article.below_content_image.image.url }}" {{ article.below_content_image.below_content_image_attributes|safe }}>    
+                <img class="content_image" src="{{ article.below_content_image.image.url }}" alt="{{ article.below_content_image.image.alt_text }}" {{ article.below_content_image.below_content_image_attributes|safe }}>    
             {% endif %}
         </div>
     {% endif %}
