@@ -389,6 +389,14 @@ class BlockedIcalEvent(models.Model):
         help_text = 'An optional name to be given to this event.'
     )
 
+    ical = models.ForeignKey(
+        ICal,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text='The ical of the event to be blocked'
+    )
+
     uuid = models.CharField(
         'uuid',
         max_length=264,

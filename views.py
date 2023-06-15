@@ -7,8 +7,9 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView,)
 from django.views.generic.list import ListView
 
-from datetime import datetime, date
-from ics import Calendar
+from datetime import datetime, date, timedelta
+import icalendar
+import recurring_ical_events
 import requests
 
 import markdown as md
@@ -81,7 +82,8 @@ class HomePage(TemplateView):
         ics_calendars = []
         ics_supressors = []
         for ics in ICal.objects.all():
-            calendar = Calendar(requests.get(ics.url).text)
+            ical_string = requests.get(ics.url).text
+            calendar = icalendar.Calendar.from_ical(ical_string)
             ics_calendars.append( calendar )
 
         for iscsupress in BlockedIcalEvent.objects.all():
@@ -115,22 +117,21 @@ class HomePage(TemplateView):
 
 
         for ics_calendar in ics_calendars:
-            for icalevent in list(ics_calendar.timeline):
-                if icalevent.uid not in ics_supressors:
+            for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=100 ) ):
+                if icalevent["uid"] not in ics_supressors:
 
-                    if icalevent.begin.date() >= date.today():
-                        isokey = icalevent.begin.date().isoformat()
+                    if icalevent["DTSTART"].dt.date() >= date.today():
+                        isokey = icalevent["DTSTART"].dt.date().isoformat()
 
                         event_from_ical = {}
                         event_from_ical['slug'] = 'test'
-                        event_from_ical['headline'] = icalevent.name
-                        event_from_ical['summary'] = icalevent.description
+                        event_from_ical['headline'] = icalevent["SUMMARY"]
 
                         if isokey in collated_article_event_dates:
                             collated_article_event_dates[isokey]['events'].append(event_from_ical)
                         else:
                             collated_article_event_dates[isokey]={}
-                            collated_article_event_dates[isokey]['whendate'] = icalevent.begin.date()
+                            collated_article_event_dates[isokey]['whendate'] = icalevent["DTSTART"].dt.date()
                             collated_article_event_dates[isokey]['events'] = [ event_from_ical ]
 
 

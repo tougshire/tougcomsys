@@ -3,8 +3,10 @@ from django.contrib import admin
 # from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
 from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement, ICal, BlockedIcalEvent
 
-from ics import Calendar
+import icalendar
+import recurring_ical_events
 import requests
+from django.utils.html import format_html
 
 class ArticleEventdateInline(admin.StackedInline):
     model=ArticleEventdate
@@ -73,6 +75,19 @@ class ICalAdmin(admin.ModelAdmin):
         icaltext = requests.get( instance.url ).text
         return icaltext
 
-admin.site.register(ICal, ICalAdmin)
+admin.site.register(ICal)
 
-admin.site.register(BlockedIcalEvent)
+class BlockedIcalEventAdmin(admin.ModelAdmin):
+
+    class Media:
+        js = ["tougcomsys/tougshire_ical.js"]
+
+    readonly_fields = [ 'note', 'ICaltext',  ]
+
+    def note( self, instance ):
+        return 'To prevent an event from displaying,  Copy a UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
+
+    def ICaltext( self, instance ):
+        return format_html('<div id="id_ical_text">-</div>')        
+    
+admin.site.register(BlockedIcalEvent, BlockedIcalEventAdmin)
