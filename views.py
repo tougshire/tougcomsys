@@ -1,11 +1,14 @@
+from django.http import HttpResponse
 from django.db.models import Count, Q
 from django.shortcuts import render
+from django.urls import reverse
 from django.conf import settings
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView,)
 from django.views.generic.list import ListView
+
 
 from datetime import datetime, date, timedelta
 import icalendar
@@ -124,8 +127,11 @@ class HomePage(TemplateView):
                         isokey = icalevent["DTSTART"].dt.date().isoformat()
 
                         event_from_ical = {}
-                        event_from_ical['slug'] = 'test'
+                        event_from_ical['slug'] = ''
                         event_from_ical['headline'] = icalevent["SUMMARY"]
+                        event_from_ical['summary'] = ''
+                        if 'DESCRIPTION' in dict(icalevent.items()):
+                            event_from_ical['summary'] = dict(icalevent.items())['DESCRIPTION']
 
                         if isokey in collated_article_event_dates:
                             collated_article_event_dates[isokey]['events'].append(event_from_ical)
@@ -204,3 +210,8 @@ class ArticleDetail(DetailView):
         context_data['article'] = article
         return context_data
 
+def get_ical_text(request, pk=0):
+    if not pk > 0:
+        return HttpResponse("-")
+    ical = ICal.objects.get(pk=pk)
+    return  HttpResponse(requests.get(ical.url).text)

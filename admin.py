@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 
 # from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
 from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement, ICal, BlockedIcalEvent
@@ -85,9 +86,11 @@ class BlockedIcalEventAdmin(admin.ModelAdmin):
     readonly_fields = [ 'note', 'ICaltext',  ]
 
     def note( self, instance ):
-        return 'To prevent an event from displaying,  Copy a UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
+        return 'To prevent an external event from displaying,  Copy its UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
 
     def ICaltext( self, instance ):
-        return format_html('<div id="id_ical_text">-</div>')        
+        return format_html('<div id="id_ical_text">-</div><div id="id_ical_text_url">' + reverse( 'tougcomsys:ical_text' ) + '</div>')        
+    
+
     
 admin.site.register(BlockedIcalEvent, BlockedIcalEventAdmin)
