@@ -8,6 +8,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView,)
 from django.views.generic.list import ListView
+from django.template.response import TemplateResponse
 
 
 from datetime import datetime, date, timedelta
@@ -82,19 +83,20 @@ class HomePage(TemplateView):
 
         collated_article_event_dates={}
 
-        ics_calendars = []
-        ics_supressors = []
-        for ics in ICal.objects.all():
-            ical_string = requests.get(ics.url).text
+        ical_calendars = []
+        ical_supressors = []
+        for ical in ICal.objects.all():
+            ical_string = requests.get(ical.url).text
             calendar = icalendar.Calendar.from_ical(ical_string)
-            ics_calendars.append( calendar )
+            ical_calendars.append( calendar )
 
         for iscsupress in BlockedIcalEvent.objects.all():
-            ics_supressors.append(iscsupress.uuid)
+            ical_supressors.append(iscsupress.uuid)
 
         for article_event_date in article_event_dates:
 
             event = article_event_date.article
+            event.source_type = 'article'
 
             if event.summary == '':
                 event.summary = event.content
@@ -119,15 +121,18 @@ class HomePage(TemplateView):
                 collated_article_event_dates[isokey]['events'] = [ event ]
 
 
-        for ics_calendar in ics_calendars:
+        for ical_calendar in ical_calendars:
             for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=100 ) ):
-                if icalevent["uid"] not in ics_supressors:
+                if icalevent["uid"] not in ical_supressors:
 
                     if icalevent["DTSTART"].dt.date() >= date.today():
                         isokey = icalevent["DTSTART"].dt.date().isoformat()
 
                         event_from_ical = {}
+                        event_from_ical['source_type'] = 'ical'
                         event_from_ical['slug'] = ''
+                        if 'UID' in dict(icalevent.items()):
+                            event_from_ical['slug'] = str(dict(icalevent.items())['UID'])
                         event_from_ical['headline'] = icalevent["SUMMARY"]
                         event_from_ical['summary'] = ''
                         if 'DESCRIPTION' in dict(icalevent.items()):
@@ -146,7 +151,6 @@ class HomePage(TemplateView):
 
         for event in sorted_collated_article_event_dates:
             collated_article_event_dates[ event[0] ] = event[1]
-            print( 'tp236dg30', event[0], collated_article_event_dates[ event[0] ])
 
         if do_preview:
             context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
@@ -215,3 +219,32 @@ def get_ical_text(request, pk=0):
         return HttpResponse("-")
     ical = ICal.objects.get(pk=pk)
     return  HttpResponse(requests.get(ical.url).text)
+
+def ical_detail_view(request, uuid):
+
+    ical_calendars = []
+    event_from_ical = {}
+
+    for ical in ICal.objects.all():
+        ical_string = requests.get(ical.url).text
+        calendar = icalendar.Calendar.from_ical(ical_string)
+        ical_calendars.append( calendar )
+
+
+    for ical_calendar in ical_calendars:
+        for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=100 ) ):
+
+            dict_items = dict(icalevent.items())
+            if dict_items["UID"] == uuid:
+
+                event_from_ical['slug'] = ''
+                event_from_ical['headline'] = icalevent["SUMMARY"]
+                event_from_ical['summary'] = ''
+                if 'DESCRIPTION' in dict_items:
+                    event_from_ical['content'] = dict_items['DESCRIPTION']
+
+                break
+
+    return TemplateResponse( request, '{}/ical_event.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "event": event_from_ical } )   
+
+
