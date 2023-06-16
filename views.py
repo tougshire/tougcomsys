@@ -122,11 +122,16 @@ class HomePage(TemplateView):
 
 
         for ical_calendar in ical_calendars:
-            for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=100 ) ):
+            for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=300 ) ):
                 if icalevent["uid"] not in ical_supressors:
 
-                    if icalevent["DTSTART"].dt.date() >= date.today():
-                        isokey = icalevent["DTSTART"].dt.date().isoformat()
+                    try:
+                        date_start = icalevent["DTSTART"].dt.date()
+                    except AttributeError:
+                        date_start = icalevent["DTSTART"].dt
+
+                    if date_start >= date.today():
+                        isokey = date_start.isoformat()
 
                         event_from_ical = {}
                         event_from_ical['source_type'] = 'ical'
@@ -142,7 +147,7 @@ class HomePage(TemplateView):
                             collated_article_event_dates[isokey]['events'].append(event_from_ical)
                         else:
                             collated_article_event_dates[isokey]={}
-                            collated_article_event_dates[isokey]['whendate'] = icalevent["DTSTART"].dt.date()
+                            collated_article_event_dates[isokey]['whendate'] = date_start
                             collated_article_event_dates[isokey]['events'] = [ event_from_ical ]
 
 
@@ -232,7 +237,7 @@ def ical_detail_view(request, uuid):
 
 
     for ical_calendar in ical_calendars:
-        for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=100 ) ):
+        for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=300 ) ):
 
             dict_items = dict(icalevent.items())
             if dict_items["UID"] == uuid:
