@@ -403,6 +403,13 @@ class BlockedIcalEvent(models.Model):
         help_text = 'The UUID of the external event to be supressed'
     )
 
+    display_instead = models.ForeignKey(
+        Article,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        help_text = 'Display this article instead of the actual ICAL event, on the date of the ical event'
+    )
     def __str__( self ):
         return self.name if self.name > '' else self.uuid
 

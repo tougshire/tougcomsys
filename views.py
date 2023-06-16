@@ -21,6 +21,9 @@ import markdown as md
 # from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
 from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu, ICal, BlockedIcalEvent
 
+class TestError(Exception):
+    pass
+
 class HomePage(TemplateView):
 
     template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
@@ -123,7 +126,50 @@ class HomePage(TemplateView):
 
         for ical_calendar in ical_calendars:
             for icalevent in recurring_ical_events.of(calendar).between(date.today(), date.today() + timedelta( days=300 ) ):
-                if icalevent["uid"] not in ical_supressors:
+
+                if icalevent['uid'] in ical_supressors:
+
+                    try:
+                        blocked_event = BlockedIcalEvent.objects.get( uuid=icalevent['uid'] )
+                        try:
+                            date_start = icalevent["DTSTART"].dt.date()
+                        except AttributeError:
+                            date_start = icalevent["DTSTART"].dt
+
+                        event = blocked_event.display_instead
+
+                        if date_start >= date.today():
+                            isokey = date_start.isoformat()
+
+                            event.source_type = 'article'
+
+                            if event.summary == '':
+                                event.summary = event.content
+                            if event.summary == '__none__':
+                                event.summary = ''
+                            if event.content_format == 'markdown':
+                                event.content = md.markdown(event.content, extensions=['markdown.extensions.fenced_code'])
+                            if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
+                                event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
+
+                            if event.summary != event.content and event.readmore > '':
+                                event.show_readmore = True 
+                            else:
+                                event.show_readmore = False
+
+                            if isokey in collated_article_event_dates:
+                                collated_article_event_dates[isokey]['events'].append(event)
+                            else:
+                                collated_article_event_dates[isokey]={}
+                                collated_article_event_dates[isokey]['whendate'] = date.fromisoformat( isokey )
+                                collated_article_event_dates[isokey]['events'] = [ event ]
+
+                    except TestError:
+                        pass
+                    except AttributeError: #there is no display_instead
+                        pass
+
+                else: # if icalevent["uid"] not in ical_supressors:
 
                     try:
                         date_start = icalevent["DTSTART"].dt.date()
