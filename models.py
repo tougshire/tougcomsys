@@ -168,6 +168,12 @@ class Article(models.Model):
         blank=True,
         help_text="The user who created ths article"
     )
+    descriptive_date = models.CharField(
+        'descriptive date',
+        max_length=50,
+        blank=True,
+        help_text='A descriptive date, such as "New Year\s Day", or "The Third Monday Each Month". Always use this for recurring ical events'
+    )
     show_author = models.IntegerField(
         'show author',
         choices=SHOW_CHOICES,

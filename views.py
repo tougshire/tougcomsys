@@ -296,6 +296,6 @@ def ical_detail_view(request, uuid):
 
                 break
 
-    return TemplateResponse( request, '{}/ical_event.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "event": event_from_ical } )   
+    return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )   
 
 
