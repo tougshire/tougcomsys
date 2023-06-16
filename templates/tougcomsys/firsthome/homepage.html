@@ -107,9 +107,9 @@
                                 <div class="headline article_headline">
                                     <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                     {% if articleplacement.article.subheadline %}
-                                    <div class="headline article_headline">
-                                        <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
-                                    </div>
+                                        <div class="headline article_headline">
+                                            <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                        </div>
                                     {% endif %}
                                 </div>
                                 <div class="summary article_summary">
@@ -144,18 +144,31 @@
                                 <div class="event_headline">
                                     <h4>
                                         {{ event.starttime|default_if_none:'' }} 
-                                        <a href="{% url 'tougcomsys:article' event.slug %}">
+                                        {% if event.slug %}
+                                            {% if event.source_type == 'article' %}
+                                                <a href="{% url 'tougcomsys:article' event.slug %}">
+                                                    {{ event.headline }}
+                                                </a>
+                                            {% elif event.source_type == 'ical' %}
+                                                <a href="{% url 'tougcomsys:ical_detail' event.slug %}">
+                                                    {{ event.headline }}
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
                                             {{ event.headline }}
-                                        </a>
+                                        {% endif %}
                                     </h4>
                                     {% if event.subheadline %}
                                     <div class="event_headline">
                                         <h5>
-                                            {{ event.starttime|default_if_none:'' }} 
-                                            <a href="{% url 'tougcomsys:article' event.slug %}">
+                                            {% if event.slug %}                                            
+                                                <a href="{% url 'tougcomsys:article' event.slug %}">
+                                                    {{ event.subheadline }}
+                                                </a>
+                                            {% else %}
                                                 {{ event.subheadline }}
-                                            </a>
-                                        </h5>
+                                            {% endif %}
+                                            </h5>
                                     </div>
                                     {% endif %}
                                 </div>
