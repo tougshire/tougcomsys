@@ -88,6 +88,11 @@ class Placement(models.Model):
         help_text = 'The type of placement'
     )
     
+    page = models.IntegerField(
+        'page',
+        default=0,
+        help_text='The page on which this placement should appear'
+    )
     title=models.CharField(
         'title',
         max_length=100,
@@ -469,7 +474,6 @@ class Menu(models.Model):
         ( DRAFT_STATUS_DRAFT, "Draft" )
     ]
 
-
     name = models.CharField(
         max_length=30,
         help_text='The name of the menu'
@@ -495,6 +499,7 @@ class Menu(models.Model):
 
 
 class MenuLink(models.Model):
+
     label = models.CharField(
         'label',
         max_length=100,
@@ -532,6 +537,12 @@ class MenuLink(models.Model):
         super().save(*args, **kwargs)
 
 class Menuitem(models.Model):
+
+    page = models.IntegerField(
+        'page',
+        default=0,
+        help_text='The page on which this menu item should appear'
+    )
     label = models.CharField(
         'label',
         max_length=100,
@@ -555,8 +566,11 @@ class Menuitem(models.Model):
         help_text='A name for sorting.  The item with the alphabetically earliest sort name is first'
     )
     def __str__(self):
-        return '{}=>{}'.format(self.menu, self.label)
+        return '{} page {}=>{}'.format(self.menu, self.page,  self.label)
     
+    class Meta:
+        ordering = ( 'sort_name', )
+
     def save(self, *args, **kwargs):   
         if not self.label > "":
             self.label = self.link.label

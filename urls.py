@@ -7,6 +7,7 @@ app_name = 'tougcomsys'
 urlpatterns = [
     path('', RedirectView.as_view(url=reverse_lazy('tougcomsys:homepage'))),
     path('homepage/', views.HomePage.as_view(), name='homepage'),
+    path('page/<int:page>/', views.HomePage.as_view(), name='page'),
     path('article/<slug:slug>/', views.ArticleDetail.as_view(), name='article'),
     path('ical_text/0/', views.get_ical_text, name='ical_text'),
     path('ical_text/<int:pk>/', views.get_ical_text, name='ical_text'),

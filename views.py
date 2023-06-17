@@ -30,18 +30,21 @@ class HomePage(TemplateView):
 
     def get_context_data(self, **kwargs):
 
+        page = self.kwargs.get("page") if "page" in self.kwargs else 0
+        print('tp236hd32', page)
+
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
         context_data = super().get_context_data(**kwargs)
 
         if do_preview:
-            placements = Placement.objects.annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1)
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1)
         else:
-            placements = Placement.objects.annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1)
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1)
 
+        collated_article_event_dates={}
         context_data['placements'] = []
         for placement in placements:
-
 
             if do_preview:
                 placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
@@ -82,7 +85,7 @@ class HomePage(TemplateView):
             event_end_date = event_start_date + timedelta( days=placement.events_list_length)
 
             if do_preview:
-                article_event_dates = ArticleEventdate.objects.filter( whendate__gte=event_start_date ).filter( whendate__lte=events_list_end ).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
+                article_event_dates = ArticleEventdate.objects.filter( whendate__gte=event_start_date ).filter( whendate__lte=event_end_date ).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
             else:
                 article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
@@ -206,9 +209,17 @@ class HomePage(TemplateView):
                 collated_article_event_dates[ event[0] ] = event[1]
 
         if do_preview:
-            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
+            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
         else:
-            context_data['menus']=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
+            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
+
+        context_data['menus'] = []
+        for menu in menus:
+
+            cd_menu_items = []
+            for menu_item in menu.menuitem_set.filter( page=page ):
+                cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
+            context_data['menus'].append( { 'menu_items': cd_menu_items })
 
 
         context_data['event_dates'] = collated_article_event_dates                                      
@@ -265,6 +276,22 @@ class ArticleDetail(DetailView):
             article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
 
         context_data['article'] = article
+
+        do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
+
+        if do_preview:
+            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
+        else:
+            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
+
+        context_data['menus'] = []
+        for menu in menus:
+
+            cd_menu_items = []
+            for menu_item in menu.menuitem_set.filter( page=0 ):
+                cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
+            context_data['menus'].append( { 'menu_items': cd_menu_items })
+
         return context_data
 
 def get_ical_text(request, pk=0):
@@ -285,8 +312,8 @@ def ical_detail_view(request, uuid):
 
 
     for ical_calendar in ical_calendars:
-        for icalevent in recurring_ical_events.of(calendar).between( event_start_date, event_end_date ):
-
+        # for icalevent in recurring_ical_events.of(calendar).between( event_start_date, event_end_date ):
+        for icalevent in recurring_ical_events.of(calendar):
             dict_items = dict(icalevent.items())
             if dict_items["UID"] == uuid:
 
