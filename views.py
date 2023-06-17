@@ -127,7 +127,7 @@ class HomePage(TemplateView):
 
                     try:
                         date_start = icalevent["DTSTART"].dt.date()
-                    except AttributeError:
+                    except AttributeError: #dt is already a date (instead of a datetime)
                         date_start = icalevent["DTSTART"].dt
 
                     if date_start >= date.today():

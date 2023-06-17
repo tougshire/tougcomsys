@@ -1,8 +1,11 @@
 from django.db import models
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+
+def plus_366():
+    return date.today() + timedelta( days=366 )
 
 class Image(models.Model):
     title = models.CharField(
@@ -68,10 +71,23 @@ class Placement(models.Model):
     SHOW_NO = 0
     SHOW_YES = 1
     SHOW_CHOICES = [
-        (SHOW_NO, "No"),
-        (SHOW_YES, "Yes"),
+        ( SHOW_NO, 'No'),
+        ( SHOW_YES, 'Yes'),
     ]
 
+    TYPE_ARTICLE = 0
+    TYPE_EVENTLIST = 1
+    TYPES = [
+        ( TYPE_ARTICLE, 'Article'),
+        ( TYPE_EVENTLIST, 'Event List')
+    ]
+
+    type = models.IntegerField(
+        'type',
+        choices=TYPES,
+        help_text = 'The type of placement'
+    )
+    
     title=models.CharField(
         'title',
         max_length=100,
@@ -88,9 +104,15 @@ class Placement(models.Model):
         help_text="If the author should be shown in the list of posts. This is just a flag - the template has to be coded appropriately for this to work"
     )
     show_created = models.IntegerField(
+        'show created date',
         choices = SHOW_CHOICES,
         default=SHOW_NO,
         help_text="If the creation date should be shown in the list of posts. This is just a flag - the template has to be coded appropriately for this to work"
+    )
+    event_date_until = models.DateField(
+        'show events until',
+        default=plus_366,
+        help_text='For event placements, the last date to show' 
     )
 
     def __str__(self):
