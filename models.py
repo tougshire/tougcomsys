@@ -3,6 +3,7 @@ from datetime import datetime, date, timedelta
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.db.models.functions import Upper
 
 def plus_366():
     return date.today() + timedelta( days=366 )
@@ -569,7 +570,7 @@ class Menuitem(models.Model):
         return '{} page {}=>{}'.format(self.menu, self.page,  self.label)
     
     class Meta:
-        ordering = ( 'sort_name', )
+        ordering = ( Upper('sort_name'), )
 
     def save(self, *args, **kwargs):   
         if not self.label > "":
