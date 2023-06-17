@@ -479,10 +479,14 @@ class Menu(models.Model):
         max_length=30,
         help_text='The name of the menu'
     )
-    sort_name = models.SlugField(
-        'sorting name',
-        blank=True,
-        help_text='A name for sorting.  The menu with the alphabetically earliest sort name is considered the main menu'
+    page = models.IntegerField(
+        'page',
+        default=0,
+        help_text='The page on which this menu item should appear'
+    )
+    menu_number = models.IntegerField(
+        'menu number',
+        help_text='A number to help determine the place of the menu in the template. For the default template, 0 is the pace for a top menu and 1 is the place a side menu'
     )
     draft_status = models.IntegerField(
         choices = DRAFT_STATUS_CHOICES,
@@ -491,13 +495,10 @@ class Menu(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return '{} on page {}'.format( self.name, self.page )
     
-    def save(self, *args, **kwargs):   
-        if not self.sort_name > "":
-            self.sort_name = slugify(self.name)
-        super().save(*args, **kwargs) 
-
+    class Meta:
+        ordering = ( 'page', 'menu_number' )
 
 class MenuLink(models.Model):
 
@@ -539,11 +540,6 @@ class MenuLink(models.Model):
 
 class Menuitem(models.Model):
 
-    page = models.IntegerField(
-        'page',
-        default=0,
-        help_text='The page on which this menu item should appear'
-    )
     label = models.CharField(
         'label',
         max_length=100,
@@ -567,7 +563,7 @@ class Menuitem(models.Model):
         help_text='A name for sorting.  The item with the alphabetically earliest sort name is first'
     )
     def __str__(self):
-        return '{} page {}=>{}'.format(self.menu, self.page,  self.label)
+        return '{}=>{}'.format(self.menu, self.label)
     
     class Meta:
         ordering = ( Upper('sort_name'), )

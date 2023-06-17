@@ -52,7 +52,6 @@ admin.site.register(Image)
 
 class MenuAdmin(admin.ModelAdmin):
     inlines = [MenuitemInline]
-    prepopulated_fields={'sort_name': ['name']}
 
 admin.site.register(Menu, MenuAdmin)
 

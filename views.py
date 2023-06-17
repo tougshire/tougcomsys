@@ -213,14 +213,18 @@ class HomePage(TemplateView):
         else:
             menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
-        context_data['menus'] = []
+        # context_data['menus'] = []
+        # for menu in menus:
+
+        #     cd_menu_items = []
+        #     for menu_item in menu.menuitem_set.filter( page=page ):
+        #         cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
+        #     context_data['menus'].append( { 'menu_items': cd_menu_items })
+
+        context_data['menus'] = {}
+        menus = Menu.objects.filter( page=page )
         for menu in menus:
-
-            cd_menu_items = []
-            for menu_item in menu.menuitem_set.filter( page=page ):
-                cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
-            context_data['menus'].append( { 'menu_items': cd_menu_items })
-
+            context_data['menus'][ menu.menu_number ] = menu        
 
         context_data['event_dates'] = collated_article_event_dates                                      
 
@@ -284,13 +288,10 @@ class ArticleDetail(DetailView):
         else:
             menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
-        context_data['menus'] = []
+        context_data['menus'] = {}
+        menus = Menu.objects.filter( page=0 )
         for menu in menus:
-
-            cd_menu_items = []
-            for menu_item in menu.menuitem_set.filter( page=0 ):
-                cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
-            context_data['menus'].append( { 'menu_items': cd_menu_items })
+            context_data['menus'][ menu.menu_number ] = menu        
 
         return context_data
 

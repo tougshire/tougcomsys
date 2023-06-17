@@ -30,8 +30,8 @@
         </div>
         {% if menus.0 %}
             <div id="menubar">
-                {% for item in menus.0.menu_items %}
-                    <a href="{{ item.url }}">{{ item.label }}</a>
+                {% for item in menus.0.menuitem_set.all %}
+                    <a href="{{ item.link.url }}">{{ item.label }}</a>
                 {% endfor %}
             </div>
         {% endif %}
