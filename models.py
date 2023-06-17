@@ -97,6 +97,12 @@ class Placement(models.Model):
     place_number = models.IntegerField(
         help_text="A number to help determine where posts of this placement appear the template."
     )
+    show_title = models.IntegerField(
+        'show title',
+        choices = SHOW_CHOICES,
+        default=SHOW_YES,
+        help_text="If the title of the list should be shown. This is just a flag - the template has to be coded appropriately for this to work"
+    )
     show_author = models.IntegerField(
         'show author',
         choices = SHOW_CHOICES,
@@ -109,10 +115,15 @@ class Placement(models.Model):
         default=SHOW_NO,
         help_text="If the creation date should be shown in the list of posts. This is just a flag - the template has to be coded appropriately for this to work"
     )
-    event_date_until = models.DateField(
-        'show events until',
-        default=plus_366,
-        help_text='For event placements, the last date to show' 
+    event_list_start = models.IntegerField(
+        'event list start',
+        default=0,
+        help_text = 'For event lists, the start date of the event list, in days relative to the current date'
+    )
+    events_list_length = models.IntegerField(
+        'event list length',
+        default=366,
+        help_text='For event lists, length in days of the list' 
     )
 
     def __str__(self):
@@ -359,7 +370,7 @@ class ArticlePlacement(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        help_text="The placement on the home page"
+        help_text="The placement on the template (for events - no placement indicates event should be on any calendar)"
     )
 
     class Meta:
@@ -403,6 +414,13 @@ class ICal(models.Model):
     url = models.URLField(
         'url',
         help_text = 'The URL of the external calendar'
+    )
+    placement = models.ForeignKey( 
+        Placement,
+        null=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={ 'type':Placement.TYPE_EVENTLIST },
+        help_text='The placement which should display this ical'
     )
 
     def __str__( self ):
