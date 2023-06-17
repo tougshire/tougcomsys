@@ -1,0 +1,47 @@
+{% extends './_base.html' %}
+{% block content %}
+<div id="post_detail" class="detail">
+    <div class="headline post_headline">
+        <h2>
+            {{ post.headline }}
+        </h2>
+    </div>
+    {% if post.above_content_image %}
+        <div class="content_image">
+            {% if post.above_content_image_link %}
+                <a href="{{ post.above_content_image_link }}"{% if post.above_content_link_attributes %} {{ post.above_content_link_attributes }}{% endif %} >
+                    <img class="content_image" src="{{ post.above_content_image.url }}" alt="{{ post.above_content_image.alt_text }}" {% if post.above_content_image_attributes %} {{ post.above_content_image_attributes|safe }}{% endif %}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ post.above_content_image.url }}" alt="{{ post.above_content_image.alt_text }}" {% if post.above_content_image_attributes %} {{ post.above_content_image_attributes|safe }}{% endif %}>     
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if post.show_author or post.show_created %}
+        <div class="meta post_meta">
+            {% if post.show_author %}
+                {{ post.author|default_if_none:'&nbsp;' }}
+            {% endif %}
+            {% if post.show_author and post.show_created %} - {% endif %}
+            {% if post.show_created %} 
+                {{ post.created|default_if_none:'&nbsp;' }} 
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="content post_content">
+        {{ post.content | safe }} 
+    </div>
+    {% if post.below_content_image %}
+        <div class="content_image">
+            {% if post.below_content_image_link %}
+                <a href="{{ post.below_content_image_link }}"{% if post.below_content_link_attributes %} {{ post.below_content_link_attributes }}{% endif %} >
+                    <img class="content_image" src="{{ post.below_content_image.url }}" alt="{{ post.below_content_image.alt_text }}" {% if post.below_content_image_attributes %} {{ post.below_content_image_attributes|safe }}{% endif %}>     
+                </a>
+            {% else %}
+                <img class="content_image" src="{{ post.below_content_image.url }}" alt="{{ post.below_content_image.alt_text }}" {% if post.below_content_image_attributes %} {{ post.below_content_image_attributes|safe }}{% endif %}>     
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
