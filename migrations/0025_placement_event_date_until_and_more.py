@@ -7,7 +7,7 @@ import tougcomsys.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tougcomsys', '0022_blockedicalevent_ical'),
+        ('tougcomsys', '0024_article_descriptive_date'),
     ]
 
     operations = [
