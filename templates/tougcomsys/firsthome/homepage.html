@@ -5,10 +5,10 @@
         <div id="columns" class="columns">
             {% for placement in placements %}
                 {% if placement.type == 0 %}
-                    {% if forloop.first %}
-                        <div id="column_first" class="column column_first">
+                    {% if placement.column_width > 1 %}
+                        <div class="column column_wide" style="flex-grow:{{ placement.column_width }}" >
                     {% else %}
-                        <div class="column">
+                        <div class="column" style="flex-grow:{{ placement.column_width }}">
                     {% endif %}
                     {% for articleplacement in placement.articleplacements %}
                         {% if articleplacement.article.list_image %}

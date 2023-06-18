@@ -63,8 +63,6 @@ class Image(models.Model):
 
         super().save(*args, **kwargs)
 
-        
-
     class Meta:
         ordering = ('-created',)
 
@@ -81,11 +79,20 @@ class Page(models.Model):
         max_length=30,
         help_text = 'The name of the page'
     )
+
     is_home = models.IntegerField(
         choices = HOME_CHOICES,
         default = HOME_NO,
         help_text = 'If this is the home page.  Only one will be used as home page even if more than one is chosen'
     )
+
+    column_widths = models.CharField(
+        'column_widths',
+        max_length=30,
+        blank=True,
+        help_text='A comma separated list of relative column widths (ex: "2,1,1" for the first column being twice as wide as others)'
+    )
+
     def __str__(self):
         return '{}{}'.format( self.name, ' (Home)' if self.is_home else '' )
 

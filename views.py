@@ -29,25 +29,29 @@ class HomePage(TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        print('tp236i809 page=', self.kwargs.get('page'))
-        page = self.kwargs.get('page') if 'page' in self.kwargs else 0
-        if page == 0:
-            page = Page.objects.first().pk
+        context_data = super().get_context_data(**kwargs)
+
+
+        page = Page.objects.first()
+        if 'page' in self.kwargs:
+            page = Page.objects.get(pk=self.kwargs.get('page'))
+
+        column_widths = page.column_widths.split(',')
+        print('tp236if14', column_widths)
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
-        context_data = super().get_context_data(**kwargs)
+        collated_article_event_dates={}
 
         if do_preview:
             placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
         else:
             placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
 
-        collated_article_event_dates={}
         context_data['placements'] = []
-        for placement in placements:
-            print('tp236ia26 placement=', placement, '|', placement.page, '|', placement.place_number, '|', placement.published_qty )
 
+        for p, placement in enumerate( placements ):
+            
             if do_preview:
                 placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
                 placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
@@ -80,7 +84,10 @@ class HomePage(TemplateView):
                     if articleimage.shown_on_list:
                         articleplacement.article.list_image = articleimage
 
+            placement.column_width = int( column_widths[p] ) if len(column_widths) > p and column_widths[p].isnumeric()  else 1
+            print('tp236if11', p, placement.column_width)
             context_data['placements'].append(placement)
+
             event_start_date = date.today() + timedelta( days=placement.event_list_start)
             event_end_date = event_start_date + timedelta( days=placement.events_list_length)
 
@@ -93,7 +100,7 @@ class HomePage(TemplateView):
 
             ical_calendars = []
             ical_supressors = []
-#            for ical in ICal.objects.all():
+
             for ical in placement.ical_set.all():
                 ical_string = requests.get(ical.url).text
                 calendar = icalendar.Calendar.from_ical(ical_string)
@@ -219,7 +226,7 @@ class HomePage(TemplateView):
             context_data['menus'][ menu.menu_number ] = []        
             for menu_item in menu.menuitem_set.all():
                 if menu_item.url.find('/article') == 0:
-                    href = '{}refpage/{}/'.format( menu_item.url, page )
+                    href = '{}refpage/{}/'.format( menu_item.url, page.pk )
                 else:
                     href = menu_item.url
                 context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
@@ -240,7 +247,8 @@ class ArticleDetail(DetailView):
 
         article = self.get_object()
 
-        page = self.kwargs.get("page") if "page" in self.kwargs else 0
+        page = self.kwargs.get("page") if "page" in self.kwargs else None
+        print('tp236ig15', page)
 
         article_event_dates = {
             'past':[],
