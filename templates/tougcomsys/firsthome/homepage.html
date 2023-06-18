@@ -23,7 +23,7 @@
                                         <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                         {% if articleplacement.article.subheadline %}
                                         <div class="subheadline article_subheadline">
-                                            <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
                                         </div>
                                         {% endif %}    
                                     </div>
@@ -57,7 +57,7 @@
                                         <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                         {% if articleplacement.article.subheadline %}
                                         <div class="headline article_headline">
-                                            <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
                                         </div>
                                         {% endif %}
                                     </div>
@@ -80,7 +80,7 @@
                                         <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                         {% if articleplacement.article.subheadline %}
                                         <div class="headline article_headline">
-                                            <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
                                         </div>
                                         {% endif %}
                                     </div>
@@ -109,7 +109,7 @@
                                         <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
                                         {% if articleplacement.article.subheadline %}
                                             <div class="headline article_headline">
-                                                <h3><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.subheadline|safe }}</a></h3>
+                                                <h3>{{ articleplacement.article.subheadline|safe }}</h3>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -163,22 +163,16 @@
                                         {% if event.subheadline %}
                                         <div class="event_headline">
                                             <h5>
-                                                {% if event.slug %}                                            
-                                                    <a href="{% url 'tougcomsys:article' event.slug %}">
-                                                        {{ event.subheadline }}
-                                                    </a>
-                                                {% else %}
-                                                    {{ event.subheadline }}
-                                                {% endif %}
-                                                </h5>
+                                                {{ event.subheadline }}
+                                            </h5>
                                         </div>
                                         {% endif %}
                                     </div>
                                     <div class="event_summary">{{ event.summary | safe }}</div>
                                     {% if event.show_readmore and event.readmore %}
-                                    <div class="readmore article_readmore">
-                                        <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
-                                    </div>        
+                                        <div class="readmore article_readmore">
+                                            <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
+                                        </div>        
                                     {% endif %}
 
                                 {% endfor %}

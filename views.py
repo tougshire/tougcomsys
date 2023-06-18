@@ -330,7 +330,7 @@ def ical_detail_view(request, uuid):
 
     for ical_calendar in ical_calendars:
         # for icalevent in recurring_ical_events.of(calendar).between( event_start_date, event_end_date ):
-        for icalevent in recurring_ical_events.of(calendar):
+        for icalevent in recurring_ical_events.of(ical_calendar).all():
             dict_items = dict(icalevent.items())
             if dict_items["UID"] == uuid:
 
