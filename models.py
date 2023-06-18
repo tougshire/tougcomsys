@@ -4,6 +4,7 @@ from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.db.models.functions import Upper
+from django.core.exceptions import ValidationError
 
 def plus_366():
     return date.today() + timedelta( days=366 )
@@ -67,6 +68,33 @@ class Image(models.Model):
     class Meta:
         ordering = ('-created',)
 
+class Page(models.Model):
+    HOME_NO = 0
+    HOME_YES = 1
+    HOME_CHOICES = [
+        ( HOME_NO, 'No'),
+        ( HOME_YES, 'Yes'),
+    ]
+
+    name = models.CharField(
+        'name',
+        max_length=30,
+        help_text = 'The name of the page'
+    )
+    is_home = models.IntegerField(
+        choices = HOME_CHOICES,
+        default = HOME_NO,
+        help_text = 'If this is the home page.  Only one will be used as home page even if more than one is chosen'
+    )
+    def __str__(self):
+        return '{}{}'.format( self.name, ' (Home)' if self.is_home else '' )
+
+    def get_absolute_url(self):
+        return reverse('tougcomsys:page', kwargs={'page': self.pk})
+
+    class Meta:
+        ordering = ( '-is_home', 'pk', )
+
 
 class Placement(models.Model):
     SHOW_NO = 0
@@ -89,10 +117,12 @@ class Placement(models.Model):
         help_text = 'The type of placement'
     )
     
-    page = models.IntegerField(
-        'page',
-        default=0,
-        help_text='The page on which this placement should appear'
+    page = models.ForeignKey(
+        Page,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text = 'The page on which this placement should appear'
     )
     title=models.CharField(
         'title',
@@ -133,12 +163,12 @@ class Placement(models.Model):
     )
 
     def __str__(self):
-        return self.title
+        return '{} on page {}'.format( self.title, self.page )
         
     class Meta:
-        ordering = ('place_number',)
+        ordering = ('page', 'place_number',)
     
-#     
+
 class Article(models.Model):
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_ARCHIVED = 3
@@ -261,9 +291,6 @@ class Article(models.Model):
         "slug",
         help_text = "The slug used to refer to this article"
     )
-
-    def get_absolute_url(self): 
-        return reverse("post_detail", kwargs={"slug": self.slug}) 
 
     def save(self, *args, **kwargs):   
         if not self.slug > "":
@@ -465,6 +492,7 @@ class BlockedIcalEvent(models.Model):
     def __str__( self ):
         return self.name if self.name > '' else self.uuid
 
+
 class Menu(models.Model):
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_NO_PREVIEW = 5
@@ -479,10 +507,17 @@ class Menu(models.Model):
         max_length=30,
         help_text='The name of the menu'
     )
-    page = models.IntegerField(
+    pagex = models.IntegerField(
         'page',
         default=0,
         help_text='The page on which this menu item should appear'
+    )
+    page = models.ForeignKey(
+        Page,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text = 'The page on which this menu should be displayed'
     )
     menu_number = models.IntegerField(
         'menu number',
@@ -500,43 +535,6 @@ class Menu(models.Model):
     class Meta:
         ordering = ( 'page', 'menu_number' )
 
-class MenuLink(models.Model):
-
-    label = models.CharField(
-        'label',
-        max_length=100,
-        help_text="The default label when added to menus"
-    )
-    article = models.ForeignKey(
-        Article,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        help_text='The article that this item links to - can be blank if URL is entered and no article needs to be chosen. Removed and replaced by URL of article when this link is saved.'
-    )
-    url = models.CharField(
-        'URL',
-        max_length=250,
-        blank=True,
-        help_text='The URL.  This will be overwritten if an article is chosen'
-    )
-
-    def __str__(self):
-        return self.label
-    
-    def save(self, *args, **kwargs):
-        update_url = False
-
-        if self.article:
-            update_url = True
-
-        super().save(*args, **kwargs)
-
-        if update_url:
-            self.url = self.article.get_absolute_url()
-            self.file = None
-
-        super().save(*args, **kwargs)
 
 class Menuitem(models.Model):
 
@@ -546,29 +544,63 @@ class Menuitem(models.Model):
         blank=True,
         help_text='The label of the menu item.  If left blank, the label of the link will be used'
     )
-    link = models.ForeignKey(
-        MenuLink,
-        null=True,
-        on_delete=models.CASCADE,
-        help_text = 'The link that this menu item links to'
-    )
+
     menu = models.ForeignKey(
         Menu,
         on_delete=models.CASCADE,
         help_text='The menu to which this item is attached'
     )
+
+    article = models.ForeignKey(
+        Article,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text='The article that this item links to - can be blank if a page or URL is entered and no article needs to be chosen. Removed and replaced by URL of article or page when this link is saved.'
+    )
+
+    page = models.ForeignKey(
+        Page,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        help_text='The page that this item links to - can be blank if article or URL is entered and no page needs to be chosen. Removed and replaced by URL of article or page when this link is saved.'
+    )
+
+    url = models.CharField(
+        'URL',
+        max_length=250,
+        blank=True,
+        help_text='The URL.  This will be overwritten if an article or page is chosen'
+    )
+
     sort_name = models.CharField(
         max_length=20,
         blank=True,
         help_text='A name for sorting.  The item with the alphabetically earliest sort name is first'
     )
+
     def __str__(self):
-        return '{}=>{}'.format(self.menu, self.label)
+        return '{} on menu {}'.format(self.label, self.menu, )
     
     class Meta:
         ordering = ( Upper('sort_name'), )
 
+    def clean(self):
+
+        if self.article and self.page:
+            raise ValidationError('A menu item can link to an article or page, but not both')
+
     def save(self, *args, **kwargs):   
+
+        update_url = False
+
+        if self.article or self.page:
+            update_url = True
+
+        if update_url:
+            self.url = self.article.get_absolute_url() if self.article is not None else self.page.get_absolute_url() 
+
         if not self.label > "":
             self.label = self.link.label
         if not self.sort_name > "":
