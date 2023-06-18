@@ -65,7 +65,7 @@ div.detail div.headline h3 a {
     color:#00a7e0;
 }
 
-div.list div.columns #column_first.column {
+div.list div.columns {
 }
 
 div.list #columns .column  {
@@ -121,29 +121,29 @@ div.list div.article_nimg_ymet {
 /* div.list  {
 } */
 
-div.list div.column_first div.article_yimg_nmet {
+div.list div.column_wide div.article_yimg_nmet {
 }
 
 
-div.list div.column_first div.article_yimg_nmet div.list_image {
+div.list div.column_wide div.article_yimg_nmet div.list_image {
 }
 
-div.list div.column_first div.article_yimg_nmet div.summary {
+div.list div.column_wide div.article_yimg_nmet div.summary {
 }
 
-div.list div.column_first div.article_yimg_nmet div.headline {
+div.list div.column_wide div.article_yimg_nmet div.headline {
 }
 
-div.list div.column_first div.article_yimg_ymet {
+div.list div.column_wide div.article_yimg_ymet {
 }
 
-div.list div.column_first div.article_yimg_ymet div.list_image {
+div.list div.column_wide div.article_yimg_ymet div.list_image {
 }
 
-div.list div.column_first div.article_yimg_ymet div.summary {
+div.list div.column_wide div.article_yimg_ymet div.summary {
 }
 
-div.list div.column_first div.article_yimg_nmet div.meta {
+div.list div.column_wide div.article_yimg_nmet div.meta {
 }
 
 
