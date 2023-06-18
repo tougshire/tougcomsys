@@ -18,7 +18,6 @@ import requests
 
 import markdown as md
 
-# from tougcomsys.models import Event, EventDate, Page, Placement, Post, Article, ArticleEventdate, ArticleImage, ArticlePlacement
 from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu, ICal, BlockedIcalEvent
 
 class TestError(Exception):
@@ -31,7 +30,6 @@ class HomePage(TemplateView):
     def get_context_data(self, **kwargs):
 
         page = self.kwargs.get("page") if "page" in self.kwargs else 0
-        print('tp236hd32', page)
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
@@ -213,18 +211,16 @@ class HomePage(TemplateView):
         else:
             menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
-        # context_data['menus'] = []
-        # for menu in menus:
-
-        #     cd_menu_items = []
-        #     for menu_item in menu.menuitem_set.filter( page=page ):
-        #         cd_menu_items.append({'url':menu_item.link.url, 'label':menu_item.label })
-        #     context_data['menus'].append( { 'menu_items': cd_menu_items })
-
         context_data['menus'] = {}
         menus = Menu.objects.filter( page=page )
         for menu in menus:
-            context_data['menus'][ menu.menu_number ] = menu        
+            context_data['menus'][ menu.menu_number ] = []        
+            for menu_item in menu.menuitem_set.all():
+                if menu_item.link.url.find('/article') == 0:
+                    href = '{}refpage/{}/'.format( menu_item.link.url, page )
+                else:
+                    href = menu_item.link.url
+                context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
 
         context_data['event_dates'] = collated_article_event_dates                                      
 
@@ -241,6 +237,8 @@ class ArticleDetail(DetailView):
         context_data = super().get_context_data(**kwargs)
 
         article = self.get_object()
+
+        page = self.kwargs.get("page") if "page" in self.kwargs else 0
 
         article_event_dates = {
             'past':[],
@@ -289,9 +287,16 @@ class ArticleDetail(DetailView):
             menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
 
         context_data['menus'] = {}
-        menus = Menu.objects.filter( page=0 )
+        menus = Menu.objects.filter( page=page )
         for menu in menus:
-            context_data['menus'][ menu.menu_number ] = menu        
+            context_data['menus'][ menu.menu_number ] = []        
+            for menu_item in menu.menuitem_set.all():
+                if menu_item.link.url.find('/article') == 0:
+                    href = '{}refpage/{}/'.format( menu_item.link.url, page )
+                else:
+                    href = menu_item.link.url
+                context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
+
 
         return context_data
 

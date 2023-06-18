@@ -40,13 +40,6 @@
             {% endif %}
         {% endif %}
     </div>
-    {% if event_dates.past or event_dates.future %}
-        <div class="event_dates">
-            <div class="event_date event_date_info">
-                [more dates below]
-            </div>
-        </div>
-    {% endif %}
     {% if article.show_author or article.show_created %}
         <div class="meta article_meta">
             {% if article.show_author %}
