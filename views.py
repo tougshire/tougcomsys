@@ -31,13 +31,14 @@ class HomePage(TemplateView):
 
         context_data = super().get_context_data(**kwargs)
 
-
         page = Page.objects.first()
         if 'page' in self.kwargs:
             page = Page.objects.get(pk=self.kwargs.get('page'))
+        
+        if page is None:
+            return context_data
 
         column_widths = page.column_widths.split(',')
-        print('tp236if14', column_widths)
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
