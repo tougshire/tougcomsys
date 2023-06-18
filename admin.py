@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 
-# from tougcomsys.models import Event, EventDate, Image, Page, Placement, Post
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, MenuLink, Menuitem, Placement, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent
 
 import icalendar
 import recurring_ical_events
@@ -26,7 +25,7 @@ class MenuitemInline(admin.StackedInline):
     extra=1
 
 class PlacementAdmin(admin.ModelAdmin):
-    list_display = ('title', 'place_number')
+    list_display = ('__str__',  'place_number')
     inlines = [ArticlePlacementInline]
 
 admin.site.register(Placement, PlacementAdmin)
@@ -55,10 +54,9 @@ class MenuAdmin(admin.ModelAdmin):
 
 admin.site.register(Menu, MenuAdmin)
 
-admin.site.register(MenuLink)
-
 class MenuitemAdmin(admin.ModelAdmin):
 
+    list_display = ('__str__', 'url')
     prepopulated_fields={'sort_name': ['label']}
 
 admin.site.register(Menuitem, MenuitemAdmin)
@@ -93,3 +91,5 @@ class BlockedIcalEventAdmin(admin.ModelAdmin):
 
     
 admin.site.register(BlockedIcalEvent, BlockedIcalEventAdmin)
+
+admin.site.register( Page )

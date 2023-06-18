@@ -18,7 +18,7 @@ import requests
 
 import markdown as md
 
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Placement, Menu, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
 
 class TestError(Exception):
     pass
@@ -29,20 +29,24 @@ class HomePage(TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        page = self.kwargs.get("page") if "page" in self.kwargs else 0
+        print('tp236i809 page=', self.kwargs.get('page'))
+        page = self.kwargs.get('page') if 'page' in self.kwargs else 0
+        if page == 0:
+            page = Page.objects.first().pk
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
         context_data = super().get_context_data(**kwargs)
 
         if do_preview:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1)
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
         else:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1)
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
 
         collated_article_event_dates={}
         context_data['placements'] = []
         for placement in placements:
+            print('tp236ia26 placement=', placement, '|', placement.page, '|', placement.place_number, '|', placement.published_qty )
 
             if do_preview:
                 placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
@@ -66,8 +70,6 @@ class HomePage(TemplateView):
                     articleplacement.article.show_readmore = True 
                 else:
                     articleplacement.article.show_readmore = False
-
-
 
                 if articleplacement.article.show_author == Article.SHOW_COMPLY:
                     articleplacement.article.show_author = placement.show_author
@@ -216,10 +218,10 @@ class HomePage(TemplateView):
         for menu in menus:
             context_data['menus'][ menu.menu_number ] = []        
             for menu_item in menu.menuitem_set.all():
-                if menu_item.link.url.find('/article') == 0:
-                    href = '{}refpage/{}/'.format( menu_item.link.url, page )
+                if menu_item.url.find('/article') == 0:
+                    href = '{}refpage/{}/'.format( menu_item.url, page )
                 else:
-                    href = menu_item.link.url
+                    href = menu_item.url
                 context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
 
         context_data['event_dates'] = collated_article_event_dates                                      
@@ -291,10 +293,10 @@ class ArticleDetail(DetailView):
         for menu in menus:
             context_data['menus'][ menu.menu_number ] = []        
             for menu_item in menu.menuitem_set.all():
-                if menu_item.link.url.find('/article') == 0:
-                    href = '{}refpage/{}/'.format( menu_item.link.url, page )
+                if menu_item.url.find('/article') == 0:
+                    href = '{}refpage/{}/'.format( menu_item.url, page )
                 else:
-                    href = menu_item.link.url
+                    href = menu_item.url
                 context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
 
 
