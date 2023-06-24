@@ -27,26 +27,6 @@ body {
 }
 
 
-div.detail {
-}
-
-div.detail div.content {
-}
-
-div.detail div.content_image {
-}
-
-div.detail div.content_image img {
-}
-
-div.detail div.event_dates {
-}
-
-div.detail div.meta {
-}
-
-div.detail div.headline {
-}
 
 div.detail div.headline h2 {
     color:#002e5c;
@@ -72,26 +52,9 @@ div.list #columns .column  {
     border-color: #cdf;
 }
 
-div.list div.columns {
-}
-
-div.list .list_image {
-}
-
-div.list div.list_image img {
-}
-
-div.list div.meta {
-}
 
 div.list div.article, div.list div.event_date {
     border-color: #00a7e0;
-}
-
-div.list div.article div.summary {
-}
-
-div.list div.article div.headline {
 }
 
 div.list div.article div.headline h2 {
@@ -105,61 +68,13 @@ div.list div.article div.headline h2 a {
 }
 
 div.list div.article div.headline h3 {
-    color:#00a7e0;
+    color: #002e5c;
 }
 
 div.list div.article div.headline h3 a {
-    color:#00a7e0;
+    color: #002e5c;
 }
-
-div.list div.article_nimg_nmet {
+div.list div.columns .article {
+    border-bottom:1px solid blue;
 }
-
-div.list div.article_nimg_ymet {
-}
-
-/* div.list  {
-} */
-
-div.list div.column_wide div.article_yimg_nmet {
-}
-
-
-div.list div.column_wide div.article_yimg_nmet div.list_image {
-}
-
-div.list div.column_wide div.article_yimg_nmet div.summary {
-}
-
-div.list div.column_wide div.article_yimg_nmet div.headline {
-}
-
-div.list div.column_wide div.article_yimg_ymet {
-}
-
-div.list div.column_wide div.article_yimg_ymet div.list_image {
-}
-
-div.list div.column_wide div.article_yimg_ymet div.summary {
-}
-
-div.list div.column_wide div.article_yimg_nmet div.meta {
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

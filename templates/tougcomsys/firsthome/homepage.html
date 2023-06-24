@@ -2,195 +2,95 @@
 
 {% block content %}
     <div id="tougcomsys" class="list">
-        <div id="columns" class="columns">
+
+        <div id="columns" class="columns"> 
             {% for placement in placements %}
-                {% if placement.type == 0 %}
-                    {% if placement.column_width > 1 %}
-                        <div class="column column_wide" style="flex-grow:{{ placement.column_width }}" >
-                    {% else %}
-                        <div class="column" style="flex-grow:{{ placement.column_width }}">
-                    {% endif %}
-                    {% for articleplacement in placement.articleplacements %}
-                        {% if articleplacement.article.list_image %}
-                            {% if articleplacement.article.show_author or articleplacement.article.show_created %}
-                                <div class="article article_yimg_ymet">
-                                    <div class="list_image">
-                                        <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
-                                            <img src="{{ articleplacement.article.list_image.url }}" alt="{{ articleplacement.article.list_image.alt_text }}" {{ articleplacement.article.list_image.list_image_attributes|safe }}>
-                                        </a>
-                                    </div>
-                                    <div class="headline article_headline">
-                                        <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
-                                        {% if articleplacement.article.subheadline %}
-                                        <div class="subheadline article_subheadline">
-                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
-                                        </div>
-                                        {% endif %}    
-                                    </div>
-                                    <div class="article_meta">
-                                        {% if articleplacement.article.show_author %}
-                                            {{ articleplacement.article.author|default_if_none:'&nbsp;' }}
-                                        {% endif %}
-                                        {% if articleplacement.article.show_author and articleplacement.article.show_created %} - {% endif %}
-                                        {% if articleplacement.article.show_created %}  
-                                            {{ articleplacement.article.created|default_if_none:'&nbsp;' }} 
-                                        {% endif %}
-                                    </div>
-                                    <div class="summary article_summary">
-                                        {{ articleplacement.article.summary | safe }}
-                                        {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
-                                            <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
-                                            </div>        
-                                        {% endif %}
-                                    </div>        
 
-                                </div>
-                            {% else %}
-                                <div class="article article_yimg_nmet">
-                                    <div class="list_image">
-                                        <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
-                                            <img src="{{ articleplacement.article.list_image.image.url }}" alt="{{ articleplacement.article.list_image.image.alt_text }}" {{ articleplacement.article.list_image.list_image_attributes|safe}}>
-                                        </a>
-                                    </div>
-                                    <div class="headline article_headline">
-                                        <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
-                                        {% if articleplacement.article.subheadline %}
-                                        <div class="headline article_headline">
-                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="summary article_summary">
-                                        {{ articleplacement.article.summary | safe }}
-                                        {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
-                                            <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
-                                            </div>        
-                                        {% endif %}
+                {% if placement.type == placement_types.articlelist %}
 
-                                    </div>
-            
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            {% if articleplacement.article.show_author or articleplacement.article.show_created %}
-                                <div class="article article_nimg_ymet">
-                                    <div class="headline article_headline">
-                                        <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
-                                        {% if articleplacement.article.subheadline %}
-                                        <div class="headline article_headline">
-                                            <h3>{{ articleplacement.article.subheadline|safe }}</h3>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="article_meta">
-                                        {% if articleplacement.article.show_author %}
-                                            {{ articleplacement.article.author|default_if_none:'&nbsp;' }}
-                                        {% endif %}
-                                        {% if articleplacement.article.show_author and articleplacement.article.show_created %} - {% endif %}
-                                        {% if articleplacement.article.show_created %}  
-                                            {{ articleplacement.article.created|default_if_none:'&nbsp;' }} 
-                                        {% endif %}
-                                    </div>
-                                    <div class="summary article_summary">
-                                        {{ articleplacement.article.summary | safe }}
-                                        {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
-                                            <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
-                                            </div>        
-                                        {% endif %}
-
-                                    </div>        
-                                </div>
-                            {% else %}
-                                <div class="article article_nimg_nmet">
-                                    <div class="headline article_headline">
-                                        <h2><a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.headline|safe }}</a></h2>
-                                        {% if articleplacement.article.subheadline %}
-                                            <div class="headline article_headline">
-                                                <h3>{{ articleplacement.article.subheadline|safe }}</h3>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="summary article_summary">
-                                        {{ articleplacement.article.summary | safe }}
-                                        {% if articleplacement.article.show_readmore and articleplacement.article.readmore %}
-                                            <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
-                                            </div>        
-                                        {% endif %}
-                                    </div>        
-
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    </div>
-                {% elif placement.type == 1 %}
-
-                    <div id="columns_{ forloop.counter0}" class="column">
+                    <div class="column column_{{ placement.column_width }}">
                         {% if placement.show_title %}
-                            <div class="headline columns_headline">
-                                <h2>Events</h2>
-                            </div>
+                            <h2>{{ placement.title }}</h2>
                         {% endif %}
-                        {% for event_date, values in event_dates.items %}
-                            <div class = "event_date">
-                                <div class="headline event_date_date">
-                                    <h3>
-                                        {{ values.whendate|date:'D d M Y' }}
-                                    </h3>
-                                </div>
-                                {% for event in values.events %}  
-                                    <div class="event_headline">
-                                        <h4>
-                                            {{ event.starttime|default_if_none:'' }} 
-                                            {% if event.slug %}
-                                                {% if event.source_type == 'article' %}
-                                                    <a href="{% url 'tougcomsys:article' event.slug %}">
-                                                        {{ event.headline }}
-                                                    </a>
-                                                {% elif event.source_type == 'ical' %}
-                                                    <a href="{% url 'tougcomsys:ical_detail' event.slug %}">
-                                                        {{ event.headline }}
-                                                    </a>
-                                                {% endif %}
-                                            {% else %}
-                                                {{ event.headline }}
-                                            {% endif %}
-                                        </h4>
-                                        {% if event.subheadline %}
-                                        <div class="event_headline">
-                                            <h5>
-                                                {{ event.subheadline }}
-                                            </h5>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="event_summary">{{ event.summary | safe }}</div>
-                                    {% if event.show_readmore and event.readmore %}
-                                        <div class="readmore article_readmore">
-                                            <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
-                                        </div>        
-                                    {% endif %}
 
-                                {% endfor %}
-                            </div>
-                        {% endfor %}            
+                        {% for articleplacement in placement.articleplacements %}
+
+                            {% if articleplacement.article.list_image.show_in_list == "top" %}
+                                <div class="article article_image_{{ articleplacement.article.list_image.show_in_list }}">
+                                    <div class="list_image">
+                                        <img src="{{ articleplacement.article.list_image.image.url }}">
+                                    </div>
+
+                                    <div class="list_textfields">
+                                        <div class="headline">
+                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                        </div>
+                                        <div class="subheadline">
+                                            {{ articleplacement.article.subheadline|safe }}
+                                        </div>
+                                        <div class="summary">
+                                            {{ articleplacement.article.summary|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% elif articleplacement.article.list_image.show_in_list == "side" %}
+                                <div class="article article_image_{{ articleplacement.article.list_image.show_in_list }}">
+                                    <div class="list_image">
+                                        <img src="{{ articleplacement.article.list_image.image.url }}">
+                                    </div>
+
+                                    <div class="list_textfields">
+                                        <div class="headline">
+                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                        </div>
+                                        <div class="subheadline">
+                                            {{ articleplacement.article.subheadline|safe }}
+                                        </div>
+                                        <div class="summary">
+                                            {{ articleplacement.article.summary|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% elif articleplacement.article.list_image.show_in_list == image_positions.belowcontent %}
+
+                                <div class="article article_image_{{ articleplacement.article.list_image.show_in_list }}">
+                                    <div class="list_image">
+                                        <img src="{{ articleplacement.article.list_image.image.url }}">
+                                    </div>
+
+                                    <div class="list_textfields">
+                                        <div class="headline">
+                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                        </div>
+                                        <div class="subheadline">
+                                            {{ articleplacement.article.subheadline|safe }}
+                                        </div>
+                                        <div class="summary">
+                                            {{ articleplacement.article.summary|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        {% endfor %}
+
                     </div>
+
+                {% elif placement.type == placement_types.eventlist %}}
                 {% endif %}
 
             {% endfor %}
-
-            {% if menus.1 %}
-                <div id="sidemenu">
-                    {% for item in menus.1.menuitem_set.all %}
-                        <a href="{{ item.link.url }}">{{ item.label }}</a>
-                    {% endfor %}
-                </div>
-            {% endif %}
         </div>
     </div>
+
+    {% if menus.1 %}
+        <div id="sidemenu">
+            {% for item in menus.1.menuitem_set.all %}
+                <a href="{{ item.link.url }}">{{ item.label }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
 
 {% endblock %}

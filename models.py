@@ -86,13 +86,6 @@ class Page(models.Model):
         help_text = 'If this is the home page.  Only one will be used as home page even if more than one is chosen'
     )
 
-    column_widths = models.CharField(
-        'column_widths',
-        max_length=30,
-        blank=True,
-        help_text='A comma separated list of relative column widths (ex: "2,1,1" for the first column being twice as wide as others)'
-    )
-
     def __str__(self):
         return '{}{}'.format( self.name, ' (Home)' if self.is_home else '' )
 
@@ -111,19 +104,26 @@ class Placement(models.Model):
         ( SHOW_YES, 'Yes'),
     ]
 
-    TYPE_ARTICLE = 0
-    TYPE_EVENTLIST = 1
-    TYPES = [
-        ( TYPE_ARTICLE, 'Article'),
-        ( TYPE_EVENTLIST, 'Event List')
+    TYPE_ARTICLE_LIST = 0
+    TYPE_EVENT_LIST = 1
+    TYPE_CHOICES = [
+        ( TYPE_ARTICLE_LIST, 'Article List'),
+        ( TYPE_EVENT_LIST, 'Event List')
+    ]
+
+    COLUMNWIDTH_NARROW = "narrow"
+    COLUMNWIDTH_WIDE = "wide"
+    COLUMNWIDTH_CHOICES = [
+        ( COLUMNWIDTH_NARROW, 'Narrow'),
+        ( COLUMNWIDTH_WIDE, 'Wide')
     ]
 
     type = models.IntegerField(
         'type',
-        choices=TYPES,
+        choices=TYPE_CHOICES,
         help_text = 'The type of placement'
     )
-    
+
     page = models.ForeignKey(
         Page,
         on_delete=models.SET_NULL,
@@ -131,6 +131,7 @@ class Placement(models.Model):
         blank=True,
         help_text = 'The page on which this placement should appear'
     )
+
     title=models.CharField(
         'title',
         max_length=100,
@@ -139,6 +140,14 @@ class Placement(models.Model):
     )
     place_number = models.IntegerField(
         help_text="A number to help determine where posts of this placement appear the template."
+    )
+    column_width = models.CharField(
+        'column width',
+        max_length=20,
+        blank=True,
+        null=True,
+        choices=COLUMNWIDTH_CHOICES,
+        help_text='The width of the column. The template may ingore this setting either completely or for certain media types'
     )
     show_title = models.IntegerField(
         'show title',
@@ -177,9 +186,11 @@ class Placement(models.Model):
     
 
 class Article(models.Model):
+
     DRAFT_STATUS_PUBLISHED = 7
     DRAFT_STATUS_ARCHIVED = 3
     DRAFT_STATUS_DRAFT = 0
+
     SHOW_NO = 0
     SHOW_YES = 1
     SHOW_COMPLY = 2
@@ -188,6 +199,7 @@ class Article(models.Model):
         (SHOW_YES, "Yes"),
         (SHOW_COMPLY, "Use Placement Choice")
     ]
+
     headline = models.CharField(
         'Headline',
         max_length=100,
@@ -314,6 +326,19 @@ class Article(models.Model):
         ordering = ('-sticky', '-sortable_date',)
 
 class ArticleImage(models.Model):
+
+    SHOW_NO = ""
+    SHOW_TOP = "top"
+    SHOW_SIDE = "side"
+    SHOW_BOTTOM = "bottom"
+
+    SHOW_CHOICES = [
+        (SHOW_NO, "No"),
+        (SHOW_TOP, "Above Content"),
+        (SHOW_SIDE, "Right of Content"),
+        (SHOW_BOTTOM, "Below Content"),
+    ]
+
     article = models.ForeignKey(
         Article,
         on_delete=models.CASCADE,
@@ -326,20 +351,21 @@ class ArticleImage(models.Model):
         on_delete=models.SET_NULL,
         help_text = 'The image to add to the article'
     )
-    shown_on_list = models.BooleanField(
-        'shown on list',
-        default=False,
-        help_text='If this image should be displayed with this article\'s headline and summary on a list of articles'
+    show_in_list = models.CharField(
+        'show in list view',
+        max_length=10,
+        blank=True,
+        choices=SHOW_CHOICES,
+        default=SHOW_NO,
+        help_text='If and where this image should be displayed with this article\'s headline and summary on a list of articles. *Note*: side images may be hidden or moved in narrow columns. Image display may be vary by theme.'
     )
-    shown_above_content = models.BooleanField(
-        'shown above content',
-        default=False,
-        help_text='If this image should be displayed above the content in a detail view of the articles'
-    )
-    shown_below_content = models.BooleanField(
-        'shown below content',
-        default=False,
-        help_text='If this image should be displayed below the content in a detail view of the articles'
+    show_in_detail = models.CharField(
+        'show in detail view',
+        max_length=10,
+        blank=True,
+        choices=SHOW_CHOICES,
+        default=SHOW_NO,
+        help_text='If and where this image should be displayed with in a detail view of this article. Image display may vary by theme'
     )
     is_featured = models.BooleanField(
         'is featured',
@@ -350,7 +376,7 @@ class ArticleImage(models.Model):
         "list image attributes",
         max_length=200,
         blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed list content',
+        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed list content.',
     )
     list_image_link = models.URLField(
         "list image link",
@@ -363,13 +389,13 @@ class ArticleImage(models.Model):
         blank=True,
         help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content',
     )
-
-    above_content_image_attributes = models.CharField(
-        "above content image attributes",
+    detail_image_attributes = models.CharField(
+        "detail image attributes",
         max_length=200,
         blank=True,
-        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed in a list',
-    )
+        default='',
+        help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed detail content',
+    ),
     above_content_image_link = models.URLField(
         "above content image link",
         blank=True,
@@ -459,7 +485,7 @@ class ICal(models.Model):
         Placement,
         null=True,
         on_delete=models.SET_NULL,
-        limit_choices_to={ 'type':Placement.TYPE_EVENTLIST },
+        limit_choices_to={ 'type':Placement.TYPE_EVENT_LIST },
         help_text='The placement which should display this ical'
     )
 

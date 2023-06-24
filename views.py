@@ -9,7 +9,7 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
                                        UpdateView,)
 from django.views.generic.list import ListView
 from django.template.response import TemplateResponse
-
+from django.utils.text import slugify
 
 from datetime import datetime, date, timedelta
 import icalendar
@@ -23,9 +23,13 @@ from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePl
 class TestError(Exception):
     pass
 
+
+def condensify( value ):
+    return slugify( value ).replace('-','')
+
 class HomePage(TemplateView):
 
-    template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['HOME_PAGE'])
 
     def get_context_data(self, **kwargs):
 
@@ -34,25 +38,26 @@ class HomePage(TemplateView):
         page = Page.objects.first()
         if 'page' in self.kwargs:
             page = Page.objects.get(pk=self.kwargs.get('page'))
-        
+
         if page is None:
             return context_data
 
-        column_widths = page.column_widths.split(',')
+        context_data['placement_types'] = {}
+        for placement_type in Placement.TYPE_CHOICES:
+            context_data['placement_types'][ condensify( placement_type[1] ) ] = placement_type[0]
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
-
-        collated_article_event_dates={}
 
         if do_preview:
             placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
         else:
             placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
 
+
         context_data['placements'] = []
 
-        for p, placement in enumerate( placements ):
-            
+        for placement in placements:
+
             if do_preview:
                 placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
                 placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
@@ -61,7 +66,7 @@ class HomePage(TemplateView):
                 placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
             for articleplacement in placement.articleplacements:
-                
+
                 if articleplacement.article.summary == '':
                     articleplacement.article.summary = articleplacement.article.content
                 if articleplacement.article.summary == '__none__':
@@ -72,7 +77,7 @@ class HomePage(TemplateView):
                     articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
 
                 if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
-                    articleplacement.article.show_readmore = True 
+                    articleplacement.article.show_readmore = True
                 else:
                     articleplacement.article.show_readmore = False
 
@@ -80,13 +85,90 @@ class HomePage(TemplateView):
                     articleplacement.article.show_author = placement.show_author
                 if articleplacement.article.show_updated == Article.SHOW_COMPLY:
                     articleplacement.article.show_updates = placement.show_created
-                
-                for articleimage in articleplacement.article.articleimage_set.all():
-                    if articleimage.shown_on_list:
-                        articleplacement.article.list_image = articleimage
 
-            placement.column_width = int( column_widths[p] ) if len(column_widths) > p and column_widths[p].isnumeric()  else 1
-            print('tp236if11', p, placement.column_width)
+                for articleimage in articleplacement.article.articleimage_set.all():
+                    if articleimage.show_in_list:
+                        articleplacement.article.list_image = articleimage
+                        articleplacement.article.list_image.show_in_list = articleimage.show_in_list
+            print('tp236mc13', placements)
+
+            context_data['placements'].append(placement)
+
+            event_start_date = date.today() + timedelta( days=placement.event_list_start)
+            event_end_date = event_start_date + timedelta( days=placement.events_list_length)
+
+            if do_preview:
+                article_event_dates = ArticleEventdate.objects.filter( whendate__gte=event_start_date ).filter( whendate__lte=event_end_date ).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
+            else:
+                article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+
+        return context_data
+
+class z_HomePage(TemplateView):
+
+    # template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
+
+    def get_context_data(self, **kwargs):
+
+        context_data = super().get_context_data(**kwargs)
+
+        page = Page.objects.first()
+        if 'page' in self.kwargs:
+            page = Page.objects.get(pk=self.kwargs.get('page'))
+
+        if page is None:
+            return context_data
+
+        do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
+
+        collated_article_event_dates={}
+
+        context_data['placement_types'] = {}
+        for placement_type in Placement.TYPE_CHOICES:
+            context_data['placement_types'][ slugify( placement_type[1] ) ] = placement_type[0]
+
+        if do_preview:
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
+        else:
+            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
+
+        context_data['placements'] = []
+
+        for p, placement in enumerate( placements ):
+
+            if do_preview:
+                placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
+                placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
+            else:
+                placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
+                placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+
+            for articleplacement in placement.articleplacements:
+
+                if articleplacement.article.summary == '':
+                    articleplacement.article.summary = articleplacement.article.content
+                if articleplacement.article.summary == '__none__':
+                    articleplacement.article.summary = ''
+                if articleplacement.article.content_format == 'markdown':
+                    articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
+                if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
+                    articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
+
+                if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
+                    articleplacement.article.show_readmore = True
+                else:
+                    articleplacement.article.show_readmore = False
+
+                if articleplacement.article.show_author == Article.SHOW_COMPLY:
+                    articleplacement.article.show_author = placement.show_author
+                if articleplacement.article.show_updated == Article.SHOW_COMPLY:
+                    articleplacement.article.show_updates = placement.show_created
+
+                for articleimage in articleplacement.article.articleimage_set.all():
+                    if articleimage.show_in_list:
+                        articleplacement.article.list_image = articleimage
+                        articleplacement.article.list_image.show_in_list = articleimage.show_in_list
+
             context_data['placements'].append(placement)
 
             event_start_date = date.today() + timedelta( days=placement.event_list_start)
@@ -125,7 +207,7 @@ class HomePage(TemplateView):
                     event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
 
                 if event.summary != event.content and event.readmore > '':
-                    event.show_readmore = True 
+                    event.show_readmore = True
                 else:
                     event.show_readmore = False
 
@@ -166,7 +248,7 @@ class HomePage(TemplateView):
                                     event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
 
                                 if event.summary != event.content and event.readmore > '':
-                                    event.show_readmore = True 
+                                    event.show_readmore = True
                                 else:
                                     event.show_readmore = False
 
@@ -224,7 +306,7 @@ class HomePage(TemplateView):
         context_data['menus'] = {}
         menus = Menu.objects.filter( page=page )
         for menu in menus:
-            context_data['menus'][ menu.menu_number ] = []        
+            context_data['menus'][ menu.menu_number ] = []
             for menu_item in menu.menuitem_set.all():
                 if menu_item.url.find('/article') == 0:
                     href = '{}refpage/{}/'.format( menu_item.url, page.pk )
@@ -232,14 +314,14 @@ class HomePage(TemplateView):
                     href = menu_item.url
                 context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
 
-        context_data['event_dates'] = collated_article_event_dates                                      
+        context_data['event_dates'] = collated_article_event_dates
 
         return context_data
-    
+
 
 class ArticleDetail(DetailView):
     model=Article
-    template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
+    # template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
     context_object_name = 'article'
 
     def get_context_data(self, **kwargs):
@@ -249,13 +331,12 @@ class ArticleDetail(DetailView):
         article = self.get_object()
 
         page = self.kwargs.get("page") if "page" in self.kwargs else None
-        print('tp236ig15', page)
 
         article_event_dates = {
             'past':[],
             'future':[],
             'only':False,
-        }   
+        }
         for article_event_date in article.articleeventdate_set.all():
             if article_event_date.whendate < date.today():
                 article_event_dates['past'].append(article_event_date.whendate)
@@ -273,11 +354,8 @@ class ArticleDetail(DetailView):
         context_data['event_dates'] = article_event_dates
 
         for articleimage in article.articleimage_set.all():
-            if articleimage.shown_above_content:
-                article.above_content_image = articleimage
-            if articleimage.shown_below_content:
-                article.below_content_image = articleimage
-
+            if articleimage.show_in_detail:
+                article.detail_image.show_in_detail = articleimage.show_in_detail
 
         if article.summary == '':
             article.summary = article.content
@@ -300,7 +378,7 @@ class ArticleDetail(DetailView):
         context_data['menus'] = {}
         menus = Menu.objects.filter( page=page )
         for menu in menus:
-            context_data['menus'][ menu.menu_number ] = []        
+            context_data['menus'][ menu.menu_number ] = []
             for menu_item in menu.menuitem_set.all():
                 if menu_item.url.find('/article') == 0:
                     href = '{}refpage/{}/'.format( menu_item.url, page )
@@ -342,6 +420,6 @@ def ical_detail_view(request, uuid):
 
                 break
 
-    return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )   
+    return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )
 
 
