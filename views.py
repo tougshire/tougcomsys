@@ -84,7 +84,7 @@ class HomePage(TemplateView):
                 if articleplacement.article.show_author == Article.SHOW_COMPLY:
                     articleplacement.article.show_author = placement.show_author
                 if articleplacement.article.show_updated == Article.SHOW_COMPLY:
-                    articleplacement.article.show_updates = placement.show_created
+                    articleplacement.article.show_updates = placement.show_created  
 
                 articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
                 articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
@@ -93,6 +93,8 @@ class HomePage(TemplateView):
                         articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
                     if articleimage.show_in_detail:
                         articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
+                    if not articleimage.list_image_link > '':
+                        articleimage.list_image_link = articleplacement.article.get_absolute_url()
 
             context_data['placements'].append(placement)
 

@@ -15,12 +15,16 @@
 
                         {% for articleplacement in placement.articleplacements %}
 
-                            {% for list_image in articleplacement.article.list_images.show_in_list == "top" %}
-                                <div class="article article_image_top">
-                                    <div class="list_image">
-                                        <a href="{{ articleplacement.article.image_link }}">
-                                            <img src="{{ articleplacement.article.list_image.image.url }}">
-                                        </a>
+                            {% if articleplacement.article.list_images.side %}
+                                <div class="article article_image_side">
+                                    <div class="list_images">
+                                        {% for list_image in articleplacement.article.list_images.side %}
+                                            <div class="list_image">
+                                                <a href="{{ list_image.list_image_link }}">
+                                                    <img src="{{ list_image.image.url }}">
+                                                </a>
+                                            </div>
+                                        {% endfor %}
                                     </div>
 
                                     <div class="list_textfields">
@@ -36,7 +40,7 @@
                                     </div>
                                 </div>
 
-                            {% elif articleplacement.article.list_image.show_in_list == "side" %}
+                            {% elif articleplacement.article.list_image.show_in_list == "xside" %}
                                 <div class="article article_image_{{ articleplacement.article.list_image.show_in_list }}">
                                     <div class="list_image">
                                         <img src="{{ articleplacement.article.list_image.image.url }}">

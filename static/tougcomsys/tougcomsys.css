@@ -76,6 +76,11 @@
         display:flex;
     }
 
+    div.list div.columns .column_wide div.article_image_side>div{
+        flex:1;
+    }
+
+
     div.list div.list_image {
         flex: 1;
         margin-left:1em;
