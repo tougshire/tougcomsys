@@ -15,10 +15,12 @@
 
                         {% for articleplacement in placement.articleplacements %}
 
-                            {% if articleplacement.article.list_image.show_in_list == "top" %}
-                                <div class="article article_image_{{ articleplacement.article.list_image.show_in_list }}">
+                            {% for list_image in articleplacement.article.list_images.show_in_list == "top" %}
+                                <div class="article article_image_top">
                                     <div class="list_image">
-                                        <img src="{{ articleplacement.article.list_image.image.url }}">
+                                        <a href="{{ articleplacement.article.image_link }}">
+                                            <img src="{{ articleplacement.article.list_image.image.url }}">
+                                        </a>
                                     </div>
 
                                     <div class="list_textfields">
