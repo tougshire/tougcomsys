@@ -29,7 +29,7 @@ def condensify( value ):
 
 class HomePage(TemplateView):
 
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['HOME_PAGE'])
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'homepage.html')
 
     def get_context_data(self, **kwargs):
 
@@ -86,11 +86,13 @@ class HomePage(TemplateView):
                 if articleplacement.article.show_updated == Article.SHOW_COMPLY:
                     articleplacement.article.show_updates = placement.show_created
 
+                articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
+                articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
                 for articleimage in articleplacement.article.articleimage_set.all():
                     if articleimage.show_in_list:
-                        articleplacement.article.list_image = articleimage
-                        articleplacement.article.list_image.show_in_list = articleimage.show_in_list
-            print('tp236mc13', placements)
+                        articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
+                    if articleimage.show_in_detail:
+                        articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
 
             context_data['placements'].append(placement)
 

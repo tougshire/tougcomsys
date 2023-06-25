@@ -335,7 +335,7 @@ class ArticleImage(models.Model):
     SHOW_CHOICES = [
         (SHOW_NO, "No"),
         (SHOW_TOP, "Above Content"),
-        (SHOW_SIDE, "Right of Content"),
+        (SHOW_SIDE, "Beside Content"),
         (SHOW_BOTTOM, "Below Content"),
     ]
 
