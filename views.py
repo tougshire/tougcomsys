@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from django.http import HttpResponse
 from django.db.models import Count, Q
 from django.shortcuts import render
@@ -23,9 +24,93 @@ from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePl
 class TestError(Exception):
     pass
 
+def events_from_icals( placement ):
+
+    start_date = date.today() + timedelta( days=placement.event_list_start )
+    end_date =   start_date + timedelta( days=placement.events_list_length )
+
+    event_date_dict = {}
+
+    for ical in placement.ical_set.all():
+    
+        url = ical.url
+
+        ical_string = requests.get(url).text
+        calendar = icalendar.Calendar.from_ical(ical_string)
+        ical_events = recurring_ical_events.of(calendar).between(start_date, end_date)
+
+
+        for ical_event in ical_events:
+
+            event_dict = {}
+            event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
+            if isinstance( ical_event['DTSTART'].dt, datetime ):
+                event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
+            event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
+            if isinstance( ical_event['DTEND'].dt, datetime ):
+                event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+
+            event_dict['headline'] = str(ical_event['summary'])
+            event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
+
+            isokey = event_dict['whendate'].isoformat()
+
+            if isokey in event_date_dict:
+                event_date_dict[ isokey ].append( event_dict )
+            else:
+                event_date_dict[ isokey ] = [ event_dict ]
+
+    return event_date_dict
+
+def events_from_articles( placement ):
+
+    start_date = date.today() + timedelta( days=placement.event_list_start )
+    end_date =   start_date + timedelta( days=placement.events_list_length )
+
+    event_date_dict = {}
+
+    for articleplacement in placement.articleplacement_set.all():
+    
+        for event_date in articleplacement.article.articleeventdate_set.all():
+
+            if event_date.whendate >= start_date and event_date.whendate <= end_date:
+
+                event_dict = {}
+                event_dict['whendate'] = event_date.whendate
+                event_dict['whentime'] = event_date.whentime
+                event_dict['endtime'] = event_date.whendate + timedelta( minutes=event_date.timelen )
+
+                event_dict['headline'] = articleplacement.article.headline
+                event_dict['content'] = articleplacement.article.content
+
+                isokey = event_dict['whendate'].isoformat()
+                if isokey in event_date_dict:
+                    event_date_dict[ isokey ].append( event_dict )
+                else:
+                    event_date_dict[ isokey ] = [ event_dict ]
+
+    return event_date_dict            
+
+def event_date_dict( placement ):
+
+    ical_dict = events_from_icals( placement )
+    article_dict = events_from_articles( placement )
+
+    new_dict = ical_dict
+
+    for key, events in article_dict.items():
+
+        if key in new_dict:
+            new_dict[ key ] = new_dict[ key ] + events 
+        else:
+            new_dict[ key ] = events
+
+    new_dict = dict(sorted( new_dict.items() ) )
+    return new_dict
 
 def condensify( value ):
     return slugify( value ).replace('-','')
+
 
 class HomePage(TemplateView):
 
@@ -58,339 +143,73 @@ class HomePage(TemplateView):
 
         for placement in placements:
 
-            if do_preview:
-                placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
-                placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
-            else:
-                placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
-                placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
-
-            for articleplacement in placement.articleplacements:
-
-                if articleplacement.article.summary == '':
-                    articleplacement.article.summary = articleplacement.article.content
-                if articleplacement.article.summary == '__none__':
-                    articleplacement.article.summary = ''
-                if articleplacement.article.content_format == 'markdown':
-                    articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
-                if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
-                    articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
-
-                if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
-                    articleplacement.article.show_readmore = True
+            if placement.type == Placement.TYPE_ARTICLE_LIST:
+                if do_preview:
+                    placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
+                    placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
                 else:
-                    articleplacement.article.show_readmore = False
+                    placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
+                    placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
-                if articleplacement.article.show_author == Article.SHOW_COMPLY:
-                    articleplacement.article.show_author = placement.show_author
-                if articleplacement.article.show_updated == Article.SHOW_COMPLY:
-                    articleplacement.article.show_updates = placement.show_created  
+                for articleplacement in placement.articleplacements:
 
-                articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
-                articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
-                for articleimage in articleplacement.article.articleimage_set.all():
-                    if articleimage.show_in_list:
-                        articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
-                    if articleimage.show_in_detail:
-                        articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
-                    if not articleimage.list_image_link > '':
-                        articleimage.list_image_link = articleplacement.article.get_absolute_url()
+                    if articleplacement.article.summary == '':
+                        articleplacement.article.summary = articleplacement.article.content
+                    if articleplacement.article.summary == '__none__':
+                        articleplacement.article.summary = ''
+                    if articleplacement.article.content_format == 'markdown':
+                        articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
+                    if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
+                        articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
+
+                    if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
+                        articleplacement.article.show_readmore = True
+                    else:
+                        articleplacement.article.show_readmore = False
+
+                    if articleplacement.article.show_author == Article.SHOW_COMPLY:
+                        articleplacement.article.show_author = placement.show_author
+                    if articleplacement.article.show_updated == Article.SHOW_COMPLY:
+                        articleplacement.article.show_updates = placement.show_created  
+
+                    articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
+                    articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
+                    for articleimage in articleplacement.article.articleimage_set.all():
+                        if articleimage.show_in_list:
+                            articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
+                        if articleimage.show_in_detail:
+                            articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
+                        if not articleimage.list_image_link > '':
+                            articleimage.list_image_link = articleplacement.article.get_absolute_url()
+
+            elif placement.type == Placement.TYPE_EVENT_LIST:
+
+                placement.events = event_date_dict( placement ) 
 
             context_data['placements'].append(placement)
-
-            event_start_date = date.today() + timedelta( days=placement.event_list_start)
-            event_end_date = event_start_date + timedelta( days=placement.events_list_length)
-
-            if do_preview:
-                article_event_dates = ArticleEventdate.objects.filter( whendate__gte=event_start_date ).filter( whendate__lte=event_end_date ).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
-            else:
-                article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
-
-        return context_data
-
-class z_HomePage(TemplateView):
-
-    # template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-
-    def get_context_data(self, **kwargs):
-
-        context_data = super().get_context_data(**kwargs)
-
-        page = Page.objects.first()
-        if 'page' in self.kwargs:
-            page = Page.objects.get(pk=self.kwargs.get('page'))
-
-        if page is None:
-            return context_data
-
-        do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
-
-        collated_article_event_dates={}
-
-        context_data['placement_types'] = {}
-        for placement_type in Placement.TYPE_CHOICES:
-            context_data['placement_types'][ slugify( placement_type[1] ) ] = placement_type[0]
-
-        if do_preview:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
-        else:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
-
-        context_data['placements'] = []
-
-        for p, placement in enumerate( placements ):
-
-            if do_preview:
-                placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
-                placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
-            else:
-                placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
-                placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
-
-            for articleplacement in placement.articleplacements:
-
-                if articleplacement.article.summary == '':
-                    articleplacement.article.summary = articleplacement.article.content
-                if articleplacement.article.summary == '__none__':
-                    articleplacement.article.summary = ''
-                if articleplacement.article.content_format == 'markdown':
-                    articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
-                if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
-                    articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
-
-                if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
-                    articleplacement.article.show_readmore = True
-                else:
-                    articleplacement.article.show_readmore = False
-
-                if articleplacement.article.show_author == Article.SHOW_COMPLY:
-                    articleplacement.article.show_author = placement.show_author
-                if articleplacement.article.show_updated == Article.SHOW_COMPLY:
-                    articleplacement.article.show_updates = placement.show_created
-
-                for articleimage in articleplacement.article.articleimage_set.all():
-                    if articleimage.show_in_list:
-                        articleplacement.article.list_image = articleimage
-                        articleplacement.article.list_image.show_in_list = articleimage.show_in_list
-
-            context_data['placements'].append(placement)
-
-            event_start_date = date.today() + timedelta( days=placement.event_list_start)
-            event_end_date = event_start_date + timedelta( days=placement.events_list_length)
-
-            if do_preview:
-                article_event_dates = ArticleEventdate.objects.filter( whendate__gte=event_start_date ).filter( whendate__lte=event_end_date ).filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
-            else:
-                article_event_dates = ArticleEventdate.objects.filter(whendate__gte=date.today()).filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
-
-            collated_article_event_dates={}
-
-            ical_calendars = []
-            ical_supressors = []
-
-            for ical in placement.ical_set.all():
-                ical_string = requests.get(ical.url).text
-                calendar = icalendar.Calendar.from_ical(ical_string)
-                ical_calendars.append( calendar )
-
-            for iscsupress in BlockedIcalEvent.objects.all():
-                ical_supressors.append(iscsupress.uuid)
-
-            for article_event_date in article_event_dates:
-
-                event = article_event_date.article
-                event.source_type = 'article'
-
-                if event.summary == '':
-                    event.summary = event.content
-                if event.summary == '__none__':
-                    event.summary = ''
-                if event.content_format == 'markdown':
-                    event.content = md.markdown(event.content, extensions=['markdown.extensions.fenced_code'])
-                if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
-                    event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
-
-                if event.summary != event.content and event.readmore > '':
-                    event.show_readmore = True
-                else:
-                    event.show_readmore = False
-
-                isokey = article_event_date.whendate.isoformat()
-                if isokey in collated_article_event_dates:
-                    collated_article_event_dates[isokey]['events'].append(event)
-                else:
-                    collated_article_event_dates[isokey]={}
-                    collated_article_event_dates[isokey]['whendate'] = article_event_date.whendate
-                    collated_article_event_dates[isokey]['events'] = [ event ]
-
-            for ical_calendar in ical_calendars:
-                for icalevent in recurring_ical_events.of(calendar).between( event_start_date, event_end_date ):
-
-                    if icalevent['uid'] in ical_supressors:
-
-                        try:
-                            blocked_event = BlockedIcalEvent.objects.get( uuid=icalevent['uid'] )
-                            try:
-                                date_start = icalevent["DTSTART"].dt.date()
-                            except AttributeError:
-                                date_start = icalevent["DTSTART"].dt
-
-                            event = blocked_event.display_instead
-
-                            if date_start >= date.today():
-                                isokey = date_start.isoformat()
-
-                                event.source_type = 'article'
-
-                                if event.summary == '':
-                                    event.summary = event.content
-                                if event.summary == '__none__':
-                                    event.summary = ''
-                                if event.content_format == 'markdown':
-                                    event.content = md.markdown(event.content, extensions=['markdown.extensions.fenced_code'])
-                                if event.summary_format == 'markdown' or ( event.summary_format == 'same' and event.content_format == 'markdown' ):
-                                    event.summary = md.markdown(event.summary, extensions=['markdown.extensions.fenced_code'])
-
-                                if event.summary != event.content and event.readmore > '':
-                                    event.show_readmore = True
-                                else:
-                                    event.show_readmore = False
-
-                                if isokey in collated_article_event_dates:
-                                    collated_article_event_dates[isokey]['events'].append(event)
-                                else:
-                                    collated_article_event_dates[isokey]={}
-                                    collated_article_event_dates[isokey]['whendate'] = date.fromisoformat( isokey )
-                                    collated_article_event_dates[isokey]['events'] = [ event ]
-
-                        except TestError:
-                            pass
-                        except AttributeError: #there is no display_instead
-                            pass
-
-                    else: # if icalevent["uid"] not in ical_supressors:
-
-                        try:
-                            date_start = icalevent["DTSTART"].dt.date()
-                        except AttributeError: #dt is already a date (instead of a datetime)
-                            date_start = icalevent["DTSTART"].dt
-
-                        if date_start >= date.today():
-                            isokey = date_start.isoformat()
-
-                            event_from_ical = {}
-                            event_from_ical['source_type'] = 'ical'
-                            event_from_ical['slug'] = ''
-                            if 'UID' in dict(icalevent.items()):
-                                event_from_ical['slug'] = str(dict(icalevent.items())['UID'])
-                            event_from_ical['headline'] = icalevent["SUMMARY"]
-                            event_from_ical['summary'] = ''
-                            if 'DESCRIPTION' in dict(icalevent.items()):
-                                event_from_ical['summary'] = dict(icalevent.items())['DESCRIPTION']
-
-                            if isokey in collated_article_event_dates:
-                                collated_article_event_dates[isokey]['events'].append(event_from_ical)
-                            else:
-                                collated_article_event_dates[isokey]={}
-                                collated_article_event_dates[isokey]['whendate'] = date_start
-                                collated_article_event_dates[isokey]['events'] = [ event_from_ical ]
-
-
-            sorted_collated_article_event_dates = (sorted( collated_article_event_dates.items() ))
-            collated_article_event_dates = {}
-
-            for event in sorted_collated_article_event_dates:
-                collated_article_event_dates[ event[0] ] = event[1]
-
-        if do_preview:
-            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
-        else:
-            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
-
-        context_data['menus'] = {}
-        menus = Menu.objects.filter( page=page )
-        for menu in menus:
-            context_data['menus'][ menu.menu_number ] = []
-            for menu_item in menu.menuitem_set.all():
-                if menu_item.url.find('/article') == 0:
-                    href = '{}refpage/{}/'.format( menu_item.url, page.pk )
-                else:
-                    href = menu_item.url
-                context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
-
-        context_data['event_dates'] = collated_article_event_dates
 
         return context_data
 
 
 class ArticleDetail(DetailView):
-    model=Article
-    # template_name = '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR'])
-    context_object_name = 'article'
+
+    model = Article
+
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article.html')
 
     def get_context_data(self, **kwargs):
 
         context_data = super().get_context_data(**kwargs)
 
-        article = self.get_object()
+        if self.object.content_format == 'markdown':
+            self.object.content = md.markdown(self.object.content, extensions=['markdown.extensions.fenced_code'])
 
-        page = self.kwargs.get("page") if "page" in self.kwargs else None
-
-        article_event_dates = {
-            'past':[],
-            'future':[],
-            'only':False,
-        }
-        for article_event_date in article.articleeventdate_set.all():
-            if article_event_date.whendate < date.today():
-                article_event_dates['past'].append(article_event_date.whendate)
-            else:
-                article_event_dates['future'].append(article_event_date.whendate)
-
-        if article_event_dates['future']:
-            article_event_dates['now_or_next'] = article_event_dates['future'].pop(0)
-        if article_event_dates['future']:
-            article_event_dates['next'] = article_event_dates['future'].pop(0)
-        if article_event_dates['past']:
-            article_event_dates['previous'] = article_event_dates['past'].pop()
-
-
-        context_data['event_dates'] = article_event_dates
-
-        for articleimage in article.articleimage_set.all():
+        self.object.list_images = { 'top':[], 'side':[], 'bottom':[] }
+        self.object.detail_images = { 'top':[], 'side':[], 'bottom':[] }
+        for articleimage in self.object.articleimage_set.all():
             if articleimage.show_in_detail:
-                article.detail_image.show_in_detail = articleimage.show_in_detail
-
-        if article.summary == '':
-            article.summary = article.content
-        if article.summary == '__none__':
-            article.summary = ''
-        if article.content_format == 'markdown':
-            article.content = md.markdown(article.content, extensions=['markdown.extensions.fenced_code'])
-        if article.summary_format == 'markdown' or ( article.summary_format == 'same' and article.content_format == 'markdown' ):
-            article.summary = md.markdown(article.summary, extensions=['markdown.extensions.fenced_code'])
-
-        context_data['article'] = article
-
-        do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
-
-        if do_preview:
-            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_DRAFT))
-        else:
-            menus=Menu.objects.filter(Q(draft_status=Menu.DRAFT_STATUS_PUBLISHED) | Q(draft_status=Menu.DRAFT_STATUS_NO_PREVIEW))
-
-        context_data['menus'] = {}
-        menus = Menu.objects.filter( page=page )
-        for menu in menus:
-            context_data['menus'][ menu.menu_number ] = []
-            for menu_item in menu.menuitem_set.all():
-                if menu_item.url.find('/article') == 0:
-                    href = '{}refpage/{}/'.format( menu_item.url, page )
-                else:
-                    href = menu_item.url
-                context_data['menus'][ menu.menu_number ].append( { 'href':href, 'label':menu_item.label } )
-
-
+                self.object.detail_images[ articleimage.show_in_detail  ].append( articleimage )
+  
         return context_data
 
 def get_ical_text(request, pk=0):
@@ -417,7 +236,7 @@ def ical_detail_view(request, uuid):
             if dict_items["UID"] == uuid:
 
                 event_from_ical['slug'] = ''
-                event_from_ical['headline'] = icalevent["SUMMARY"]
+                event_from_ical['headline'] = str(icalevent["SUMMARY"])
                 event_from_ical['summary'] = ''
                 if 'DESCRIPTION' in dict_items:
                     event_from_ical['content'] = dict_items['DESCRIPTION']

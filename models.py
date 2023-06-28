@@ -443,6 +443,7 @@ class ArticlePlacement(models.Model):
         ordering = ( 'article', )
 
 class ArticleEventdate(models.Model):
+
     article = models.ForeignKey(
         Article,
         on_delete=models.CASCADE,

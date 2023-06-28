@@ -1,74 +1,112 @@
 {% extends './_base.html' %}
 {% block content %}
 
-<div id="article_detail" class="detail">
-    <div class="headline article_headline">
-        <h2>
-            {{ article.headline }}
-        </h2>
-        {% if article.subheadline %}
-        <div class="subheadline article_subheadline">
-            <h3>
-                {{ article.subheadline }}
-            </h3>
+<div id="tougcomsys" class="detail">
+
+    {% if object.detail_images.side %}
+        <div class="article article_image_side">
+            <div class="detail_images">
+                {% for detail_image in object.detail_images.side %}
+                    <div class="detail_image">
+                        <a href="{{ detail_image.above_content_image_link }}">
+                            <img src="{{ detail_image.image.url }}">
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="detail_textfields">
+                <div class="headline">   
+                    <a href="{% url 'tougcomsys:article' slug=object.slug %}">                                          
+                        <h3>{{ object.headline|safe }}</h3>
+                    </a>
+                </div>
+                <div class="subheadline">
+                    {{ object.subheadline|safe }}
+                </div>
+                <div class="summary">
+                    {{ object.summary|safe }}
+                </div>
+            </div>
         </div>
-        {% endif %}
-    </div>
-    {% if article.above_content_image %}
-        <div class="content_image">
-            {% if article.above_content_image.above_content_image_link %}
-                <a href="{{ article.above_content_image.above_content_image_link }}" {{ article.above_content_image.above_content_link_attributes }}>
-                    <img class="content_image" src="{{ article.above_content_image.above_content_image.url }}" alt="{{ article.above_content_image.above_content_image.alt_text }}" {{ article.above_content_image.above_content_image_attributes|safe }}>     
-                </a>
-            {% else %}
-                <img class="content_image" src="{{ article.above_content_image.image.url }}" alt="{{ article.above_content_image.image.alt_text }}" {{ article.above_content_image.above_content_image_attributes|safe }}>    
-            {% endif %}
+
+    {% elif object.detail_images.top %}
+        <div class="article article_image_top">
+            <div class="detail_textfields">
+                <div class="headline">
+                    <h3>{{ object.headline|safe }}</h3>
+                </div>
+                <div class="subheadline">
+                    {{ object.subheadline|safe }}
+                </div>
+            </div>
+
+            <div class="detail_images">
+                {% for detail_image in object.detail_images.top %}
+                    <div class="detail_image">
+                        {% if detail_image.above_content_image_link %}
+                            <a href="{{ detail_image.above_content_image_link }}">
+                                <img src="{{ detail_image.image.url }}">
+                            </a>
+                        {% else %}
+                            <img src="{{ detail_image.image.url }}">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="detail_textfields">
+                <div class="content">
+                    {{ object.content|safe }}
+                </div>
+            </div>
         </div>
+
+    {% elif object.detail_images.bottom %}
+
+        <div class="article article_image_bottom">
+            <div class="detail_textfields">
+                <div class="headline">    
+                    <a href="{{ detail_image.below_content_image_link }}">
+                        <h3>{{ object.headline|safe }}</h3>
+                    </a>
+                </div>
+
+                <div class="subheadline">
+                    {{ object.subheadline|safe }}
+                </div>
+                <div class="summary">
+                    {{ object.summary|safe }}
+                </div>
+            </div>
+            <div class="detail_images">
+                {% for detail_image in object.detail_images.top %}
+                    <div class="detail_image">
+                        <a href="{{ detail_image.detail_image_link }}">
+                            <img src="{{ detail_image.image.url }}">
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    {% else %}
+        <div class="article">
+            <div class="detail_textfields">
+                <div class="headline">
+                    <h3>{{ object.headline|safe }}</h3>
+                </div>
+
+                <div class="subheadline">
+                    {{ object.subheadline|safe }}
+                </div>
+                <div class="summary">
+                    {{ object.summary|safe }}
+                </div>
+            </div>
+
+        </div>
+
     {% endif %}
-    <div class="event_dates">
-        {% if article.descriptive_date %}
-            <div class="event_date event_date_now_or_next" >{{ article.descriptive_date }}</div>
-        {% else %}
-            {% if event_dates.previous %}
-                <div class="event_date event_date_previous" >{{ event_dates.previous }}</div>
-            {% endif %}
-            {% if event_dates.now_or_next %}
-                <div class="event_date event_date_now_or_next" >{{ event_dates.now_or_next }}</div>
-            {% endif %}
-            {% if event_dates.next %}
-                <div class="event_date event_date_next" >{{ event_dates.next }}</div>
-            {% endif %}
-        {% endif %}
-    </div>
-    {% if article.show_author or article.show_created %}
-        <div class="meta article_meta">
-            {% if article.show_author %}
-                {{ article.author|default_if_none:'&nbsp;' }}
-            {% endif %}
-            {% if article.show_author and article.show_created %} - {% endif %}
-            {% if article.show_created %} 
-                {{ article.created|default_if_none:'&nbsp;' }} 
-            {% endif %}
-        </div>
-    {% endif %}
-    <div class="content article_content">
-        {{ article.content | safe }} 
-    </div>
-    {% if article.below_content_image %}
-        <div class="content_image">
-            {% if article.below_content_image.below_content_image_link %}
-                <a href="{{ article.below_content_image.below_content_image_link }}" {{ article.below_content_image.below_content_link_attributes }}>
-                    <img class="content_image" src="{{ article.below_content_image.below_content_image.url }}" alt="{{ article.below_content_image.below_content_image.alt_text }}" {{ article.below_content_image.below_content_image_attributes|safe }}>     
-                </a>
-            {% else %}
-                <img class="content_image" src="{{ article.below_content_image.image.url }}" alt="{{ article.below_content_image.image.alt_text }}" {{ article.below_content_image.below_content_image_attributes|safe }}>    
-            {% endif %}
-        </div>
-    {% endif %}
-    <div class="event_dates event_dates_stacked">
-        {% for event_date in article.eventdate_set.all %}
-            <div class="event_date">{{ event_date.whenday }}</div>
-        {% endfor %}
-</div>
 
 {% endblock %}
