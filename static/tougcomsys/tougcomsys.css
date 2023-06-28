@@ -1,6 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
 
+.font_size_xs {
+    font-size:60%;
+}
+.font_size_s {
+    font-size:80%;
+}
+.font_size_m {
+    font-size:100%;
+}
+.font_size_l {
+    font-size:120%;
+}
+.font_size_xl {
+    font-size:150%;
+}
 
 @media only screen and (min-width: 600px) {
     body {

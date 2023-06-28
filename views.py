@@ -50,7 +50,8 @@ def events_from_icals( placement ):
             if isinstance( ical_event['DTEND'].dt, datetime ):
                 event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
 
-            event_dict['headline'] = str(ical_event['summary'])
+            event_dict['uid'] = ical_event['UID'] if ical_event.has_key('UID') else ''
+            event_dict['headline'] = str(ical_event['SUMMARY'])
             event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
 
             isokey = event_dict['whendate'].isoformat()
@@ -79,7 +80,7 @@ def events_from_articles( placement ):
                 event_dict['whendate'] = event_date.whendate
                 event_dict['whentime'] = event_date.whentime
                 event_dict['endtime'] = event_date.whendate + timedelta( minutes=event_date.timelen )
-
+                event_dict['slug'] = articleplacement.article.slug
                 event_dict['headline'] = articleplacement.article.headline
                 event_dict['content'] = articleplacement.article.content
 
@@ -130,6 +131,10 @@ class HomePage(TemplateView):
         context_data['placement_types'] = {}
         for placement_type in Placement.TYPE_CHOICES:
             context_data['placement_types'][ condensify( placement_type[1] ) ] = placement_type[0]
+
+        context_data['font_sizes'] = {}
+        for font_size in Placement.FONT_SIZE_CHOICES:
+            context_data['font_sizes'][ condensify( font_size[1] ) ] = font_size[0]
 
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 

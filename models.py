@@ -118,12 +118,23 @@ class Placement(models.Model):
         ( COLUMNWIDTH_WIDE, 'Wide')
     ]
 
+    FONT_SIZE_XLARGE = "xl"
+    FONT_SIZE_LARGE = "l"
+    FONT_SIZE_MEDIUM = "m"
+    FONT_SIZE_SMALL = 's'
+    FONT_SIZE_XSMALL = 'xs'
+    FONT_SIZE_CHOICES = (
+        (FONT_SIZE_XLARGE, "XL"),
+        (FONT_SIZE_LARGE, "L"),
+        (FONT_SIZE_MEDIUM, "M"),
+        (FONT_SIZE_SMALL, 'S'),
+        (FONT_SIZE_XSMALL, 'XS'),
+    )
     type = models.IntegerField(
         'type',
         choices=TYPE_CHOICES,
         help_text = 'The type of placement'
     )
-
     page = models.ForeignKey(
         Page,
         on_delete=models.SET_NULL,
@@ -131,7 +142,6 @@ class Placement(models.Model):
         blank=True,
         help_text = 'The page on which this placement should appear'
     )
-
     title=models.CharField(
         'title',
         max_length=100,
@@ -148,6 +158,13 @@ class Placement(models.Model):
         null=True,
         choices=COLUMNWIDTH_CHOICES,
         help_text='The width of the column. The template may ingore this setting either completely or for certain media types'
+    )
+    font_size = models.CharField(
+        'font size',
+        default='m',
+        choices=FONT_SIZE_CHOICES,
+        max_length=8,
+        help_text='The relative font size. The template may ingore this setting either completely or for certain media types'
     )
     show_title = models.IntegerField(
         'show title',

@@ -8,7 +8,7 @@
 
                 {% if placement.type == placement_types.articlelist %}
 
-                    <div class="column column_{{ placement.column_width }}">
+                    <div class="column column_{{ placement.column_width }} font_size_{{ placement.font_size }}">
                         {% if placement.show_title %}
                             <h2>{{ placement.title }}</h2>
                         {% endif %}
@@ -131,7 +131,7 @@
 
                 {% elif placement.type == placement_types.eventlist %}}
 
-                    <div class="column column_{{ placement.column_width }}">
+                    <div class="column column_{{ placement.column_width }} font_size_{{ placement.font_size }}">
                         {% if placement.show_title %}
                             <h2>{{ placement.title }}</h2>
                         {% endif %}
@@ -145,10 +145,17 @@
                             {% for event in events %}
                                 <div class="article">
                                     <div class="list_textfields">
-                                        <div class="headline">    
-                                                <h3>tp236s745{{ event.headline|safe }}</h3>
+                                        {% if event.slug %}
+                                            <a href="{% url 'tougcomsys:article' event.slug %}">
+                                                <div class="headline">    
+                                                        <h3 >{{ event.headline|safe }}</h3>
+                                                </div>
+                                            </a>
+                                        {% else %}
+                                            <div class="headline">    
+                                                <h3 >{{ event.headline|safe }}</h3>
                                         </div>
-
+                                        {% endif %}
                                         <div class="subheadline">
                                             {{ event.summary|safe }}
                                         </div>
