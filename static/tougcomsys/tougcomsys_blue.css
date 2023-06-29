@@ -1,8 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 @import url("https://fonts.googleapis.com/css2?family=Merriweather&display=swap");
 
-body {
-    border-color:black;
+
+#head {
+    border-top: 1px solid blue;
+    border-bottom: 1px solid blue;
+
 }
 
 #footer {

@@ -558,11 +558,6 @@ class Menu(models.Model):
         max_length=30,
         help_text='The name of the menu'
     )
-    pagex = models.IntegerField(
-        'page',
-        default=0,
-        help_text='The page on which this menu item should appear'
-    )
     page = models.ForeignKey(
         Page,
         on_delete=models.SET_NULL,

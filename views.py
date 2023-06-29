@@ -166,6 +166,11 @@ class HomePage(TemplateView):
 
         if page is None:
             return context_data
+ 
+        context_data['menus'] = []
+        for menuobject in Menu.objects.filter(page=page):
+            menu = [{'href':menuitem.url, 'label':menuitem.label} for menuitem in menuobject.menuitem_set.all() ]
+            context_data['menus'].append(menu)
 
         context_data['placement_types'] = {}
         for placement_type in Placement.TYPE_CHOICES:
