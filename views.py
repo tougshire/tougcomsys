@@ -31,6 +31,10 @@ def events_from_icals( placement ):
 
     event_date_dict = {}
 
+    blocked_ical_events = BlockedIcalEvent.objects.all()
+    blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
+    print('tp236sj41', blocked_ical_uids)
+
     for ical in placement.ical_set.all():
     
         url = ical.url
@@ -39,22 +43,57 @@ def events_from_icals( placement ):
         calendar = icalendar.Calendar.from_ical(ical_string)
         ical_events = recurring_ical_events.of(calendar).between(start_date, end_date)
 
-
         for ical_event in ical_events:
 
             event_dict = {}
-            event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
-            if isinstance( ical_event['DTSTART'].dt, datetime ):
-                event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
-            event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
-            if isinstance( ical_event['DTEND'].dt, datetime ):
-                event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+            event_dict['uid'] = str(ical_event['UID']) if ical_event.has_key('UID') else ''
+            if not event_dict['uid'] > '':
+                continue
+            print('tp236si58', event_dict)
 
-            event_dict['uid'] = ical_event['UID'] if ical_event.has_key('UID') else ''
-            event_dict['headline'] = str(ical_event['SUMMARY'])
-            event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
 
-            isokey = event_dict['whendate'].isoformat()
+            if event_dict['uid'] in blocked_ical_uids:
+                print('tp236si57')
+
+                blocks = blocked_ical_events.filter( uuid=event_dict['uid'] )
+
+                if blocks.exists():
+                    block = blocks.first()
+
+                    print('tp236si56', block)
+
+                    article = block.display_instead
+                    if not article:
+                        continue
+
+                    event_dict['slug'] = article.slug
+
+                    event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
+                    if isinstance( ical_event['DTSTART'].dt, datetime ):
+                        event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
+                    event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
+                    if isinstance( ical_event['DTEND'].dt, datetime ):
+                        event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+
+                    event_dict['headline'] = article.headline 
+                    event_dict['content'] = article.content
+
+                    isokey = event_dict['whendate'].isoformat()
+
+            else:
+
+                event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
+                if isinstance( ical_event['DTSTART'].dt, datetime ):
+                    event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
+                event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
+                if isinstance( ical_event['DTEND'].dt, datetime ):
+                    event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+
+                 
+                event_dict['headline'] = str(ical_event['SUMMARY'])
+                event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
+
+                isokey = event_dict['whendate'].isoformat()
 
             if isokey in event_date_dict:
                 event_date_dict[ isokey ].append( event_dict )
