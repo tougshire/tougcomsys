@@ -151,6 +151,12 @@ def event_date_dict( placement ):
 def condensify( value ):
     return slugify( value ).replace('-','')
 
+def get_menu_items( page ):
+    menus = []
+    for menuobject in Menu.objects.filter( page=page ):
+        menu = [{'href':menuitem.url, 'label':menuitem.label} for menuitem in menuobject.menuitem_set.all() ]
+        menus.append(menu)
+    return menus
 
 class HomePage(TemplateView):
 
@@ -167,10 +173,7 @@ class HomePage(TemplateView):
         if page is None:
             return context_data
  
-        context_data['menus'] = []
-        for menuobject in Menu.objects.filter(page=page):
-            menu = [{'href':menuitem.url, 'label':menuitem.label} for menuitem in menuobject.menuitem_set.all() ]
-            context_data['menus'].append(menu)
+        context_data['menus'] = get_menu_items( page )
 
         context_data['placement_types'] = {}
         for placement_type in Placement.TYPE_CHOICES:
@@ -250,16 +253,32 @@ class ArticleDetail(DetailView):
 
         context_data = super().get_context_data(**kwargs)
 
+        page = Page.objects.first()
+        if 'page' in self.kwargs:
+            page = Page.objects.get(pk=self.kwargs.get('page'))
+
+        if page is None:
+            return context_data
+ 
+        context_data['menus'] = get_menu_items( page )
+
         if self.object.content_format == 'markdown':
             self.object.content = md.markdown(self.object.content, extensions=['markdown.extensions.fenced_code'])
+        if self.object.show_author == Article.SHOW_COMPLY:
+            self.object.show_author = True
+        if self.object.show_updated == Article.SHOW_COMPLY:
+            self.object.show_updates = True  
 
-        self.object.list_images = { 'top':[], 'side':[], 'bottom':[] }
         self.object.detail_images = { 'top':[], 'side':[], 'bottom':[] }
+
         for articleimage in self.object.articleimage_set.all():
             if articleimage.show_in_detail:
-                self.object.detail_images[ articleimage.show_in_detail  ].append( articleimage )
-  
+                self.object.detail_images[ articleimage.show_in_list  ].append( articleimage )
+            if not articleimage.detail_image_link > '':
+                articleimage.detail_image_link = self.object.get_absolute_url()
+
         return context_data
+
 
 def get_ical_text(request, pk=0):
     if not pk > 0:
