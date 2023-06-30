@@ -398,14 +398,26 @@ class ArticleImage(models.Model):
     list_image_link = models.URLField(
         "list image link",
         blank=True,
-        help_text='The link for the image if/when displayed list content',
+        help_text='The link for the image if/when displayed list content ( leave blank for default behavior )',
     )
     list_image_link_attributes = models.CharField(
         "list image link attributes",
         max_length=70,
         blank=True,
-        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content',
+        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content ( leave blank for default behavior )',
     )
+    detail_image_link = models.URLField(
+        "detail image link",
+        blank=True,
+        help_text='The link for the image if/when displayed detail content ( leave blank for default behavior )',
+    )
+    detail_image_link_attributes = models.CharField(
+        "detail image link attributes",
+        max_length=70,
+        blank=True,
+        help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed detail content ( leave blank for default behavior )',
+    )
+
     detail_image_attributes = models.CharField(
         "detail image attributes",
         max_length=200,

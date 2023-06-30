@@ -1,112 +1,126 @@
 {% extends './_base.html' %}
+
 {% block content %}
+    <div id="tougcomsys" class="detail">
 
-<div id="tougcomsys" class="detail">
-
-    {% if object.detail_images.side %}
-        <div class="article article_image_side">
-            <div class="detail_images">
-                {% for detail_image in object.detail_images.side %}
-                    <div class="detail_image">
-                        <a href="{{ detail_image.above_content_image_link }}">
-                            <img src="{{ detail_image.image.url }}">
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <div class="detail_textfields">
-                <div class="headline">   
-                    <a href="{% url 'tougcomsys:article' slug=object.slug %}">                                          
-                        <h3>{{ object.headline|safe }}</h3>
-                    </a>
-                </div>
-                <div class="subheadline">
-                    {{ object.subheadline|safe }}
-                </div>
-                <div class="summary">
-                    {{ object.summary|safe }}
-                </div>
-            </div>
-        </div>
-
-    {% elif object.detail_images.top %}
-        <div class="article article_image_top">
-            <div class="detail_textfields">
-                <div class="headline">
-                    <h3>{{ object.headline|safe }}</h3>
-                </div>
-                <div class="subheadline">
-                    {{ object.subheadline|safe }}
-                </div>
-            </div>
-
-            <div class="detail_images">
-                {% for detail_image in object.detail_images.top %}
-                    <div class="detail_image">
-                        {% if detail_image.above_content_image_link %}
-                            <a href="{{ detail_image.above_content_image_link }}">
-                                <img src="{{ detail_image.image.url }}">
+        {% if article.list_images.side %} tp236t930
+            <div class="article article_image_side">
+                <div class="list_images">
+                    {% for list_image in article.list_images.side %}
+                        <div class="list_image">
+                            <a href="{{ list_image.list_image_link }}">
+                                <img src="{{ list_image.image.url }}">
                             </a>
-                        {% else %}
-                            <img src="{{ detail_image.image.url }}">
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-
-            <div class="detail_textfields">
-                <div class="content">
-                    {{ object.content|safe }}
-                </div>
-            </div>
-        </div>
-
-    {% elif object.detail_images.bottom %}
-
-        <div class="article article_image_bottom">
-            <div class="detail_textfields">
-                <div class="headline">    
-                    <a href="{{ detail_image.below_content_image_link }}">
-                        <h3>{{ object.headline|safe }}</h3>
-                    </a>
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <div class="subheadline">
-                    {{ object.subheadline|safe }}
-                </div>
-                <div class="summary">
-                    {{ object.summary|safe }}
-                </div>
-            </div>
-            <div class="detail_images">
-                {% for detail_image in object.detail_images.top %}
-                    <div class="detail_image">
-                        <a href="{{ detail_image.detail_image_link }}">
-                            <img src="{{ detail_image.image.url }}">
+                <div class="list_textfields">
+                    <div class="headline">   
+                        <a href="{% url 'tougcomsys:article' slug=article.slug %}">                                          
+                            <h3>{{ article.headline|safe }}</h3>
                         </a>
                     </div>
-                {% endfor %}
-            </div>
-
-        </div>
-    {% else %}
-        <div class="article">
-            <div class="detail_textfields">
-                <div class="headline">
-                    <h3>{{ object.headline|safe }}</h3>
-                </div>
-
-                <div class="subheadline">
-                    {{ object.subheadline|safe }}
-                </div>
-                <div class="summary">
-                    {{ object.summary|safe }}
+                    <div class="subheadline">
+                        {{ article.subheadline|safe }}
+                    </div>
+                    <div class="summary">
+                        {{ article.summary|safe }}
+                    </div>
                 </div>
             </div>
 
-        </div>
+        {% elif article.list_images.top %}
 
+            <div class="article article_image_top">
+                <div class="list_textfields">
+                    <div class="headline">
+                        <a href="{% url 'tougcomsys:article' article.slug %}">                                          
+                            <h3>{{ article.headline|safe }}</h3>
+                        </a>
+                    </div>
+                    <div class="subheadline">
+                        {{ article.subheadline|safe }}
+                    </div>
+                </div>
+
+                <div class="list_images">
+                    {% for list_image in article.list_images.top %}
+                        <div class="list_image">
+                            <a href="{{ list_image.list_image_link }}">
+                                <img src="{{ list_image.image.url }}">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="list_textfields">
+                    <div class="summary">
+                        {{ article.summary|safe }}
+                    </div>
+                </div>
+            </div>
+
+        {% elif article.list_image.show_in_list == image_positions.belowcontent %}
+
+            <div class="article article_image_bottom">
+                <div class="list_textfields">
+                    <div class="headline">    
+                        <a href="{% url 'tougcomsys:article' article.slug %}">                                          
+                            <h3>{{ article.headline|safe }}</h3>
+                        </a>
+                    </div>
+
+                    <div class="subheadline">
+                        {{ article.subheadline|safe }}
+                    </div>
+                    <div class="summary">
+                        {{ article.summary|safe }}
+                    </div>
+                </div>
+                <div class="list_images">
+                    {% for list_image in article.list_images.top %}
+                        <div class="list_image">
+                            <a href="{{ list_image.list_image_link }}">
+                                <img src="{{ list_image.image.url }}">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="article">
+                <div class="list_textfields">
+                    <div class="headline">    
+                        <a href="{% url 'tougcomsys:article' article.slug %}">                                          
+                            <h3>{{ article.headline|safe }}</h3>
+                        </a>
+                    </div>
+
+                    <div class="subheadline">
+                        {{ article.subheadline|safe }}
+                    </div>
+                    <div class="summary">
+                        {{ article.summary|safe }}
+                    </div>
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if menus.1 %}
+        <div id="sidemenu">
+            {% for item in menus.1.menuitem_set.all %}
+                <a href="{{ item.link.url }}">{{ item.label }}</a>
+            {% endfor %}
+        </div>
     {% endif %}
 
 {% endblock %}

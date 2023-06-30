@@ -246,6 +246,7 @@ class HomePage(TemplateView):
 class ArticleDetail(DetailView):
 
     model = Article
+    context_object_name = 'article'
 
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article.html')
 
@@ -278,7 +279,6 @@ class ArticleDetail(DetailView):
                 articleimage.detail_image_link = self.object.get_absolute_url()
 
         return context_data
-
 
 def get_ical_text(request, pk=0):
     if not pk > 0:
