@@ -2,20 +2,19 @@
 
 {% block content %}
     <div id="tougcomsys" class="detail">
-
-        {% if article.list_images.side %} tp236t930
+        {% if article.detail_images.side %}tp2371626
             <div class="article article_image_side">
-                <div class="list_images">
-                    {% for list_image in article.list_images.side %}
-                        <div class="list_image">
-                            <a href="{{ list_image.list_image_link }}">
-                                <img src="{{ list_image.image.url }}">
+                <div class="detail_images">
+                    {% for detail_image in article.detail_images.side %}
+                        <div class="detail_image">
+                            <a href="{{ detail_image.detail_image_link }}">
+                                <img src="{{ detail_image.image.url }}">
                             </a>
                         </div>
                     {% endfor %}
                 </div>
 
-                <div class="list_textfields">
+                <div class="detail_textfields">
                     <div class="headline">   
                         <a href="{% url 'tougcomsys:article' slug=article.slug %}">                                          
                             <h3>{{ article.headline|safe }}</h3>
@@ -30,10 +29,10 @@
                 </div>
             </div>
 
-        {% elif article.list_images.top %}
+        {% elif article.detail_images.top %}
 
             <div class="article article_image_top">
-                <div class="list_textfields">
+                <div class="detail_textfields">
                     <div class="headline">
                         <a href="{% url 'tougcomsys:article' article.slug %}">                                          
                             <h3>{{ article.headline|safe }}</h3>
@@ -44,27 +43,27 @@
                     </div>
                 </div>
 
-                <div class="list_images">
-                    {% for list_image in article.list_images.top %}
-                        <div class="list_image">
-                            <a href="{{ list_image.list_image_link }}">
-                                <img src="{{ list_image.image.url }}">
+                <div class="detail_images">
+                    {% for detail_image in article.detail_images.top %}
+                        <div class="detail_image">
+                            <a href="{{ detail_image.detail_image_link }}">
+                                <img src="{{ detail_image.image.url }}">
                             </a>
                         </div>
                     {% endfor %}
                 </div>
 
-                <div class="list_textfields">
+                <div class="detail_textfields">
                     <div class="summary">
                         {{ article.summary|safe }}
                     </div>
                 </div>
             </div>
 
-        {% elif article.list_image.show_in_list == image_positions.belowcontent %}
+        {% elif article.detail_image.show_in_detail == image_positions.belowcontent %}
 
             <div class="article article_image_bottom">
-                <div class="list_textfields">
+                <div class="detail_textfields">
                     <div class="headline">    
                         <a href="{% url 'tougcomsys:article' article.slug %}">                                          
                             <h3>{{ article.headline|safe }}</h3>
@@ -78,11 +77,11 @@
                         {{ article.summary|safe }}
                     </div>
                 </div>
-                <div class="list_images">
-                    {% for list_image in article.list_images.top %}
-                        <div class="list_image">
-                            <a href="{{ list_image.list_image_link }}">
-                                <img src="{{ list_image.image.url }}">
+                <div class="detail_images">
+                    {% for detail_image in article.detail_images.top %}
+                        <div class="detail_image">
+                            <a href="{{ detail_image.detail_image_link }}">
+                                <img src="{{ detail_image.image.url }}">
                             </a>
                         </div>
                     {% endfor %}
@@ -93,7 +92,7 @@
         {% else %}
 
             <div class="article">
-                <div class="list_textfields">
+                <div class="detail_textfields">
                     <div class="headline">    
                         <a href="{% url 'tougcomsys:article' article.slug %}">                                          
                             <h3>{{ article.headline|safe }}</h3>

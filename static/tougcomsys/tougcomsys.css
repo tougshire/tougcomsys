@@ -16,167 +16,67 @@
 .font_size_xl {
     font-size:150%;
 }
-
-@media only screen and (min-width: 600px) {
     
-    #footer {
-        text-align:center;
-    }
+#footer {
+    text-align:center;
+}
 
-    #head {
-        width:80%;
-        margin: 0 auto;
-        text-align:center;
-    }
+#head {
+    width:80%;
+    margin: 0 auto;
+    text-align:center;
+}
 
-    #head img {
-        width:65%;
-    }
+#head img {
+    width:65%;
+}
 
-    #menubar {
-        width:100%;
-        display:flex;
-        justify-content: space-evenly;
-        text-align: center;
-        border-top: 2px solid;
-        border-bottom: 2px solid;
-        margin: auto auto 1ex auto;
-        padding: .5ex .5ex;
-    }
-    
-    #menubar a {
-        display:block;
-        text-decoration: none;
-    }
+#menubar {
+    width:100%;
+    display:flex;
+    justify-content: space-evenly;
+    text-align: center;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+    margin: auto auto 1ex auto;
+    padding: .5ex .5ex;
+}
 
-    #sidemenu {
-        border-left: 2px solid;
-        margin: auto 1exauto  auto;
-        padding: .5ex .5ex;
+#menubar a {
+    display:block;
+    text-decoration: none;
+}
 
-    }
-    #sidemenu a {
-        display:block;
-        text-decoration: none;
-    }
+#sidemenu {
+    border-left: 2px solid;
+    margin: auto 1exauto  auto;
+    padding: .5ex .5ex;
 
-    div.detail div.article:first-child {
-        border-left: none;
-    }
+}
+#sidemenu a {
+    display:block;
+    text-decoration: none;
+}
 
-    div.detail div.article {
-        display:flex;
-    }
+div.columns{
+    display:flex;
+}
 
-    div.detail div.article_narrow  {
-        flex: 1;
-        border-left: 1px solid;
-        padding: .5em 1em 1em 1em;
-    }
+div.columns div.column_narrow {
+    flex: 1;
+}
 
-    div.detail div.article_wide  {
-        flex: 2;
-        border-left: 1px solid;
-        padding: .5em 1em 1em 1em;
-    }
+div.columns div.column_narrow img {
+    width:80%;
+    margin: 0 auto;
+}
 
-    div.detail div.headline a {
-        text-decoration: none;
-    }
+div.columns div.column_wide {
+    flex: 2;
+}
 
-    div.detail div.article .article_wide div.article_image_side {
-        display:flex;
-    }
-
-    div.detail div.article .article_wide div.article_image_side > div{
-        flex:1;
-    }
-
-    div.detail div.detail_image {
-        flex: 1;
-        margin-left:1em;
-        margin-right:1em;
-
-    }
-    
-    div.detail div.detail_image img {
-        width:100%;
-    }
-
-    div.detail div.detail_textfields {
-        flex: 1;
-        margin-left:1em;
-        margin-right:1em;
-    }
-
-    div.detail div.detail_textfields h3 {
-        margin-top:0;
-        font-family: 'Cormorant Garamond', serif;
-        font-size:3em;
-    }
-
-    div.list div.column:first-child {
-        border-left: 1px solid;
-    }
-
-    div.list div.columns {
-        display:flex;
-    }
-
-    div.list div.columns .article {
-        margin-bottom:3ex;
-    }
-
-    div.list div.columns div.column  {
-        border-left: 1px solid;
-        padding: .5em 1em 1em 1em;
-    }
-
-    div.list div.columns div.column:first-child  {
-        border-left: none;
-    }
-
-    div.list div.columns div.column_narrow  {
-        flex: 1;
-    }
-
-    div.list div.columns div.column_wide  {
-        flex: 2;
-    }
-
-    div.list div.columns div.article div.headline a {
-        text-decoration: none;
-    }
-
-    div.list div.columns .column_wide div.article_image_side {
-        display:flex;
-    }
-
-    div.list div.columns .column_wide div.article_image_side > div{
-        flex:1;
-    }
-
-    div.list div.list_image {
-        flex: 1;
-        margin-left:1em;
-        margin-right:1em;
-
-    }
-    
-    div.list div.list_image img {
-        width:100%;
-    }
-
-    div.list div.list_textfields {
-        flex: 1;
-        margin-left:1em;
-        margin-right:1em;
-    }
-
-    div.list div.list_textfields h3 {
-        margin-top:0;
-        font-family: 'Cormorant Garamond', serif;
-        font-size:3em;
-    }
-   
+div.column_wide img {
+    float:right;
+    width:40%;
+    margin-right:10%;
 }
