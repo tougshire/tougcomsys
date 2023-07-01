@@ -43,16 +43,8 @@ div.detail div.headline h3 a {
     color:#00a7e0;
 }
 
-div.list div.columns {
-}
-
-div.list #columns .column  {
-    border-color: #cdf;
-}
-
-
-div.list div.article, div.list div.event_date {
-    border-color: #00a7e0;
+div.list div.columns div.column  {
+    border-left-color:  blue ;
 }
 
 div.list div.article div.headline h2 {

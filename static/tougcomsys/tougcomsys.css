@@ -115,8 +115,8 @@
         font-size:3em;
     }
 
-    div.list div.columns:first-child {
-        border-left: none;
+    div.list div.column:first-child {
+        border-left: 1px solid;
     }
 
     div.list div.columns {
@@ -127,16 +127,21 @@
         margin-bottom:3ex;
     }
 
-    div.list div.columns .column_narrow  {
-        flex: 1;
+    div.list div.columns div.column  {
         border-left: 1px solid;
         padding: .5em 1em 1em 1em;
     }
 
-    div.list div.columns .column_wide  {
+    div.list div.columns div.column:first-child  {
+        border-left: none;
+    }
+
+    div.list div.columns div.column_narrow  {
+        flex: 1;
+    }
+
+    div.list div.columns div.column_wide  {
         flex: 2;
-        border-left: 1px solid;
-        padding: .5em 1em 1em 1em;
     }
 
     div.list div.columns div.article div.headline a {
