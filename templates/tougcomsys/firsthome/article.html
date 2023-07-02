@@ -3,7 +3,7 @@
 {% block content %}
     <div id="tougcomsys" class="detail">
         {% if article.detail_image %}
-            <div class="article article_image_{{ article.detail_image_location }}">
+            <div class="article article_with_image_{{ article.detail_image_location }}">
                 <div class="headline">   
                     <h3>{{ article.headline|safe }}</h3>
                 </div>
@@ -19,7 +19,7 @@
             </div>
 
         {% else %}
-            <div class="article article_image_{{ article.detail_image_location }}">
+            <div class="article article_with_image_{{ article.detail_image_location }}">
                 <div class="headline">   
                     <h3>{{ article.headline|safe }}</h3>
                 </div>
