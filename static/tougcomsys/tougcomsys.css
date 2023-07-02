@@ -149,12 +149,24 @@ div.column_wide {
         border-left: none;
     }
 
-    div.article_image_side img {
+    div.article_image_top div.list_image {
         float:right;
-        width:40%;
-        margin-right:10%;
+        width:60%;
     }
-    
+
+    div.article_image_top div.list_image {
+        width:100%;
+    }
+
+    div.article_image_side div.list_image {
+        float:right;
+        width:60%;
+    }
+
+    div.article_image_side div.list_image {
+        width:100%;
+    }
+
     div.article_image_side::after {
         clear:both;
         content: "";

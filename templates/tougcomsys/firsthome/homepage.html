@@ -16,25 +16,27 @@
                         {% for articleplacement in placement.articleplacements %}
 
                             {% if articleplacement.article.list_image %}
-                                <div class="article article_image_{{ articleplacement.article.list_image_location }}">
-                                    <div class="list_image">
-                                        <img src="{{ articleplacement.article.list_image.url }}">
-                                    </div>
+                            <div class="article article_image_{{ articleplacement.article.list_image_location }}">
 
-                                    <div class="list_textfields">
-                                        <div class="headline">   
-                                            <a href="{% url 'tougcomsys:article' slug=articleplacement.article.slug %}">                                          
-                                                <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                            </a>
-                                        </div>
-                                        <div class="subheadline">
-                                            {{ articleplacement.article.subheadline|safe }}
-                                        </div>
-                                        <div class="summary">
-                                            {{ articleplacement.article.summary|safe }}
-                                        </div>
+                                <div class="headline">   
+                                    <a href="{% url 'tougcomsys:article' slug=articleplacement.article.slug %}">                                          
+                                        <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                    </a>
+                                </div>
+                                <div class="subheadline">
+                                    {{ articleplacement.article.subheadline|safe }}
+                                </div>
+
+                                <div class="list_image">
+                                    <img src="{{ articleplacement.article.list_image.url }}">
+                                </div>
+
+                                <div class="list_textfields">
+                                    <div class="summary">
+                                        {{ articleplacement.article.summary|safe }}
                                     </div>
                                 </div>
+                            </div>
 
                             {% else %}
 
