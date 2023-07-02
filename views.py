@@ -19,7 +19,8 @@ import requests
 
 import markdown as md
 
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
+# ArticleImage, 
 
 class TestError(Exception):
     pass
@@ -224,15 +225,15 @@ class HomePage(TemplateView):
                     if articleplacement.article.show_updated == Article.SHOW_COMPLY:
                         articleplacement.article.show_updates = placement.show_created  
 
-                    articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
-                    articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
-                    for articleimage in articleplacement.article.articleimage_set.all():
-                        if articleimage.show_in_list:
-                            articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
-                        if articleimage.show_in_detail:
-                            articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
-                        if not articleimage.list_image_link > '':
-                            articleimage.list_image_link = articleplacement.article.get_absolute_url()
+                    # articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
+                    # articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
+                    # for articleimage in articleplacement.article.articleimage_set.all():
+                    #     if articleimage.show_in_list:
+                    #         articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
+                    #     if articleimage.show_in_detail:
+                    #         articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
+                    #     if not articleimage.list_image_link > '':
+                    #         articleimage.list_image_link = articleplacement.article.get_absolute_url()
 
             elif placement.type == Placement.TYPE_EVENT_LIST:
 
@@ -269,14 +270,6 @@ class ArticleDetail(DetailView):
             self.object.show_author = True
         if self.object.show_updated == Article.SHOW_COMPLY:
             self.object.show_updates = True  
-
-        self.object.detail_images = { 'top':[], 'side':[], 'bottom':[] }
-
-        for articleimage in self.object.articleimage_set.all():
-            if articleimage.show_in_detail:
-                self.object.detail_images[ articleimage.show_in_list  ].append( articleimage )
-            if not articleimage.detail_image_link > '':
-                articleimage.detail_image_link = self.object.get_absolute_url()
 
         return context_data
 

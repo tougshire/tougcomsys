@@ -15,16 +15,10 @@
 
                         {% for articleplacement in placement.articleplacements %}
 
-                            {% if articleplacement.article.list_images.side %}
-                                <div class="article article_image_side">
-                                    <div class="list_images">
-                                        {% for list_image in articleplacement.article.list_images.side %}
-                                            <div class="list_image">
-                                                <a href="{{ list_image.list_image_link }}">
-                                                    <img src="{{ list_image.image.url }}">
-                                                </a>
-                                            </div>
-                                        {% endfor %}
+                            {% if articleplacement.article.list_image %}
+                                <div class="article article_image_{{ articleplacement.article.list_image_location }}">
+                                    <div class="list_image">
+                                        <img src="{{ articleplacement.article.list_image.url }}">
                                     </div>
 
                                     <div class="list_textfields">
@@ -40,66 +34,6 @@
                                             {{ articleplacement.article.summary|safe }}
                                         </div>
                                     </div>
-                                </div>
-
-                            {% elif articleplacement.article.list_images.top %}
-
-                                <div class="article article_image_top">
-                                    <div class="list_textfields">
-                                        <div class="headline">
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">                                          
-                                                <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                            </a>
-                                        </div>
-                                        <div class="subheadline">
-                                            {{ articleplacement.article.subheadline|safe }}
-                                        </div>
-                                    </div>
-
-                                    <div class="list_images">
-                                        {% for list_image in articleplacement.article.list_images.top %}
-                                            <div class="list_image">
-                                                <a href="{{ list_image.list_image_link }}">
-                                                    <img src="{{ list_image.image.url }}">
-                                                </a>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-
-                                    <div class="list_textfields">
-                                        <div class="summary">
-                                            {{ articleplacement.article.summary|safe }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                            {% elif articleplacement.article.list_image.show_in_list == image_positions.belowcontent %}
-
-                                <div class="article article_image_bottom">
-                                    <div class="list_textfields">
-                                        <div class="headline">    
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">                                          
-                                                <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                            </a>
-                                        </div>
-
-                                        <div class="subheadline">
-                                            {{ articleplacement.article.subheadline|safe }}
-                                        </div>
-                                        <div class="summary">
-                                            {{ articleplacement.article.summary|safe }}
-                                        </div>
-                                    </div>
-                                    <div class="list_images">
-                                        {% for list_image in articleplacement.article.list_images.top %}
-                                            <div class="list_image">
-                                                <a href="{{ list_image.list_image_link }}">
-                                                    <img src="{{ list_image.image.url }}">
-                                                </a>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-
                                 </div>
 
                             {% else %}

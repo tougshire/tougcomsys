@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import reverse
 
-from tougcomsys.models import Article, ArticleEventdate, ArticleImage, ArticlePlacement, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent
+# ArticleImage, 
 
 import icalendar
 import recurring_ical_events
@@ -16,9 +17,9 @@ class ArticlePlacementInline(admin.StackedInline):
     model=ArticlePlacement
     extra=1
 
-class ArticleImageInline(admin.StackedInline):
-    model=ArticleImage
-    extra=1
+# class ArticleImageInline(admin.StackedInline):
+#     model=ArticleImage
+#     extra=1
 
 class MenuitemInline(admin.StackedInline):
     model=Menuitem
@@ -36,7 +37,8 @@ class ArticleAdmin(admin.ModelAdmin):
     ordering = list(Article._meta.ordering)
     prepopulated_fields={'slug': ["headline"]}
 
-    inlines = [ArticlePlacementInline, ArticleImageInline, ArticleEventdateInline, ]
+    inlines = [ArticlePlacementInline, ArticleEventdateInline, ]
+# ArticleImageInline, 
 
     def get_changeform_initial_data(self, request):
 

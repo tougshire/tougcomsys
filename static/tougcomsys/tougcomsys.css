@@ -16,7 +16,11 @@
 .font_size_xl {
     font-size:150%;
 }
-    
+
+.article, .content, .column {
+    max-width: 98%;
+}
+
 #footer {
     text-align:center;
 }
@@ -58,8 +62,63 @@
     text-decoration: none;
 }
 
+h3 {
+    font-family: 'Gilda Display', serif;
+    font-size:3em;
+
+}
+
+div.headline a {
+    text-decoration: none;
+}
+
+div.subheadline {
+    font-size:2em;
+    margin-bottom:1em;
+}
+
+div.summary {
+    font-size:1.4em;
+}
+
+div.content {
+    width:70%;
+    margin:0 auto;
+    font-size:1.4em;
+}
+
+div.article_image_top img {
+    width:80%;
+    margin: 0 10%;
+}
+
+div.article_image_side img {
+    float:right;
+    width:40%;
+    margin-right:10%;
+}
+
+@media only screen and (max-width: 600px) {
+
+    div.article_image_side img {
+        float:none;
+        width:90%;
+        margin-right:0;
+    }
+}
+
+div.article_image_side::after {
+    clear:both;
+    content: "";
+    display:block;
+}
+
 div.columns{
     display:flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+    column-gap:2%;
+
 }
 
 div.columns div.column_narrow {
@@ -68,15 +127,11 @@ div.columns div.column_narrow {
 
 div.columns div.column_narrow img {
     width:80%;
-    margin: 0 auto;
+    margin: 0 10%;
 }
 
 div.columns div.column_wide {
     flex: 2;
 }
 
-div.column_wide img {
-    float:right;
-    width:40%;
-    margin-right:10%;
-}
+
