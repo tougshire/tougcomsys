@@ -84,6 +84,12 @@ div.content {
     font-size:1.4em;
 }
 
+div.article_with_image_top div.detail_image {
+    text-align: center; 
+    width:80%;
+    margin: 0 10%;
+}
+
 div.article_with_image_top img { 
     width:80%;
     margin: 0 10%;
