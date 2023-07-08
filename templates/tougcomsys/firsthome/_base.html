@@ -4,6 +4,8 @@
 <html>
     <head>
         {% if object %}
+            <meta property="og:title" content="{{ object.headline  }}" />
+
             {% if object.featured_image %}
                 <meta property="og:image" content="{{ object.featured_image.url  }}" />
             {% endif %}
