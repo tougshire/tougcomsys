@@ -283,6 +283,16 @@ class Article(models.Model):
         default=IMAGE_LOCATION_CHOICES[0],
         help_text='The location of the image. This is just a flag which indicates a preference'
     )
+    featured_image = models.ForeignKey(
+        Image,
+        verbose_name='featured image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='featured_image',
+        help_text = 'The image to show in links to this article, where supported '
+    )
+
     summary_format = models.CharField(
         'summary format',
         max_length=20,
@@ -382,117 +392,6 @@ class Article(models.Model):
     class Meta:
         ordering = ('-sticky', '-sortable_date',)
 
-# class ArticleImage(models.Model):
-
-#     SHOW_NO = ""
-#     SHOW_TOP = "top"
-#     SHOW_SIDE = "side"
-#     SHOW_BOTTOM = "bottom"
-
-#     SHOW_CHOICES = [
-#         (SHOW_NO, "No"),
-#         (SHOW_TOP, "Above Content"),
-#         (SHOW_SIDE, "Beside Content"),
-#         (SHOW_BOTTOM, "Below Content"),
-#     ]
-
-#     article = models.ForeignKey(
-#         Article,
-#         on_delete=models.CASCADE,
-#         help_text='The article to which the image is attached'
-#     )
-#     image = models.ForeignKey(
-#         Image,
-#         null=True,
-#         blank=True,
-#         on_delete=models.SET_NULL,
-#         help_text = 'The image to add to the article'
-#     )
-#     show_in_list = models.CharField(
-#         'show in list view',
-#         max_length=10,
-#         blank=True,
-#         choices=SHOW_CHOICES,
-#         default=SHOW_NO,
-#         help_text='If and where this image should be displayed with this article\'s headline and summary on a list of articles. *Note*: side images may be hidden or moved in narrow columns. Image display may be vary by theme.'
-#     )
-#     show_in_detail = models.CharField(
-#         'show in detail view',
-#         max_length=10,
-#         blank=True,
-#         choices=SHOW_CHOICES,
-#         default=SHOW_NO,
-#         help_text='If and where this image should be displayed with in a detail view of this article. Image display may vary by theme'
-#     )
-#     is_featured = models.BooleanField(
-#         'is featured',
-#         default=False,
-#         help_text='If this image should be featured, for use in Social Media links'
-#     )
-#     list_image_attributes = models.CharField(
-#         "list image attributes",
-#         max_length=200,
-#         blank=True,
-#         help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed list content.',
-#     )
-#     list_image_link = models.URLField(
-#         "list image link",
-#         blank=True,
-#         help_text='The link for the image if/when displayed list content ( leave blank for default behavior )',
-#     )
-#     list_image_link_attributes = models.CharField(
-#         "list image link attributes",
-#         max_length=70,
-#         blank=True,
-#         help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content ( leave blank for default behavior )',
-#     )
-#     detail_image_link = models.URLField(
-#         "detail image link",
-#         blank=True,
-#         help_text='The link for the image if/when displayed detail content ( leave blank for default behavior )',
-#     )
-#     detail_image_link_attributes = models.CharField(
-#         "detail image link attributes",
-#         max_length=70,
-#         blank=True,
-#         help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed detail content ( leave blank for default behavior )',
-#     )
-
-#     detail_image_attributes = models.CharField(
-#         "detail image attributes",
-#         max_length=200,
-#         blank=True,
-#         default='',
-#         help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed detail content',
-#     ),
-#     above_content_image_link = models.URLField(
-#         "above content image link",
-#         blank=True,
-#         help_text='The link for the image if/when displayed list content',
-#     )
-#     above_content_link_attributes = models.CharField(
-#         "above content link attributes",
-#         max_length=70,
-#         blank=True,
-#         help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed list content',
-#     )
-#     below_content_image_attributes = models.CharField(
-#         "below content image attributes",
-#         max_length=200,
-#         blank=True,
-#         help_text='The attributes (ie style="width:60%") for the image for if/when the image is displayed below content',
-#     )
-#     below_content_image_link = models.URLField(
-#         "below content image link",
-#         blank=True,
-#         help_text='The link for the image if/when displayed below content',
-#     )
-#     below_content_link_attributes = models.CharField(
-#         "below content link attributes",
-#         max_length=70,
-#         blank=True,
-#         help_text='The attributes (ie target="_blank") for the link for if/when the image is displayed below content',
-#     )
 
 class ArticlePlacement(models.Model):
     article = models.ForeignKey(

@@ -3,6 +3,11 @@
 
 <html>
     <head>
+        {% if object %}
+            {% if object.featured_image %}
+                <meta property="og:image" content="{{ object.featured_image.url  }}" />
+            {% endif %}
+        {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ tougcomsys.SITE_NAME }}</title>
         <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys.css' %}">
