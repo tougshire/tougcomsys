@@ -34,7 +34,6 @@ def events_from_icals( placement ):
 
     blocked_ical_events = BlockedIcalEvent.objects.all()
     blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
-    print('tp236sj41', blocked_ical_uids)
 
     for ical in placement.ical_set.all():
     
@@ -50,18 +49,13 @@ def events_from_icals( placement ):
             event_dict['uid'] = str(ical_event['UID']) if ical_event.has_key('UID') else ''
             if not event_dict['uid'] > '':
                 continue
-            print('tp236si58', event_dict)
-
 
             if event_dict['uid'] in blocked_ical_uids:
-                print('tp236si57')
 
                 blocks = blocked_ical_events.filter( uuid=event_dict['uid'] )
 
                 if blocks.exists():
                     block = blocks.first()
-
-                    print('tp236si56', block)
 
                     article = block.display_instead
                     if not article:
