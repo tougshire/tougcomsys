@@ -4,10 +4,16 @@
 <html>
     <head>
         {% if object %}
-            <meta property="og:title" content="{{ object.headline  }}" />
+            <meta property="og:title" content="{{ object.headline|safe  }}" />
 
             {% if object.featured_image %}
                 <meta property="og:image" content="{{ object.featured_image.url  }}" />
+            {% else %}
+                {% if 'keyed_head_lines' in tougcomsys %}
+                    {% if 'og_image' in tougcomsys.keyed_head_lines %}
+                        {{ tougcomsys.keyed_head_lines.og_image|safe  }}
+                    {% endif %}
+                {% endif %}
             {% endif %}
         {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +30,10 @@
         {% for head_line in tougcomsys.head_lines %}
             {{ head_line|safe }}
         {% endfor %}
+        {% for head_line in tougcomsys.head_lines_replaceable %}
+            {{ head_line|safe }}
+        {% endfor %}
+
     </head>
     <body>
 
