@@ -219,16 +219,6 @@ class HomePage(TemplateView):
                     if articleplacement.article.show_updated == Article.SHOW_COMPLY:
                         articleplacement.article.show_updates = placement.show_created  
 
-                    # articleplacement.article.list_images = { 'top':[], 'side':[], 'bottom':[] }
-                    # articleplacement.article.detail_images = { 'top':[], 'side':[], 'bottom':[] }
-                    # for articleimage in articleplacement.article.articleimage_set.all():
-                    #     if articleimage.show_in_list:
-                    #         articleplacement.article.list_images[ articleimage.show_in_list  ].append( articleimage )
-                    #     if articleimage.show_in_detail:
-                    #         articleplacement.article.detail_images[ articleimage.show_in_list  ].append( articleimage )
-                    #     if not articleimage.list_image_link > '':
-                    #         articleimage.list_image_link = articleplacement.article.get_absolute_url()
-
             elif placement.type == Placement.TYPE_EVENT_LIST:
 
                 placement.events = event_date_dict( placement ) 
@@ -264,6 +254,7 @@ class ArticleDetail(DetailView):
             self.object.show_author = True
         if self.object.show_updated == Article.SHOW_COMPLY:
             self.object.show_updates = True  
+        
 
         return context_data
 
