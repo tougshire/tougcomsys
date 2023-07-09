@@ -8,10 +8,14 @@
 
             {% if object.featured_image %}
                 <meta property="og:image" content="{{ object.featured_image.url  }}" />
+                <meta property="og:image:alt" content="{{ object.featured_image.alt_text  }}" />
             {% else %}
                 {% if 'keyed_head_lines' in tougcomsys %}
                     {% if 'og_image' in tougcomsys.keyed_head_lines %}
                         {{ tougcomsys.keyed_head_lines.og_image|safe  }}
+                    {% endif %}
+                    {% if 'og_image_alt' in tougcomsys.keyed_head_lines %}
+                        {{ tougcomsys.keyed_head_lines.og_image_alt|safe  }}
                     {% endif %}
                 {% endif %}
             {% endif %}
