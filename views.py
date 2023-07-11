@@ -97,14 +97,19 @@ def events_from_icals( placement ):
 
     return event_date_dict
 
-def events_from_articles( placement ):
+def events_from_articles( placement, do_preview=False ):
 
     start_date = date.today() + timedelta( days=placement.event_list_start )
     end_date =   start_date + timedelta( days=placement.events_list_length )
 
     event_date_dict = {}
 
-    for articleplacement in placement.articleplacement_set.all():
+    if do_preview:
+        articleplacements = placement.articleplacement_set.filter( Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
+    else:
+        articleplacements = placement.articleplacement_set.filter( article__draft_status=Article.DRAFT_STATUS_PUBLISHED) 
+
+    for articleplacement in articleplacements:
     
         for event_date in articleplacement.article.articleeventdate_set.all():
 
@@ -126,10 +131,10 @@ def events_from_articles( placement ):
 
     return event_date_dict            
 
-def event_date_dict( placement ):
+def event_date_dict( placement, do_preview=False ):
 
     ical_dict = events_from_icals( placement )
-    article_dict = events_from_articles( placement )
+    article_dict = events_from_articles( placement, do_preview )
 
     new_dict = ical_dict
 
@@ -181,10 +186,11 @@ class HomePage(TemplateView):
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
         if do_preview:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
+#            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
+            placements = Placement.objects.filter( page=page ).order_by('place_number')
         else:
-            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
-
+#            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
+            placements = Placement.objects.filter( page=page ).order_by('place_number')
 
         context_data['placements'] = []
 
@@ -193,10 +199,10 @@ class HomePage(TemplateView):
             if placement.type == Placement.TYPE_ARTICLE_LIST:
                 if do_preview:
                     placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
-                    placement.articleplacements = placement.articleplacement_set.all().filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) )
+                    placement.articleplacements = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT))
                 else:
                     placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
-                    placement.articleplacements = placement.articleplacement_set.all().filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+                    placement.articleplacements = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
                 for articleplacement in placement.articleplacements:
 
@@ -221,7 +227,7 @@ class HomePage(TemplateView):
 
             elif placement.type == Placement.TYPE_EVENT_LIST:
 
-                placement.events = event_date_dict( placement ) 
+                placement.events = event_date_dict( placement, do_preview ) 
 
             context_data['placements'].append(placement)
 
