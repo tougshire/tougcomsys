@@ -17,9 +17,9 @@ class ArticlePlacementInline(admin.StackedInline):
     model=ArticlePlacement
     extra=1
 
-# class ArticleImageInline(admin.StackedInline):
-#     model=ArticleImage
-#     extra=1
+class IcalInline(admin.StackedInline):
+    model=ICal
+    extra=1
 
 class MenuitemInline(admin.StackedInline):
     model=Menuitem
@@ -27,7 +27,7 @@ class MenuitemInline(admin.StackedInline):
 
 class PlacementAdmin(admin.ModelAdmin):
     list_display = ('__str__',  'place_number')
-    inlines = [ArticlePlacementInline]
+    inlines = [ArticlePlacementInline, IcalInline]
 
 admin.site.register(Placement, PlacementAdmin)
 
