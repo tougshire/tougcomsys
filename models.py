@@ -157,6 +157,7 @@ class Placement(models.Model):
         blank=True,
         null=True,
         choices=COLUMNWIDTH_CHOICES,
+        default=COLUMNWIDTH_NARROW,
         help_text='The width of the column. The template may ingore this setting either completely or for certain media types'
     )
     font_size = models.CharField(
