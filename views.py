@@ -142,9 +142,12 @@ def ical_from_events( placement, do_preview=False ):
                 ical_text = ical_text + 'BEGIN:VEVENT\n'
                 ical_text = ical_text + 'DTSTAMP:{}\n'.format( date.today().isoformat() )
                 ical_text = ical_text + 'UID:{}\n'.format( article.pk )
-                ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )  
                 ical_text = ical_text + 'SUMMARY:{}\n'.format( article.headline )
 
+                if eventdate.whentime is not None:
+                    ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )  
+                else:
+                    ical_text = ical_text + 'DTSTART:{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day )
                 ical_text = ical_text + 'END:VEVENT\n'
 
     ical_text = ical_text + 'END:VCALENDAR\n'
