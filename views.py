@@ -131,6 +131,29 @@ def events_from_articles( placement, do_preview=False ):
 
     return event_date_dict            
 
+def ical_from_events( placement, do_preview=False ):
+    ical_text = 'BEGIN:VCALENDAR\n'
+    placementarticles = placement.articleplacement_set.all()
+    for placementarticle in placementarticles:
+        article = placementarticle.article
+        eventdates = article.articleeventdate_set.all()
+        if eventdates.exists():
+            for eventdate in eventdates:
+                ical_text = ical_text + 'BEGIN:VEVENT\n'
+                ical_text = ical_text + 'DTSTAMP:{}\n'.format( date.today().isoformat() )
+                ical_text = ical_text + 'UID:{}\n'.format( article.pk )
+                ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )  
+                ical_text = ical_text + 'SUMMARY:{}\n'.format( article.headline )
+
+                ical_text = ical_text + 'END:VEVENT\n'
+
+    ical_text = ical_text + 'END:VCALENDAR\n'
+
+    return ical_text            
+            
+
+
+
 def event_date_dict( placement, do_preview=False ):
 
     ical_dict = events_from_icals( placement )
