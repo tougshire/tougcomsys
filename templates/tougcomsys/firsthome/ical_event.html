@@ -1,0 +1,40 @@
+{% extends './_base.html' %}
+
+{% block content %}
+    <div id="tougcomsys" class="detail">
+        {% if article.detail_image %}
+            <div class="article article_with_image_{{ article.detail_image_location }}">
+                <div class="headline">   
+                    <h3>{{ article.headline|safe }}</h3>
+                </div>
+                <div class="subheadline">
+                    {{ article.subheadline|safe }}
+                </div>
+                <div class="detail_image" >
+                    <img src="{{ article.detail_image.url }}">
+                </div>
+                <div class="content" >
+                    {{ article.content|safe }}
+                </div>
+            </div>
+
+        {% else %}
+            <div class="article article_with_image_{{ article.detail_image_location }}">
+                <div class="headline">   
+                    <h3>{{ article.headline|safe }}</h3>
+                </div>
+                <div class="subheadline">
+                    {{ article.subheadline|safe }}
+                </div>
+                <div class="content" >
+                    {{ article.content|safe }}
+                </div>
+            </div>
+
+
+        {% endif %}
+
+    </div>
+
+
+{% endblock %}
