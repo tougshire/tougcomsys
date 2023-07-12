@@ -77,13 +77,13 @@ def events_from_icals( placement ):
 
             else:
 
+                event_dict['ical_url'] = url.replace('/', '_%2f_')
                 event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
                 if isinstance( ical_event['DTSTART'].dt, datetime ):
                     event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
                 event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
                 if isinstance( ical_event['DTEND'].dt, datetime ):
                     event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
-
                  
                 event_dict['headline'] = str(ical_event['SUMMARY'])
                 event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
@@ -155,8 +155,6 @@ def ical_from_events( placement, do_preview=False ):
     return ical_text            
             
 
-
-
 def event_date_dict( placement, do_preview=False ):
 
     ical_dict = events_from_icals( placement )
@@ -174,6 +172,61 @@ def event_date_dict( placement, do_preview=False ):
     new_dict = dict(sorted( new_dict.items() ) )
     return new_dict
 
+def single_event_date_dict( url, uid ):
+
+    blocked_ical_events = BlockedIcalEvent.objects.all()
+    blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
+
+    ical_string = requests.get(url).text
+    calendar = icalendar.Calendar.from_ical(ical_string)
+    ical_events = recurring_ical_events.of(calendar).all()
+
+    event_dict = {}
+
+    for ical_event in ical_events:
+
+        event_dict['uid'] = str(ical_event['UID']) if ical_event.has_key('UID') else ''
+        if not event_dict['uid'] == uid:
+            continue
+
+        if event_dict['uid'] in blocked_ical_uids:
+
+            blocks = blocked_ical_events.filter( uuid=event_dict['uid'] )
+
+            if blocks.exists():
+                block = blocks.first()
+
+                article = block.display_instead
+                if not article:
+                    continue
+
+                event_dict['slug'] = article.slug
+
+                event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
+                if isinstance( ical_event['DTSTART'].dt, datetime ):
+                    event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
+                event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
+                if isinstance( ical_event['DTEND'].dt, datetime ):
+                    event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+
+                event_dict['headline'] = article.headline 
+                event_dict['content'] = article.content
+
+        else:
+
+            event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
+            if isinstance( ical_event['DTSTART'].dt, datetime ):
+                event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
+            event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
+            if isinstance( ical_event['DTEND'].dt, datetime ):
+                event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+            
+            event_dict['headline'] = str(ical_event['SUMMARY'])
+            event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
+
+    return event_dict
+
+
 def condensify( value ):
     return slugify( value ).replace('-','')
 
@@ -183,6 +236,38 @@ def get_menu_items( page ):
         menu = [{'href':menuitem.url, 'label':menuitem.label} for menuitem in menuobject.menuitem_set.all() ]
         menus.append(menu)
     return menus
+
+class IcalEventView(TemplateView):
+
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'ical_event.html')
+
+    def get_context_data(self, **kwargs):
+
+        context_data = super().get_context_data(**kwargs)
+
+        if 'ical_url' in self.kwargs:
+            ical_url = self.kwargs.get('ical_url').replace( '_%2f_', '/')
+        else:
+            return context_data 
+
+        if 'uid' in self.kwargs:
+            uid = self.kwargs.get('uid')
+        else:
+            return context_data 
+
+        page = Page.objects.first()
+        if 'page' in self.kwargs:
+            page = Page.objects.get(pk=self.kwargs.get('page'))
+
+        if page is None:
+            return context_data
+ 
+        context_data['menus'] = get_menu_items( page )
+
+        context_data['article'] = single_event_date_dict( ical_url, uid ) 
+
+        return context_data
+
 
 class HomePage(TemplateView):
 
