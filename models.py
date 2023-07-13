@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from datetime import datetime, date, timedelta
 from django.conf import settings
@@ -252,6 +253,12 @@ class Article(models.Model):
         blank=True,
         help_text="The content of the post"
     )
+    hashtags = models.CharField(
+        'hashtags',
+        max_length=100,
+        blank=True,
+        help_text='Hashtags, separated by spaces'
+    )
     list_image = models.ForeignKey(
         Image,
         verbose_name='list view image',
@@ -382,6 +389,8 @@ class Article(models.Model):
     def save(self, *args, **kwargs):   
         if not self.slug > "":
             self.slug = slugify(self.headline)
+        hashtag_list = re.split('\s*[\s;,]\s*', self.hashtags )
+        self.hashtags = ' '.join([ tag if tag[:1] == '#' else '#' + tag for tag in hashtag_list])
         super().save(*args, **kwargs) 
 
     def __str__(self):
