@@ -11,7 +11,7 @@
                     {{ article.subheadline|safe }}
                 </div>
                 <div class="detail_image" >
-                    <img src="{{ article.detail_image.url }}">
+                    <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text }}"{% endif %}>
                 </div>
                 <div class="content" >
                     {{ article.content|safe }}
@@ -19,7 +19,8 @@
             </div>
 
         {% else %}
-            <div class="article article_with_image_{{ article.detail_image_location }}">
+
+        <div class="article article_with_image_{{ article.detail_image_location }}">
                 <div class="headline">   
                     <h3>{{ article.headline|safe }}</h3>
                 </div>
@@ -30,7 +31,6 @@
                     {{ article.content|safe }}
                 </div>
             </div>
-
 
         {% endif %}
 

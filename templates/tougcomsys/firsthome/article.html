@@ -11,7 +11,7 @@
                     {{ article.subheadline|safe }}
                 </div>
                 <div class="detail_image" >
-                    <img src="{{ article.detail_image.url }}">
+                    <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text }}"{% endif %}>
                 </div>
                 <div class="content" >
                     {{ article.content|safe }}
