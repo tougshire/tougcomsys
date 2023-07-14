@@ -112,6 +112,10 @@ div.column_wide {
     flex: 2;
 }
 
+div.readmore {
+    text-align: center;
+}
+
 @media only screen and (max-width: 600px) {
 
     #menubar {

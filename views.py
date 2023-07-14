@@ -297,10 +297,8 @@ class HomePage(TemplateView):
         do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
 
         if do_preview:
-#            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=( Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_DRAFT ) ) )).filter(published_qty__gte=1).order_by('place_number')
             placements = Placement.objects.filter( page=page ).order_by('place_number')
         else:
-#            placements = Placement.objects.filter( page=page ).annotate(published_qty=Count("articleplacement", filter=(Q(articleplacement__article__draft_status=Article.DRAFT_STATUS_PUBLISHED)))).filter(published_qty__gte=1).order_by('place_number')
             placements = Placement.objects.filter( page=page ).order_by('place_number')
 
         context_data['placements'] = []
