@@ -36,7 +36,7 @@
                                         {{ articleplacement.article.summary|safe }}
                                         {% if articleplacement.article.show_readmore %}
                                             <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                             </div>        
                                         {% endif %}
 
@@ -61,7 +61,7 @@
                                             {{ articleplacement.article.summary|safe }}
                                             {% if articleplacement.article.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                                 </div>        
                                             {% endif %}
     
@@ -113,7 +113,7 @@
                                             {{ event.summary|safe }}
                                             {% if event.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' event.slug %}">read more</a>
+                                                    <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
                                                 </div>        
                                             {% endif %}
     
@@ -122,7 +122,7 @@
                                             {{ articleplacement.article.summary|safe }}
                                             {% if articleplacement.article.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">read more</a>
+                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
                                                 </div>        
                                             {% endif %}
     
