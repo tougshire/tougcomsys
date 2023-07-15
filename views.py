@@ -19,7 +19,7 @@ import requests
 
 import markdown as md
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
 # ArticleImage, 
 
 class TestError(Exception):
@@ -346,7 +346,6 @@ class HomePage(TemplateView):
 class ArticleDetail(DetailView):
 
     model = Article
-    context_object_name = 'article'
 
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article.html')
 
@@ -406,4 +405,9 @@ def ical_detail_view(request, uuid):
 
     return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )
 
+class CommentCreate(CreateView):
+    model=Comment
+    model = Comment
+
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'comment_form.html')
 

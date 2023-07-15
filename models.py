@@ -402,6 +402,26 @@ class Article(models.Model):
     class Meta:
         ordering = ('-sticky', '-sortable_date',)
 
+class Comment(models.Model):
+
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        help_text="The article which is to be placed on the site"
+    )    
+    in_reply_to = models.ForeignKey(
+        'Comment',
+        on_delete=models.SET_NULL,        
+        blank=True,
+        null=True,
+        help_text='The comment to which this comment is a reply'
+    )
+    commenter = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        help_text='The user who wrote the comment'
+    )
 
 class ArticlePlacement(models.Model):
     article = models.ForeignKey(
