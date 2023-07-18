@@ -226,6 +226,14 @@ class Article(models.Model):
         (IMAGE_LOCATION_SIDE, 'side or top'),
         (IMAGE_LOCATION_BOTTOM, 'bottom only'),
     ]
+    COMMENTS_ALLOW = 1
+    COMMENTS_NONE = 0
+    COMMENTS_CLOSED = -1
+    COMMENTS_CHOICES = [
+        (COMMENTS_ALLOW, 'allow'),
+        (COMMENTS_NONE, 'none'),
+        (COMMENTS_CLOSED, 'closed'),
+    ]
 
     headline = models.CharField(
         'Headline',
@@ -380,6 +388,12 @@ class Article(models.Model):
         default=0,
         help_text="If this post is a draft, which only displays in preview mode"
     )
+    allow_comments = models.IntegerField(
+        'allow comments',
+        choices = COMMENTS_CHOICES,
+        default=0,
+        help_text='If comments are allowed'
+    )
 
     slug = models.SlugField(
         "slug",
@@ -416,12 +430,26 @@ class Comment(models.Model):
         null=True,
         help_text='The comment to which this comment is a reply'
     )
-    commenter = models.ForeignKey(
+    author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         help_text='The user who wrote the comment'
     )
+    created_date = models.DateField(
+        auto_now_add=True,
+        help_text = 'The date the comment was created'
+    )
+    comment_text = models.TextField(
+        'comment',
+        help_text='The comment'
+    )
+
+    def __str__(self):
+        return '[{}: {}] {}'.format(self.created_date, self.author, self.comment_text[:50])
+
+    class Meta:
+        ordering = ('created_date',)
 
 class ArticlePlacement(models.Model):
     article = models.ForeignKey(

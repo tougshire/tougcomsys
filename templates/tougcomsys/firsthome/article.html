@@ -31,9 +31,23 @@
                 </div>
             </div>
 
-
         {% endif %}
 
+        {% if article.allow_comments > -1 %}
+            {% for comment in article.comment_set.all %}
+                <div class="comment">
+                    <div class="commentheader">{{ comment.created_date }}: {{ comment.author }}</div>
+                    {% if comment.in_reply_to %}
+                        <div class="commentinreplyto">In Reply To: {{ comment.in_reply_to.created_date }}: {{ comment.in_reply_to.author }} {{ comment.in_reply_to.comment_text|slice:"0:50"}}</div>
+                        </div>
+                    {% endif %}
+                    <div class="commenttext">{{ comment.comment_text }}</div>
+                </div>
+            {% endfor %}
+            {% if article.allow_comments == 1 %}
+                    <a href="{% url 'tougcomsys:comment_create' article.slug %}">Comment</a>
+            {% endif %}
+        {% endif %}
     </div>
 
 

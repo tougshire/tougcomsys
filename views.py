@@ -1,8 +1,9 @@
 from typing import Any, Dict
+from django.forms.models import BaseModelForm
 from django.http import HttpResponse
 from django.db.models import Count, Q
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.conf import settings
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
@@ -18,6 +19,9 @@ import recurring_ical_events
 import requests
 
 import markdown as md
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from tougcomsys.forms import CommentForm
 
 from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
 # ArticleImage, 
@@ -405,9 +409,36 @@ def ical_detail_view(request, uuid):
 
     return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )
 
-class CommentCreate(CreateView):
-    model=Comment
+class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
-
+    form_class = CommentForm
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'comment_form.html')
 
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        if 'article' in self.kwargs:
+            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        if 'to' in self.kwargs:
+            context_data['article'] = Comment.objects.get(pk=self.kwargs.get('to'))
+
+        return context_data
+
+    def get_initial(self):
+        
+        initial_data = super().get_initial()
+        if 'article' in self.kwargs:
+            initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        if 'to' in self.kwargs:
+            initial_data['article'] = Comment.objects.get(pk=self.kwargs.get('to'))
+        return initial_data
+
+    def form_valid(self, form):
+        
+        comment = form.save(commit=False)
+        comment.author = self.request.user
+        form.save()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import reverse
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent
 # ArticleImage, 
 
 import icalendar
@@ -95,3 +95,5 @@ class BlockedIcalEventAdmin(admin.ModelAdmin):
 admin.site.register(BlockedIcalEvent, BlockedIcalEventAdmin)
 
 admin.site.register( Page )
+
+admin.site.register( Comment )
