@@ -448,7 +448,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
                     [subscription.subscriber.email]
                 )
             except Exception as e:
-                print(f'error {type(e)}: e')
+                print('{} {}'.format(type(e), e))
 
         return super().form_valid(form)
 
