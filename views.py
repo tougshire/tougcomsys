@@ -442,7 +442,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         for subscription in comment.article.subscription_set.all():
             try:
                 send_mail(
-                    settings[settings.TOUGCOMSYS['active']].SITE_NAME + ' new comment',
+                    settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']].SITE_NAME + ' new comment',
                     comment.comment_text,
                     None,
                     [subscription.subscriber.email]
