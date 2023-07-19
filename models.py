@@ -394,7 +394,6 @@ class Article(models.Model):
         default=0,
         help_text='If comments are allowed'
     )
-
     slug = models.SlugField(
         "slug",
         help_text = "The slug used to refer to this article"
@@ -450,6 +449,21 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('created_date',)
+
+class Subscription(models.Model):
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        help_text='The article to which the subscriber is subscribed'
+    )
+    subscriber = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        help_text='The subscriber to the article'
+    )
+
+    def __str__(self):
+        return '{}->{}'.format(self.subscriber, self.article)
 
 class ArticlePlacement(models.Model):
     article = models.ForeignKey(

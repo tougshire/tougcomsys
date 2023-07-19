@@ -1,0 +1,19 @@
+{% extends './_base.html' %}
+
+{% block content %}
+    <div id="tougcomsys" class="form">
+        <div class="article">
+            <div class="headline">   
+                <h3>{{ article.headline|safe }}</h3>
+            </div>
+        </div>
+        <div class="form comment_form">
+            {{ form.errors }}
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.article.as_hidden }}
+                <p><button type="submit">Subscribe</button></p>    
+            </form>
+        </div>
+    </div>
+{% endblock %}

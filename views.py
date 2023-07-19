@@ -13,17 +13,18 @@ from django.views.generic.list import ListView
 from django.template.response import TemplateResponse
 from django.utils.text import slugify
 
+from django.core.mail import send_mail
+
 from datetime import datetime, date, timedelta
 import icalendar
 import recurring_ical_events
 import requests
-
 import markdown as md
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from tougcomsys.forms import CommentForm
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Subscription, Comment, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
 # ArticleImage, 
 
 class TestError(Exception):
@@ -438,7 +439,50 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         comment.author = self.request.user
         form.save()
 
+        for subscription in comment.article.subscription_set.all():
+            try:
+                send_mail(
+                    settings[settings.TOUGCOMSYS['active']].SITE_NAME + ' new comment',
+                    comment.comment_text,
+                    None,
+                    [subscription.subscriber.email]
+                )
+            except Exception as e:
+                print(f'error {type(e)}: e')
+
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+    
+
+class SubscriptionCreate(CreateView):
+
+    model = Subscription
+    fields = ['article']
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'subscription_form.html')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        if 'article' in self.kwargs:
+            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        return context_data
+
+    def form_valid(self, form):
+        subscription = form.save(commit=False)
+        subscription.subscriber = self.request.user
+        print(self.request.user)
+        form.save()
+
+        return super().form_valid(form)
+
+    def get_initial(self):
+        
+        initial_data = super().get_initial()
+        if 'article' in self.kwargs:
+            initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+
+        return initial_data
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )

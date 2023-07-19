@@ -46,9 +46,9 @@
             {% endfor %}
             {% if article.allow_comments == 1 %}
                     <a href="{% url 'tougcomsys:comment_create' article.slug %}">Comment</a>
+                    <a href="{% url 'tougcomsys:subscription_create' article.slug %}">Subscribe</a>
             {% endif %}
         {% endif %}
     </div>
-
 
 {% endblock %}
