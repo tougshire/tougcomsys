@@ -439,12 +439,18 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         comment.author = self.request.user
         form.save()
 
+        if 'FROM_EMAIL' in settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]:
+            from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['FROM_EMAIL']
+        else:
+            from_email = None
+        
+
         for subscription in comment.article.subscription_set.all():
             try:
                 send_mail(
                     settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['SITE_NAME'] + ' new comment',
                     comment.comment_text,
-                    None,
+                    from_email,
                     [subscription.subscriber.email]
                 )
             except Exception as e:
@@ -483,6 +489,22 @@ class SubscriptionCreate(CreateView):
             initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
 
         return initial_data
+
+    def get_success_url(self):
+        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+
+class SubscriptionDelete(DeleteView):
+
+    model = Subscription
+    fields = ['article']
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'subscription_delete.html')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        if 'article' in self.kwargs:
+            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        return context_data
+
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
