@@ -12,6 +12,7 @@ from django.views.generic.edit import (CreateView, DeleteView, FormView,
 from django.views.generic.list import ListView
 from django.template.response import TemplateResponse
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
 
 from django.core.mail import send_mail
 
@@ -374,6 +375,17 @@ class ArticleDetail(DetailView):
         if self.object.show_updated == Article.SHOW_COMPLY:
             self.object.show_updates = True  
         
+        try:
+            subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+        except Subscription.MultipleObjectsReturned:
+            subscriptions_delete = Subscription.objects.filter(article=self.get_object(), subscriber=self.request.user)[1:]
+            for subscription in subscriptions_delete:
+                subscription.delete()
+            subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+        except Subscription.DoesNotExist:
+            subscription = None
+
+        context_data['subscription'] = subscription
 
         return context_data
 
@@ -460,7 +472,6 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
-    
 
 class SubscriptionCreate(CreateView):
 
@@ -501,10 +512,8 @@ class SubscriptionDelete(DeleteView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        if 'article' in self.kwargs:
-            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        context_data['article'] = self.object.article
         return context_data
-
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
