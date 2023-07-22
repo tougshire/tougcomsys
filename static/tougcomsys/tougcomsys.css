@@ -124,6 +124,10 @@ div.commenttext {
     margin-left:1em;
 }
 
+div.commentheader {
+    margin-top:1ex;
+}
+
 div.commentinreplyto {
     margin-top:1ex;
     margin-left:3em;

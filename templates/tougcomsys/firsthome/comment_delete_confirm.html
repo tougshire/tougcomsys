@@ -1,0 +1,21 @@
+{% extends './_base.html' %}
+
+{% block content %}
+    <div id="tougcomsys" class="form">
+        <div class="article">
+            <div class="headline">   
+                <h3>{{ article.headline|safe }}</h3>
+            </div>
+        </div>
+        <div class="comment">
+            <div class="commentheader">{{ comment.created_date }}: {{ comment.author }}</div>
+            {% if comment.in_reply_to %}
+                <div class="commentinreplyto">In Reply To: {{ comment.in_reply_to_created_date }}: {{ comment.in_reply_to_author_str }} {{ comment.in_reply_to_text|slice:"0:100"}}</div>
+            {% endif %}
+            <div class="commenttext">{{ comment.comment_text }}</div>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Delete</button></form>
+    </div>
+{% endblock %}

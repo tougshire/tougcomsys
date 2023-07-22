@@ -14,6 +14,7 @@ urlpatterns = [
     path('article/<slug:article>/subscription/create/', views.SubscriptionCreate.as_view(), name='subscription_create'),
     path('subscription/<int:pk>/delete/', views.SubscriptionDelete.as_view(), name='subscription_delete'),
     path('article/<slug:article>/refpage/<int:page>/', views.ArticleDetail.as_view(), name='comment_create'),
+    path('comment/<int:pk>/delete/', views.CommentDelete.as_view(), name='comment_delete'),
     path('ical_event/<str:ical_url>/<str:uid>/', views.IcalEventView.as_view(), name='ical_event'),
     path('ical_event/<str:ical_url>/<str:uid>/refpage/<int:page>/', views.IcalEventView.as_view(), name='ical_event'),
     path('ical_text/0/', views.get_ical_text, name='ical_text'),

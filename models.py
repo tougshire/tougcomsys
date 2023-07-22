@@ -421,13 +421,31 @@ class Comment(models.Model):
         Article,
         on_delete=models.CASCADE,
         help_text="The article which is to be placed on the site"
-    )    
+    )
     in_reply_to = models.ForeignKey(
         'Comment',
         on_delete=models.SET_NULL,        
         blank=True,
         null=True,
         help_text='The comment to which this comment is a reply'
+    )
+    in_reply_to_author_str = models.CharField(
+        'in reply to author',
+        max_length=50,
+        blank=True,
+        help_text='The author of the comment to which this comment is a reply'
+    )
+    in_reply_to_created_date = models.TextField(
+        'in reply to created',
+        blank=True,
+        null=True,
+        help_text='The date of the comment to which this comment is a reply'
+    )
+
+    in_reply_to_text = models.TextField(
+        'in reply to',
+        blank=True,
+        help_text='The text of the comment to which this comment is a reply'
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -441,7 +459,7 @@ class Comment(models.Model):
     )
     comment_text = models.TextField(
         'comment',
-        help_text='The comment'
+        help_text='The text of the comment'
     )
 
     def __str__(self):

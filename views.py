@@ -13,7 +13,7 @@ from django.views.generic.list import ListView
 from django.template.response import TemplateResponse
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
-
+from django.contrib import messages
 from django.core.mail import send_mail
 
 from datetime import datetime, date, timedelta
@@ -449,6 +449,11 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         
         comment = form.save(commit=False)
         comment.author = self.request.user
+        if comment.in_reply_to is not None:
+            comment.in_reply_to_text = comment.in_reply_to.comment_text
+            comment.in_reply_to_created_date = comment.in_reply_to.created_date
+            comment.in_reply_to_author_str = str(comment.in_reply_to.author)
+
         form.save()
 
         if 'FROM_EMAIL' in settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]:
@@ -517,3 +522,27 @@ class SubscriptionDelete(DeleteView):
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+
+
+class CommentDelete(LoginRequiredMixin, DeleteView):
+
+    model = Comment
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'comment_delete_confirm.html')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['article'] = self.object.article
+        return context_data
+
+    def form_valid(self, form):
+
+        if self.request.user != self.object.author:
+            messages.error(self.request, 'You can only delete your own comments')
+            return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+
+    def get_success_url(self):
+        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+
