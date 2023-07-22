@@ -38,14 +38,13 @@
                 <div class="comment">
                     <div class="commentheader">{{ comment.created_date }}: {{ comment.author }}</div>
                     {% if comment.in_reply_to %}
-                        <div class="commentinreplyto">In Reply To: {{ comment.in_reply_to.created_date }}: {{ comment.in_reply_to.author }} {{ comment.in_reply_to.comment_text|slice:"0:50"}}</div>
-                        </div>
+                        <div class="commentinreplyto">In Reply To: {{ comment.in_reply_to_created_date }}: {{ comment.in_reply_to_author_str }} {{ comment.in_reply_to_text|slice:"0:100"}}</div>
                     {% endif %}
                     <div class="commenttext">{{ comment.comment_text }}</div>
                 </div>
             {% endfor %}
             {% if article.allow_comments == 1 %}
-                    <a href="{% url 'tougcomsys:comment_create' article.slug %}">Comment</a>
+`                    <a href="{% url 'tougcomsys:comment_create' article.slug %}">Comment</a>
                     {% if subscription %}
                         <a href="{% url 'tougcomsys:subscription_delete' subscription.id %}">Unsubscribe</a>
                     {% else %}
