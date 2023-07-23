@@ -243,6 +243,18 @@ def get_menu_items( page ):
         menus.append(menu)
     return menus
 
+def get_page(request):
+
+    try:
+        page = Page.objects.get(pk=request.session.get('page'))
+    except:
+        try:
+            page = Page.objects.first()
+        except:
+            page = None
+
+    return page
+
 class IcalEventView(TemplateView):
 
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'ical_event.html')
@@ -261,14 +273,9 @@ class IcalEventView(TemplateView):
         else:
             return context_data 
 
-        page = Page.objects.first()
-        if 'page' in self.kwargs:
-            page = Page.objects.get(pk=self.kwargs.get('page'))
-
-        if page is None:
-            return context_data
- 
-        context_data['menus'] = get_menu_items( page )
+        page = get_page(self.request)
+        if page:
+            context_data['menus'] = get_menu_items( page )
 
         context_data['article'] = single_event_date_dict( ical_url, uid ) 
 
@@ -291,6 +298,9 @@ class HomePage(TemplateView):
             return context_data
  
         context_data['menus'] = get_menu_items( page )
+
+        # Remember the page so if an article or ical event is clicked, the menu displayed will be the same menu displayed for thsi view
+        self.request.session['page'] = page.pk
 
         context_data['placement_types'] = {}
         for placement_type in Placement.TYPE_CHOICES:
@@ -359,14 +369,10 @@ class ArticleDetail(DetailView):
 
         context_data = super().get_context_data(**kwargs)
 
-        page = Page.objects.first()
-        if 'page' in self.kwargs:
-            page = Page.objects.get(pk=self.kwargs.get('page'))
+        page = get_page(self.request)
 
-        if page is None:
-            return context_data
- 
-        context_data['menus'] = get_menu_items( page )
+        if page:
+            context_data['menus'] = get_menu_items( page )
 
         if self.object.content_format == 'markdown':
             self.object.content = md.markdown(self.object.content, extensions=['markdown.extensions.fenced_code'])
