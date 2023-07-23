@@ -383,6 +383,8 @@ class ArticleDetail(DetailView):
         
         try:
             subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+        except TypeError:
+            subscription = None
         except Subscription.MultipleObjectsReturned:
             subscriptions_delete = Subscription.objects.filter(article=self.get_object(), subscriber=self.request.user)[1:]
             for subscription in subscriptions_delete:
