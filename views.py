@@ -381,17 +381,17 @@ class ArticleDetail(DetailView):
         if self.object.show_updated == Article.SHOW_COMPLY:
             self.object.show_updates = True  
         
-        try:
-            subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
-        except TypeError:
-            subscription = None
-        except Subscription.MultipleObjectsReturned:
-            subscriptions_delete = Subscription.objects.filter(article=self.get_object(), subscriber=self.request.user)[1:]
-            for subscription in subscriptions_delete:
-                subscription.delete()
-            subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
-        except Subscription.DoesNotExist:
-            subscription = None
+        subscription = None
+        if self.request.user and self.object.allow_comments:
+            try:
+                subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+            except Subscription.MultipleObjectsReturned:
+                subscriptions_delete = Subscription.objects.filter(article=self.get_object(), subscriber=self.request.user)[1:]
+                for subscription in subscriptions_delete:
+                    subscription.delete()
+                subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+            except Subscription.DoesNotExist:
+                pass
 
         context_data['subscription'] = subscription
 
