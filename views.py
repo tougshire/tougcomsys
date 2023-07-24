@@ -1,31 +1,24 @@
-from typing import Any, Dict
-from django.forms.models import BaseModelForm
-from django.http import HttpResponse
-from django.db.models import Count, Q
-from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from django.conf import settings
-from django.views.generic.base import TemplateView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import (CreateView, DeleteView, FormView,
-                                       UpdateView,)
-from django.views.generic.list import ListView
-from django.template.response import TemplateResponse
-from django.utils.text import slugify
-from django.core.exceptions import ValidationError
-from django.contrib import messages
-from django.core.mail import send_mail
+from datetime import date, datetime, timedelta
 
-from datetime import datetime, date, timedelta
 import icalendar
+import markdown as md
 import recurring_ical_events
 import requests
-import markdown as md
-
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
+from django.db.models import Q
+from django.http import HttpResponse
+from django.template.response import TemplateResponse
+from django.urls import reverse
+from django.utils.text import slugify
+from django.views.generic.base import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView
 from tougcomsys.forms import CommentForm
+from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Subscription, Comment, Image, Page, Placement, Menu, ICal, BlockedIcalEvent
 # ArticleImage, 
 
 class TestError(Exception):
@@ -382,7 +375,7 @@ class ArticleDetail(DetailView):
             self.object.show_updates = True  
         
         subscription = None
-        if self.request.user and self.object.allow_comments:
+        if self.request.user.is_authenticated and self.object.allow_comments:
             try:
                 subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
             except Subscription.MultipleObjectsReturned:
