@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from django.shortcuts import redirect, render
 
 import icalendar
 import markdown as md
@@ -16,7 +17,7 @@ from django.utils.text import slugify
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
-from tougcomsys.forms import CommentForm
+from tougcomsys.forms import CommentForm, ContactForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
 
 # ArticleImage, 
@@ -247,6 +248,45 @@ def get_page(request):
             page = None
 
     return page
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            if 'FROM_EMAIL' in settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]:
+                from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['FROM_EMAIL']
+            else:
+                from_email = None
+
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+
+            for recipient in settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['RECIPIENTS']:
+                try:
+                    send_mail(
+                        settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['SITE_NAME'] + ' Contact Form Submission from ' + name,
+                        'from:' + email + '\n' + message,
+                        from_email,
+                        [recipient]
+                    )
+                except Exception as e:
+                    print(    settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['SITE_NAME'] + ' Contact Form Submission from ' + name),
+                    print(    'from:' + email + '\n' + message),
+                    print(    from_email),
+                    print(    [recipient])
+
+                    print('{} {}'.format(type(e), e))
+
+
+            return redirect('tougcomsys:contact_success')
+    else:
+        form = ContactForm()
+
+    return render(request, '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'contact_form.html'), {'form': form})
+
+def contact_success(request):
+   return HttpResponse('Success!')
 
 class IcalEventView(TemplateView):
 
