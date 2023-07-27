@@ -2,7 +2,7 @@
 
 {% block content %}
 <div id="tougcomsys" class="form">
-
+    <p>Please leave the last field blank.  It's there to prevent submissions from automatic form fillers (and people who don't follow directions)</p>
     <form method="post">
         {% csrf_token %}
         {% for field in form %}

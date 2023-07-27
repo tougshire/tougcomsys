@@ -278,7 +278,6 @@ def contact(request):
 
                     print('{} {}'.format(type(e), e))
 
-
             return redirect('tougcomsys:contact_success')
     else:
         form = ContactForm()
