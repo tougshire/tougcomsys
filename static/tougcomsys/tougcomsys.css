@@ -203,8 +203,8 @@ div.commentinreplyto {
         width:60%;
     }
 
-    div.article_with_image_side div.list_image {
-        width:100%;
+    div.article_with_image_side div.list_image img {
+        width:90%;
     }
 
     div.article_with_image_side::after {
