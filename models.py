@@ -496,6 +496,12 @@ class ArticlePlacement(models.Model):
         blank=True,
         help_text="The placement on the template (for events - no placement indicates event should be on any calendar)"
     )
+    expiration_date=models.DateField(
+        'expiration date',
+        null=True,
+        blank=True,
+        help_text='The date that this article should be removed from this placement'
+    )
 
     class Meta:
         ordering = ( 'article', )
