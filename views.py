@@ -17,7 +17,7 @@ from django.utils.text import slugify
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
-from tougcomsys.forms import CommentForm, ContactForm
+from tougcomsys.forms import CommentForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
 
 # ArticleImage, 
