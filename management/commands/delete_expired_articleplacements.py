@@ -1,12 +1,12 @@
-from datetime import date
-from tougcomsys.models import (ArticlePlacement)
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 from django.core.management.base import BaseCommand, CommandError
+from tougcomsys.models import ArticlePlacement
+from tougcomsys.tasks import delete_expired_articleplacements as delete_expired_articleplacements_task
+from datetime import date
+
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-
-        for articleplacement in ArticlePlacement.objects.all():
-            if articleplacement.expiration_date is not None and articleplacement.expiration_date < date.today():
-                articleplacement.delete()
+        delete_expired_articleplacements_task()
 
