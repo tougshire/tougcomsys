@@ -24,7 +24,9 @@
                                     </a>
                                 </div>
                                 <div class="subheadline">
-                                    {{ articleplacement.article.subheadline|safe }}
+                                    <a href="{% url 'tougcomsys:article' slug=articleplacement.article.slug %}"> 
+                                        {{ articleplacement.article.subheadline|safe }}
+                                    </a>
                                 </div>
 
                                 <div class="list_image">

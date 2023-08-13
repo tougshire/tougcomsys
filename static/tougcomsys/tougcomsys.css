@@ -74,6 +74,10 @@ div.subheadline {
     margin-bottom:1em;
 }
 
+div.subheadline a {
+    text-decoration: none;
+}
+
 div.summary {
     font-size:1.4em;
 }
