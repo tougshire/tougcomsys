@@ -138,6 +138,47 @@
 
                     </div>
 
+                {% elif placement.type == placement_types.feed %}
+
+                    <div class="column column_{{ placement.column_width }} ">
+                        {% if placement.show_title %}
+                            <h2>{{ placement.title }}</h2>
+                        {% endif %}
+
+                        {% for feedpost in placement.feedposts %}
+
+                            <div class="article font_size_{{ placement.font_size }}">
+
+                                <div class="list_textfields">
+
+                                    <a href="{{ feedpost.link }}">
+                                        <div class="headline">
+                                            {% if feedpost.title > '' %}    
+                                                <h3>{{ feedpost.title }}</h3>
+                                            {% else %}
+                                                <p>{{ feedpost.link }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+
+                                    {% if placement.show_created %}
+                                        <div class="metafields">    
+                                            {{ feedpost.created }}
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="summary">
+                                        {{ feedpost.body | safe }}
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
                 {% endif %}
 
             {% endfor %}

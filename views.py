@@ -19,6 +19,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 from tougcomsys.forms import CommentForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
+from feeds.models import (Post as FeedPost, Source as FeedSource)
 
 # ArticleImage, 
 
@@ -226,7 +227,7 @@ def single_event_date_dict( url, uid ):
 
     return event_dict
 
-
+    
 def condensify( value ):
     return slugify( value ).replace('-','')
 
@@ -349,10 +350,12 @@ class HomePage(TemplateView):
 
                 placement.events = event_date_dict( placement, do_preview ) 
 
+            elif placement.type == Placement.TYPE_FEED:
+                placement.feedposts = FeedPost.objects.filter( source__in=[feedsource.source.pk for feedsource in placement.feedsource_set.all()] ).order_by('-created') 
+
             context_data['placements'].append(placement)
 
         return context_data
-
 
 class ArticleDetail(DetailView):
 

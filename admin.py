@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import reverse
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent, Subscription
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent, Subscription, FeedSource
+
 # ArticleImage, 
 
 import icalendar
@@ -21,13 +22,18 @@ class IcalInline(admin.StackedInline):
     model=ICal
     extra=1
 
+class FeedSourceInline(admin.StackedInline):
+    model=FeedSource
+    extra=1
+
 class MenuitemInline(admin.StackedInline):
     model=Menuitem
     extra=1
 
 class PlacementAdmin(admin.ModelAdmin):
+
     list_display = ('__str__',  'place_number')
-    inlines = [ArticlePlacementInline, IcalInline]
+    inlines = [ArticlePlacementInline, IcalInline, FeedSourceInline]
 
 admin.site.register(Placement, PlacementAdmin)
 
@@ -99,3 +105,5 @@ admin.site.register( Page )
 admin.site.register( Comment )
 
 admin.site.register(Subscription)
+
+admin.site.register(FeedSource)

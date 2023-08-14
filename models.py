@@ -6,6 +6,7 @@ from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django.db.models.functions import Upper
 from django.core.exceptions import ValidationError
+from feeds.models import Source
 
 def plus_366():
     return date.today() + timedelta( days=366 )
@@ -107,9 +108,11 @@ class Placement(models.Model):
 
     TYPE_ARTICLE_LIST = 0
     TYPE_EVENT_LIST = 1
+    TYPE_FEED = 2
     TYPE_CHOICES = [
         ( TYPE_ARTICLE_LIST, 'Article List'),
-        ( TYPE_EVENT_LIST, 'Event List')
+        ( TYPE_EVENT_LIST, 'Event List'),
+        ( TYPE_FEED, 'Feed'),
     ]
 
     COLUMNWIDTH_NARROW = "narrow"
@@ -203,7 +206,7 @@ class Placement(models.Model):
     class Meta:
         ordering = ('page', 'place_number',)
     
-
+    
 class Article(models.Model):
 
     DRAFT_STATUS_PUBLISHED = 7
@@ -589,6 +592,23 @@ class BlockedIcalEvent(models.Model):
     )
     def __str__( self ):
         return self.name if self.name > '' else self.uuid
+
+class FeedSource(models.Model):
+
+    placement=models.ForeignKey(
+        Placement,
+        on_delete=models.CASCADE,
+        null=True,
+        help_text="The placement on the template on which this feed should be displayed"
+    )
+    source = models.ForeignKey(
+        Source,
+        on_delete=models.CASCADE,
+        help_text="The source (set up in the Feeds app)"
+    )
+
+    def __str__( self ):
+        return self.source.feed_url
 
 
 class Menu(models.Model):
