@@ -1,5 +1,4 @@
 from datetime import date, datetime, timedelta
-from django.shortcuts import redirect, render
 
 import icalendar
 import markdown as md
@@ -7,19 +6,24 @@ import recurring_ical_events
 import requests
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
+from feeds.models import Post as FeedPost
+from feeds.models import Source as FeedSource
+
 from tougcomsys.forms import ArticleForm, CommentForm
-from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
-from feeds.models import (Post as FeedPost, Source as FeedSource)
+from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu,
+                               Page, Placement, Subscription)
 
 # ArticleImage, 
 
@@ -484,7 +488,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
 
-class ArticleCreate(CreateView):
+class ArticleCreate(PermissionRequiredMixin, CreateView):
 
     model = Article
     form_class = ArticleForm
