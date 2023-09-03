@@ -9,6 +9,7 @@ urlpatterns = [
     path('homepage/', views.HomePage.as_view(), name='homepage'),
     path('page/<int:page>/', views.HomePage.as_view(), name='page'),
     path('article/<slug:slug>/', views.ArticleDetail.as_view(), name='article'),
+    path('article/_/create/', views.ArticleCreate.as_view(), name='article_create'),
     path('article/<slug:article>/comment/create/', views.CommentCreate.as_view(), name='comment_create'),
     path('comment/<int:to>/comment/create/', views.CommentCreate.as_view(), name='comment_create'),
     path('article/<slug:article>/subscription/create/', views.SubscriptionCreate.as_view(), name='subscription_create'),

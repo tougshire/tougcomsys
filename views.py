@@ -17,7 +17,7 @@ from django.utils.text import slugify
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
-from tougcomsys.forms import CommentForm
+from tougcomsys.forms import ArticleForm, CommentForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu, Page, Placement, Subscription)
 from feeds.models import (Post as FeedPost, Source as FeedSource)
 
@@ -483,6 +483,13 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+
+class ArticleCreate(CreateView):
+
+    model = Article
+    form_class = ArticleForm
+    template_name = 'tougcomsys/editing/article_form.html'
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
 
 class SubscriptionCreate(CreateView):
 
