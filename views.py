@@ -490,6 +490,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
 
+    permission_required = "tougcomsys.add_article"  
     model = Article
     form_class = ArticleForm
     template_name = 'tougcomsys/editing/article_form.html'
