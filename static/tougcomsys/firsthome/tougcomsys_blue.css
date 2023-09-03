@@ -1,0 +1,20 @@
+
+#footer {
+    background-color: rgb(25, 25, 50);
+    color:white;
+}
+
+#menubar, #menubar a, #menubar a:visited, #menubar a:hover {
+    background-color: rgb(25, 25, 50);
+    color:white;
+}
+
+
+.headline, .headline a, .headline a:visited, .headline a:hover {
+    color:#022e5b;
+}
+
+.subheadline, .subheadline a, .subheadline a:visited, .subheadline a:hover {
+    color:#00a7e0;
+}
+
