@@ -1,10 +1,83 @@
 {% extends './_base.html' %}
 
 {% block content %}
-    {% for field in form %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
+    <div class="form">
+        {% csrf_token %}
+        {% for field in form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+
+        <div id="div_headline">
+            {% include 'touglates/form_field.html' with field=form.headline label_tag=form.headline.label_tag %}
         </div>
-    {% endfor %}
+        <div id="div_subheadline">
+            {% include 'touglates/form_field.html' with field=form.subheadline label_tag=formsubheadline.label_tag %}
+        </div>
+        <div id="div_content_format">
+            {% include 'touglates/form_field.html' with field=form.content_format label_tag=formcontent_format.label_tag %}
+        </div>
+        <div id="div_content">
+            {% include 'touglates/form_field.html' with field=form.content label_tag=formcontent.label_tag %}
+        </div>
+        <div id="div_hashtags">
+            {% include 'touglates/form_field.html' with field=form.hashtags label_tag=formhashtags.label_tag %}
+        </div>
+        <div id="div_list_image">
+            {% include 'touglates/form_field.html' with field=form.list_image label_tag=formlist_image.label_tag %}
+        </div>
+        <div id="div_list_image_location">
+            {% include 'touglates/form_field.html' with field=form.list_image_location label_tag=formlist_image_location.label_tag %}
+        </div>
+        <div id="div_detail_image">
+            {% include 'touglates/form_field.html' with field=form.detail_image label_tag=formdetail_image.label_tag %}
+        </div>
+        <div id="div_detail_image_location">
+            {% include 'touglates/form_field.html' with field=form.detail_image_location label_tag=formdetail_image_location.label_tag %}
+        </div>
+        <div id="div_featured_image">
+            {% include 'touglates/form_field.html' with field=form.featured_image label_tag=formfeatured_image.label_tag %}
+        </div>
+        <div id="div_summary_format">
+            {% include 'touglates/form_field.html' with field=form.summary_format label_tag=formsummary_format.label_tag %}
+        </div>
+        <div id="div_summary">
+            {% include 'touglates/form_field.html' with field=form.summary label_tag=formsummary.label_tag %}
+        </div>
+        <div id="div_readmore">
+            {% include 'touglates/form_field.html' with field=form.readmore label_tag=formreadmore.label_tag %}
+        </div>
+        <div id="div_author">
+            {% include 'touglates/form_field.html' with field=form.author label_tag=formauthor.label_tag %}
+        </div>
+        <div id="div_descriptive_date">
+            {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=formdescriptive_date.label_tag %}
+        </div>
+        <div id="div_show_author">
+            {% include 'touglates/form_field.html' with field=form.show_author label_tag=formshow_author.label_tag %}
+        </div>
+        <div id="div_show_updated">
+            {% include 'touglates/form_field.html' with field=form.show_updated label_tag=formshow_updated.label_tag %}
+        </div>
+        <div id="div_sortable_date">
+            {% include 'touglates/form_field.html' with field=form.sortable_date label_tag=formsortable_date.label_tag %}
+        </div>
+        <div id="div_sticky">
+            {% include 'touglates/form_field.html' with field=form.sticky label_tag=formsticky.label_tag %}
+        </div>
+        <div id="div_draft_status">
+            {% include 'touglates/form_field.html' with field=form.draft_status label_tag=formdraft_status.label_tag %}
+        </div>
+        <div id="div_allow_comments">
+            {% include 'touglates/form_field.html' with field=form.allow_comments label_tag=formallow_comments.label_tag %}
+        </div>
+        <div id="div_slug">
+            {% include 'touglates/form_field.html' with field=form.slug label_tag=formslug.label_tag %}
+    </div>        
+
+
+
+        {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Submit</button>' %}
+    
+    </div>
+
 {% endblock %}

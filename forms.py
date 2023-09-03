@@ -50,3 +50,9 @@ class ArticleForm(forms.ModelForm):
             "allow_comments",
             "slug",
         ]
+        widgets = {
+            'headline':forms.TextInput(attrs={'class':'width_050'}),
+            'subheadline':forms.TextInput(attrs={'class':'width_050'}),
+            'content':forms.Textarea(attrs={'class':'width_050'})
+        }
+            
