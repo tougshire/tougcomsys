@@ -23,7 +23,7 @@
         {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ tougcomsys.SITE_NAME }}</title>
-        <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys.css' %}">
+        <link rel="stylesheet" href="{% static 'tougcomsys/'|add:tougcomsys.active|add:'/tougcomsys.css' %}">
         {% if tougcomsys.COLORSCHEME %}
             {% with tougcomsys.COLORSCHEME as colorscheme %}
                 <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys_' %}{{ tougcomsys.COLORSCHEME }}.css">
