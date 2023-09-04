@@ -4,7 +4,6 @@
 {% block content %}
     <script src='{% static 'touglates\touglates.js' %}'></script>
 
-
     <div class="form">
         <form id="frm_image" enctype="multipart/form-data" method="POST">
         {{ form.media }}
@@ -32,7 +31,4 @@
         {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Submit</button>' %}
     </form>
     </div>
-    <script>
-        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-    </script>
 {% endblock %}
