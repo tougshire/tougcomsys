@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from django.apps import apps
 
 import icalendar
 import markdown as md
@@ -21,14 +22,28 @@ from django.views.generic.edit import CreateView, DeleteView
 from feeds.models import Post as FeedPost
 from feeds.models import Source as FeedSource
 
-from tougcomsys.forms import ArticleForm, CommentForm
-from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Menu,
+from tougcomsys.forms import ArticleForm, CommentForm, ImageForm
+from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
                                Page, Placement, Subscription)
 
 # ArticleImage, 
 
 class TestError(Exception):
     pass
+
+def window_closer( request, pk, model_name ):
+                   
+    option_value = pk
+    option_label = apps.get_model('tougcomsys', model_name).objects.get(pk=pk).__str__()
+    attrs=[]
+    response_text = ''
+    response_text = response_text + '<script>\n'
+    response_text = response_text + 'window.opener.addOptionFromPopup('
+    response_text = response_text + '"{}","{}","{}",{}'.format(option_value, option_label, model_name, attrs)
+    response_text = response_text + ')\n'
+    response_text = response_text + '</script>\n'
+
+    return HttpResponse(response_text)
 
 def events_from_icals( placement ):
 
@@ -495,6 +510,23 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
     form_class = ArticleForm
     template_name = 'tougcomsys/editing/article_form.html'
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
+
+class ImageCreate(PermissionRequiredMixin, CreateView):
+
+    permission_required = "tougcomsys.add_Image"  
+    model = Image
+    form_class = ImageForm
+    template_name = 'tougcomsys/editing/Image_form.html'
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'Image_form.html')
+
+    def get_success_url(self):
+        if 'popup' in self.kwargs:
+            return reverse('tougcomsys:window_closer', kwargs={'pk':self.object.pk, 'model_name':'Image'})
+        return reverse('tougcomsys:homepage')
+
+    # def get_success_url(self):
+    #     return super().get_success_url()
+    
 
 class SubscriptionCreate(CreateView):
 

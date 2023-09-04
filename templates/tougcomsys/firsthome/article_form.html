@@ -1,7 +1,11 @@
 {% extends './_base.html' %}
+{% load static %}
 
 {% block content %}
+    <script src='{% static 'touglates\touglates.js' %}'></script>
     <div class="form">
+        <form id="frm_article" method="POST">
+        {{ form.media }}
         {% csrf_token %}
         {% for field in form.hidden_fields %}
         {{ field }}
@@ -18,6 +22,12 @@
         </div>
         <div id="div_content">
             {% include 'touglates/form_field.html' with field=form.content label_tag=formcontent.label_tag %}
+        </div>
+        <div id="div_summary_format">
+            {% include 'touglates/form_field.html' with field=form.summary_format label_tag=formsummary_format.label_tag %}
+        </div>
+        <div id="div_summary">
+            {% include 'touglates/form_field.html' with field=form.summary label_tag=formsummary.label_tag %}
         </div>
         <div id="div_hashtags">
             {% include 'touglates/form_field.html' with field=form.hashtags label_tag=formhashtags.label_tag %}
@@ -36,12 +46,6 @@
         </div>
         <div id="div_featured_image">
             {% include 'touglates/form_field.html' with field=form.featured_image label_tag=formfeatured_image.label_tag %}
-        </div>
-        <div id="div_summary_format">
-            {% include 'touglates/form_field.html' with field=form.summary_format label_tag=formsummary_format.label_tag %}
-        </div>
-        <div id="div_summary">
-            {% include 'touglates/form_field.html' with field=form.summary label_tag=formsummary.label_tag %}
         </div>
         <div id="div_readmore">
             {% include 'touglates/form_field.html' with field=form.readmore label_tag=formreadmore.label_tag %}
@@ -77,7 +81,19 @@
 
 
         {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Submit</button>' %}
-    
+    </form>
     </div>
+    <script>
+        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        function getControlIdsForPopups(modelName) {
+            controlIds={
+                'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
+            }
+        return controlIds[modelName]
+    }
+  </script>
 
+    </script>
 {% endblock %}

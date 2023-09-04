@@ -1,0 +1,38 @@
+{% extends './_base.html' %}
+{% load static %}
+
+{% block content %}
+    <script src='{% static 'touglates\touglates.js' %}'></script>
+
+
+    <div class="form">
+        <form id="frm_image" enctype="multipart/form-data" method="POST">
+        {{ form.media }}
+        {% csrf_token %}
+        {% for field in form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+
+        <div id="div_title">
+            {% include 'touglates/form_field.html' with field=form.title label_tag=form.title.label_tag %}
+        </div>
+        <div id="div_author">
+            {% include 'touglates/form_field.html' with field=form.author label_tag=formauthor.label_tag %}
+        </div>
+        <div id="div_file">
+            {% include 'touglates/form_field.html' with field=form.file label_tag=formfile.label_tag %}
+        </div>
+        <div id="div_alt_text">
+            {% include 'touglates/form_field.html' with field=form.alt_text label_tag=formalt_text.label_tag %}
+        </div>
+        <div id="div_url">
+            {% include 'touglates/form_field.html' with field=form.url label_tag=formurl.label_tag %}
+        </div>
+
+        {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Submit</button>' %}
+    </form>
+    </div>
+    <script>
+        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+    </script>
+{% endblock %}

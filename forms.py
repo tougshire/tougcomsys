@@ -1,9 +1,10 @@
+from django.urls import reverse_lazy
 from django import forms
 from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from tougcomsys.models import Article, Comment
+from tougcomsys.models import Article, Comment, Image
 
 def validate_blank(value):
     if value=='':
@@ -53,6 +54,18 @@ class ArticleForm(forms.ModelForm):
         widgets = {
             'headline':forms.TextInput(attrs={'class':'width_050'}),
             'subheadline':forms.TextInput(attrs={'class':'width_050'}),
-            'content':forms.Textarea(attrs={'class':'width_050'})
+            'content':forms.Textarea(attrs={'class':'width_050'}),
+            'summary':forms.Textarea(attrs={'class':'width_050'}),
+
         }
-            
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = [
+            "title",
+            "author",
+            "file",
+            "alt_text",
+            "url",
+        ]
