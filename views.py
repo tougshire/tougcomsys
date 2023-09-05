@@ -497,6 +497,9 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
     template_name = 'tougcomsys/editing/article_form.html'
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
 
+#    def get_success_url(self):
+
+
 class ImageCreate(PermissionRequiredMixin, CreateView):
 
     permission_required = "tougcomsys.add_Image"  
