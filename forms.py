@@ -3,8 +3,10 @@ from django import forms
 from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.contrib.admin.widgets import AdminDateWidget
 
-from tougcomsys.models import Article, Comment, Image
+from tougcomsys.models import Article, ArticlePlacement, Comment, Image
+from touglates.widgets import TouglateDateInput
 
 def validate_blank(value):
     if value=='':
@@ -56,10 +58,14 @@ class ArticleForm(forms.ModelForm):
             'subheadline':forms.TextInput(attrs={'class':'width_050'}),
             'content':forms.Textarea(attrs={'class':'width_050'}),
             'summary':forms.Textarea(attrs={'class':'width_050'}),
-
+            'sortable_date':TouglateDateInput()
         }
 
 class ImageForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["author"] = self.request.user
+
     class Meta:
         model = Image
         fields = [
@@ -69,3 +75,11 @@ class ImageForm(forms.ModelForm):
             "alt_text",
             "url",
         ]
+
+class ArticlePlacementForm(forms.ModelForm):
+    model = ArticlePlacement
+    fields = [
+        'article',
+        'placement',
+        'expiration_date',
+    ]
