@@ -399,6 +399,7 @@ class Article(models.Model):
     )
     slug = models.SlugField(
         "slug",
+        blank=True,
         help_text = "The slug used to refer to this article"
     )
 
