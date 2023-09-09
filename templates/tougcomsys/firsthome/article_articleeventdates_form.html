@@ -1,0 +1,41 @@
+{% extends './_base.html' %}
+{% load static %}
+
+{% block content %}
+    <h3>{{ object }}</h3>
+    <script src='{% static 'touglates\touglates.js' %}'></script>
+    <div class="form">
+        <form id="frm_article" method="POST">
+        {{ form.media }}
+        {% csrf_token %}
+        {% for field in form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+
+        {{ articleeventdates.management_form }}
+        {% for form in articleeventdates.forms %}
+        <div id="div_allow_comments">
+            {% include 'touglates/form_field.html' with field=form.whendate  %}
+            {% include 'touglates/form_field.html' with field=form.whentime  %}
+            {% include 'touglates/form_field.html' with field=form.timelen  %}
+        </div>
+
+        {% endfor %}
+
+        {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+    </form>
+    </div>
+    <script>
+        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+        function getControlIdsForPopups(modelName) {
+            controlIds={
+                'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
+            }
+        return controlIds[modelName]
+    }
+  </script>
+
+    </script>
+{% endblock %}

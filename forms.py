@@ -3,9 +3,8 @@ from django import forms
 from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from django.contrib.admin.widgets import AdminDateWidget
 
-from tougcomsys.models import Article, ArticlePlacement, Comment, Image
+from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image
 from touglates.widgets import TouglateDateInput
 
 def validate_blank(value):
@@ -76,10 +75,29 @@ class ImageForm(forms.ModelForm):
             "url",
         ]
 
+class ArticleArticleEventDateForm(forms.ModelForm):
+    class Meta:
+        model = ArticleEventdate
+        fields = [
+            'article',
+            'whendate',
+            'whentime',
+            'timelen',
+        ]
+        widgets = {
+            'whendate': TouglateDateInput()
+        }
+
 class ArticlePlacementForm(forms.ModelForm):
-    model = ArticlePlacement
-    fields = [
-        'article',
-        'placement',
-        'expiration_date',
-    ]
+    class Meta:
+        model = ArticlePlacement
+        fields = [
+            'article',
+            'placement',
+            'expiration_date',
+        ]
+        widgets = {
+            'expiration_date': TouglateDateInput()
+        }
+
+ArticleArticleEventDateFormSet = forms.inlineformset_factory(Article, ArticleEventdate, form=ArticleArticleEventDateForm, extra=1, can_delete=True)

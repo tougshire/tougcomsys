@@ -1,5 +1,7 @@
 from datetime import date, datetime, timedelta
+from typing import Any, Dict
 from django.apps import apps
+from django.forms.models import BaseModelForm
 
 import icalendar
 import markdown as md
@@ -18,11 +20,11 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from feeds.models import Post as FeedPost
 from feeds.models import Source as FeedSource
 
-from tougcomsys.forms import ArticleForm, CommentForm, ImageForm
+from tougcomsys.forms import ArticleArticleEventDateFormSet, ArticleForm, CommentForm, ImageForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
                                Page, Placement, Subscription)
 
@@ -502,16 +504,51 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
 
 class ImageCreate(PermissionRequiredMixin, CreateView):
 
-    permission_required = "tougcomsys.add_Image"  
+    permission_required = "tougcomsys.add_image"  
     model = Image
     form_class = ImageForm
-    template_name = 'tougcomsys/editing/Image_form.html'
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'Image_form.html')
 
     def get_success_url(self):
         if 'popup' in self.kwargs:
             return reverse('tougcomsys:window_closer', kwargs={'pk':self.object.pk, 'app_name':'tougcomsys', 'model_name':'Image'})
         return reverse('tougcomsys:homepage')
+    
+class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
+
+    permission_required = "tougcomsys.change_article"  
+    model=Article
+    fields=[]
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_articleeventdates_form.html')
+
+    def get_context_data(self, **kwargs):
+
+        context_data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        else:
+            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (instance=self.get_object())
+
+        return context_data
+
+    def get_context_data(self, **kwargs):
+
+        context_data = super().get_context_data(**kwargs)
+
+        if self.request.POST:
+            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        else:
+            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (instance=self.get_object())
+
+    def form_valid(self, form):
+        valid_response = super().form_valid(form)
+
+        articleeventdates = ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        if articleeventdates.is_valid():
+            articleeventdates.save()
+            return valid_response
+        else:
+            return super().form_invalid(form)
 
 class SubscriptionCreate(CreateView):
 

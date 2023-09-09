@@ -14,6 +14,7 @@ urlpatterns = [
     path('_/article/create/', views.ArticleCreate.as_view(), name='article_create'),
     path('_/article/image/create/', views.ImageCreate.as_view(), name='article_image_create', kwargs={'popup':'popup'}),
     path('article/<slug:article>/comment/create/', views.CommentCreate.as_view(), name='comment_create'),
+    path('article/<slug:slug>/articleeventdates/', views.ArticleArticleEventDates.as_view(), name='article_articleeventdates'),
     path('comment/<int:to>/comment/create/', views.CommentCreate.as_view(), name='comment_create'),
     path('article/<slug:article>/subscription/create/', views.SubscriptionCreate.as_view(), name='subscription_create'),
     path('subscription/<int:pk>/delete/', views.SubscriptionDelete.as_view(), name='subscription_delete'),
