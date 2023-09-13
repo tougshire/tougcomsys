@@ -12,13 +12,11 @@
         {{ field }}
         {% endfor %}
 
-        {{ articleeventdates.management_form }}
-        {% for form in articleeventdates.forms %}
-        
+        {{ placements.management_form }}
+        {% for form in placements.forms %}
         <div id="div_allow_comments">
-            {% include 'touglates/form_field.html' with field=form.whendate  %}
-            {% include 'touglates/form_field.html' with field=form.whentime  %}
-            {% include 'touglates/form_field.html' with field=form.timelen  %}
+            {% include 'touglates/form_field.html' with field=form.placement  %}
+            {% include 'touglates/form_field.html' with field=form.expiration_date  %}
         </div>
 
         {% endfor %}

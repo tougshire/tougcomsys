@@ -101,3 +101,4 @@ class ArticlePlacementForm(forms.ModelForm):
         }
 
 ArticleArticleEventDateFormSet = forms.inlineformset_factory(Article, ArticleEventdate, form=ArticleArticleEventDateForm, extra=1, can_delete=True)
+ArticlePlacementFormSet = forms.inlineformset_factory(Article, ArticlePlacement, form=ArticlePlacementForm, extra=1, can_delete=True)

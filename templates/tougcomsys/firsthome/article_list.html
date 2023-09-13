@@ -1,0 +1,32 @@
+{% extends './_base.html' %}
+
+{% block content %}
+    <div id="tougcomsys" class="list">
+        <table>
+        {% for article in object_list %}
+            <tr class="{% cycle 'listRowOdd' 'ListRowEven' %}" style="background-color: {% cycle '#eee' '#fff' %};">
+                <td>
+                    <div>
+                        <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
+                    </div>
+                </td>
+                <td>
+                    <div>{{ article.headline }}</div>
+                    <div>{{ article.subheadline }}</div>
+                </td>
+                <td>
+                    <div>{{ article.updated_date }}</div>
+                </td>
+                <td>
+                    <div>{{ article.get_draft_status_display }}</div>
+                </td>
+                <td>
+                    {% for articleplacement in article.articleplacement_set.all %}
+                        <div>{{ articleplacement.placement }}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+{% endblock %}
