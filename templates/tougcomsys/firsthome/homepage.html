@@ -14,7 +14,7 @@
                         {% endif %}
 
                         {% for articleplacement in placement.articleplacements %}
-
+            
                             {% if articleplacement.article.list_image %}
                             <div class="article article_with_image_{{ articleplacement.article.list_image_location }} font_size_{{ placement.font_size }}">
 
@@ -28,6 +28,15 @@
                                         {{ articleplacement.article.subheadline|safe }}
                                     </a>
                                 </div>
+
+                                {% if articleplacement.article.date %}
+                                    {{ articleplacement.article.date }}
+                                {% elif articleplacement.article.next_date %}
+                                    Next Date:{{ articleplacement.article.next_date }}
+                                {% elif articleplacement.article.prev_date %}
+                                    {{ articleplacement.article.prev_date }}
+                                {% endif %}
+
 
                                 <div class="list_image">
                                     <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text }}"{% endif %}>
@@ -55,6 +64,15 @@
                                                 <h3>{{ articleplacement.article.headline|safe }}</h3>
                                             </a>
                                         </div>
+
+                                        {% if articleplacement.article.date %}
+                                            {{ articleplacement.article.date }}
+                                        {% elif articleplacement.article.next_date %}
+                                            Next Date:{{ articleplacement.article.next_date }}
+                                        {% elif articleplacement.article.prev_date %}
+                                            {{ articleplacement.article.prev_date }}
+                                        {% endif %}
+    
 
                                         <div class="subheadline">
                                             {{ articleplacement.article.subheadline|safe }}

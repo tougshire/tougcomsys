@@ -334,6 +334,21 @@ class HomePage(TemplateView):
 
                 for articleplacement in placement.articleplacements:
 
+                    date_count = articleplacement.article.articleeventdate_set.count()
+
+                    if date_count == 1:
+                        articleplacement.article.date = articleplacement.article.articleeventdate_set.first().whendate
+                    else:
+                        for article_eventdate in articleplacement.article.articleeventdate_set.all():
+                            if article_eventdate.whendate < date.today():
+                                articleplacement.article.prev_date = article_eventdate.whendate
+                            if article_eventdate.whendate > date.today():
+                                articleplacement.article.next_date = article_eventdate.whendate
+                                break
+                    
+                    articleplacement.article.date_count = date_count
+
+
                     if articleplacement.article.summary == '':
                         articleplacement.article.summary = articleplacement.article.content
                     if articleplacement.article.summary == '__none__':
@@ -385,6 +400,21 @@ class ArticleDetail(DetailView):
             self.object.show_author = True
         if self.object.show_updated == Article.SHOW_COMPLY:
             self.object.show_updates = True  
+
+        date_count = self.object.articleeventdate_set.count()
+
+        if date_count == 1:
+            context_data['date'] = self.object.articleeventdate_set.first().whendate
+        else:
+            for article_eventdate in self.object.articleeventdate_set.all():
+                if article_eventdate.whendate < date.today():
+                    context_data['prev_date'] = article_eventdate.whendate
+                if article_eventdate.whendate > date.today():
+                    context_data['next_date'] = article_eventdate.whendate
+                    break
+        
+        context_data['date_count'] = date_count
+
         
         subscription = None
         if self.request.user.is_authenticated and self.object.allow_comments:

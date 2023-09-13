@@ -2,6 +2,14 @@
 
 {% block content %}
     <div id="tougcomsys" class="detail">
+        {% if date %}
+            {{ date }}
+        {% elif next_date %}
+            Next Date:{{ next_date }}
+        {% elif prev_date %}
+            {{ prev_date }}
+        {% endif %}
+
         {% if article.detail_image %}
             <div class="article article_with_image_{{ article.detail_image_location }}">
                 <div class="headline">   
