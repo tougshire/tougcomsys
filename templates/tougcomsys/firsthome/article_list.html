@@ -4,17 +4,37 @@
     {% include 'tougshire_vistas/filter.html' %}
     <div id="tougcomsys" class="list">
         <table>
+            <tr>
+                {% if user.is_authenticated %}
+                    <th>Action</th>
+                {% endif %}
+                <th>Headline</th>
+                <th>Update</th>
+                <th>Status</th>
+                <th>Placements</th>
+            </tr>
         {% for article in object_list %}
             <tr class="{% cycle 'listRowOdd' 'ListRowEven' %}" style="background-color: {% cycle '#eee' '#fff' %};">
-                <td>
-                    <div>
-                        <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
-                    </div>
-                </td>
-                <td>
-                    <div>{{ article.headline }}</div>
-                    <div>{{ article.subheadline }}</div>
-                </td>
+                
+                {% if user.is_authenticated %}
+                    <td>
+                        <div>
+                            <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
+                        </div>
+                        <div>
+                            <a href="{% url 'tougcomsys:article' article.slug %}">View</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div>{{ article.headline }}</div>
+                        <div>{{ article.subheadline }}</div>
+                    </td>
+                {% else %}
+                    <td>
+                        <div><a href="{% url 'tougcomsys:article' article.slug %}">{{ article.headline }}</a></div>
+                        <div>{{ article.subheadline }}</div>
+                    </td>
+                {% endif %}
                 <td>
                     <div>{{ article.updated_date }}</div>
                 </td>
