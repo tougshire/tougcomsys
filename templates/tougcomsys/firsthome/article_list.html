@@ -1,6 +1,7 @@
 {% extends './_base.html' %}
 
 {% block content %}
+    {% include 'tougshire_vistas/filter.html' %}
     <div id="tougcomsys" class="list">
         <table>
         {% for article in object_list %}

@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from typing import Any, Dict
+from urllib.parse import urlencode
 from django.apps import apps
 from django.forms.models import BaseModelForm
 
@@ -13,7 +14,7 @@ from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -27,6 +28,8 @@ from feeds.models import Source as FeedSource
 from tougcomsys.forms import ArticleArticleEventDateFormSet, ArticleForm, ArticlePlacementFormSet, CommentForm, ImageForm
 from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
                                Page, Placement, Subscription)
+from tougshire_vistas.models import Vista
+from tougshire_vistas.views import get_vista_queryset, make_vista_fields, vista_context_data
 
 # ArticleImage, 
 
@@ -348,7 +351,6 @@ class HomePage(TemplateView):
                     
                     articleplacement.article.date_count = date_count
 
-
                     if articleplacement.article.summary == '':
                         articleplacement.article.summary = articleplacement.article.content
                     if articleplacement.article.summary == '__none__':
@@ -434,9 +436,79 @@ class ArticleDetail(DetailView):
 
 class ArticleList(ListView):
 
+    permission_required = 'sdcpeople.view_person'
     model = Article
 
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_list.html')
+
+    def setup(self, request, *args, **kwargs):
+
+        self.vista_settings={
+            'max_search_keys':5,
+            'fields':[],
+        }
+
+        self.vista_settings['fields'] = make_vista_fields(Article, field_names=[
+            'headline'
+
+        ])
+
+        if 'by_value' in kwargs and 'by_parameter' in kwargs:
+
+            self.vista_get_by = QueryDict(urlencode([
+                ('filter__fieldname__0', [kwargs.get('by_parameter')]),
+                ('filter__op__0', ['exact']),
+                ('filter__value__0', [kwargs.get('by_value')]),
+                ('order_by', ['name_last', 'name_common', ]),
+                ('paginate_by',self.paginate_by),
+            ],doseq=True) )
+
+
+        self.vista_defaults = QueryDict(urlencode([
+            ('filter__fieldname__0', ['membership_status__is_member']),
+            ('filter__op__0', ['exact']),
+            ('filter__value__0', ['True']),
+            ('order_by', ['name_last', 'name_common', ]),
+            ('paginate_by',self.paginate_by),
+        ],doseq=True),mutable=True )
+
+        return super().setup(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self, **kwargs):
+
+        queryset = super().get_queryset()
+
+        self.vistaobj = {'querydict':QueryDict(), 'queryset':queryset}
+
+        return get_vista_queryset( self )
+
+    def get_paginate_by(self, queryset):
+
+        if 'paginate_by' in self.vistaobj['querydict'] and self.vistaobj['querydict']['paginate_by']:
+            return self.vistaobj['querydict']['paginate_by']
+
+    def get_context_data(self, **kwargs):
+
+        context_data = super().get_context_data(**kwargs)
+
+        vista_data = vista_context_data(self.vista_settings, self.vistaobj['querydict'])
+
+
+        context_data = {**context_data, **vista_data}
+        context_data['vista_default'] = dict(self.vista_defaults)
+
+        if self.request.user.is_authenticated:
+            context_data['vistas'] = Vista.objects.filter(user=self.request.user, model_name='sdcpeople.Article').all() # for choosing saved vistas
+
+        if self.request.POST.get('vista_name'):
+            context_data['vista_name'] = self.request.POST.get('vista_name')
+
+        context_data['count'] = self.object_list.count()
+
+        return context_data
 
 
 def get_ical_text(request, pk=0):
