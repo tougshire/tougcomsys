@@ -449,8 +449,9 @@ class ArticleList(ListView):
         }
 
         self.vista_settings['fields'] = make_vista_fields(Article, field_names=[
-            'headline'
-
+            'headline',
+            'draft_status',
+            'articleplacement__placement'
         ])
 
         if 'by_value' in kwargs and 'by_parameter' in kwargs:
@@ -465,10 +466,10 @@ class ArticleList(ListView):
 
 
         self.vista_defaults = QueryDict(urlencode([
-            ('filter__fieldname__0', ['membership_status__is_member']),
+            ('filter__fieldname__0', ['draft_status']),
             ('filter__op__0', ['exact']),
-            ('filter__value__0', ['True']),
-            ('order_by', ['name_last', 'name_common', ]),
+            ('filter__value__0', [Article.DRAFT_STATUS_PUBLISHED]),
+            ('order_by', ['updated_date', 'headline', ]),
             ('paginate_by',self.paginate_by),
         ],doseq=True),mutable=True )
 
