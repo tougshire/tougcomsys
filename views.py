@@ -488,8 +488,11 @@ class ArticleList(ListView):
 
     def get_paginate_by(self, queryset):
 
-        if 'paginate_by' in self.vistaobj['querydict'] and self.vistaobj['querydict']['paginate_by']:
+        if 'paginate_by' in self.vistaobj['querydict'] and isinstance(self.vistaobj['querydict']['paginate_by'], int):
+            print('tp239i644', self.vistaobj['querydict']['paginate_by'])
             return self.vistaobj['querydict']['paginate_by']
+
+        return super().get_paginate_by(queryset)
 
     def get_context_data(self, **kwargs):
 
