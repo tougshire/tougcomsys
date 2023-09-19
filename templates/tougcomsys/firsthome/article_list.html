@@ -13,41 +13,46 @@
                 <th>Status</th>
                 <th>Placements</th>
             </tr>
-        {% for article in object_list %}
-            <tr class="{% cycle 'listRowOdd' 'ListRowEven' %}" style="background-color: {% cycle '#eee' '#fff' %};">
-                
-                {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
+                <tr>
+                    <td><a href="{% url 'tougcomsys:article_create' %}">new</a><td colspan="*"></td>
+                </tr>
+            {% endif %}
+            {% for article in object_list %}
+                <tr class="{% cycle 'listRowOdd' 'ListRowEven' %}" style="background-color: {% cycle '#eee' '#fff' %};">
+                    
+                    {% if user.is_authenticated %}
+                        <td>
+                            <div>
+                                <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
+                            </div>
+                            <div>
+                                <a href="{% url 'tougcomsys:article' article.slug %}">View</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ article.headline }}</div>
+                            <div>{{ article.subheadline }}</div>
+                        </td>
+                    {% else %}
+                        <td>
+                            <div><a href="{% url 'tougcomsys:article' article.slug %}">{{ article.headline }}</a></div>
+                            <div>{{ article.subheadline }}</div>
+                        </td>
+                    {% endif %}
                     <td>
-                        <div>
-                            <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
-                        </div>
-                        <div>
-                            <a href="{% url 'tougcomsys:article' article.slug %}">View</a>
-                        </div>
+                        <div>{{ article.updated_date }}</div>
                     </td>
                     <td>
-                        <div>{{ article.headline }}</div>
-                        <div>{{ article.subheadline }}</div>
+                        <div>{{ article.get_draft_status_display }}</div>
                     </td>
-                {% else %}
                     <td>
-                        <div><a href="{% url 'tougcomsys:article' article.slug %}">{{ article.headline }}</a></div>
-                        <div>{{ article.subheadline }}</div>
+                        {% for articleplacement in article.articleplacement_set.all %}
+                            <div>{{ articleplacement.placement }}</div>
+                        {% endfor %}
                     </td>
-                {% endif %}
-                <td>
-                    <div>{{ article.updated_date }}</div>
-                </td>
-                <td>
-                    <div>{{ article.get_draft_status_display }}</div>
-                </td>
-                <td>
-                    {% for articleplacement in article.articleplacement_set.all %}
-                        <div>{{ articleplacement.placement }}</div>
-                    {% endfor %}
-                </td>
-            </tr>
-        {% endfor %}
+                </tr>
+            {% endfor %}
         </table>
     </div>
 {% endblock %}
