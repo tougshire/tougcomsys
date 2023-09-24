@@ -633,6 +633,12 @@ class ImageCreate(PermissionRequiredMixin, CreateView):
     form_class = ImageForm
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'Image_form.html')
 
+    def get_initial(self):
+        
+        initial = super().get_initial()
+        initial['author'] = self.request.user
+        return initial
+
     def get_success_url(self):
         if 'popup' in self.kwargs:
             return reverse('tougcomsys:window_closer', kwargs={'pk':self.object.pk, 'app_name':'tougcomsys', 'model_name':'Image'})

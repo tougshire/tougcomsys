@@ -61,9 +61,6 @@ class ArticleForm(forms.ModelForm):
         }
 
 class ImageForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["author"] = self.request.user
 
     class Meta:
         model = Image
