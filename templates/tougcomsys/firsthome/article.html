@@ -18,16 +18,24 @@
                 <div class="subheadline">
                     {{ article.subheadline|safe }}
                 </div>
-                <div class="detail_image" >
-                    <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text }}"{% endif %}>
-                </div>
+                {% if article.detail_image_location == "top" %}
+                    <div class="detail_image" >
+                        <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text }}"{% endif %}>
+                    </div>
+                {% endif %}
                 <div class="content" >
                     {{ article.content|safe }}
                 </div>
+                {% if article.detail_image_location == "bottom" %}
+                    <div class="detail_image" >
+                        <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text }}"{% endif %}>
+                    </div>
+                {% endif %}
+
             </div>
 
         {% else %}
-            <div class="article article_with_image_{{ article.detail_image_location }}">
+            <div class="article article_without_image">
                 <div class="headline">   
                     <h3>{{ article.headline|safe }}</h3>
                 </div>

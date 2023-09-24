@@ -137,16 +137,17 @@ div.article {
     border-bottom: 1px solid;
 }
 
-div.article_with_image_top div.detail_image {
+div.article_with_image_top div.detail_image, div.article_with_image_bottom div.detail_image {
     text-align: center; 
-    width:80%;
-    margin: 0 10%;
+    width:60%;
+    margin: 0 20%;
 }
 
-div.article_with_image_top img { 
+/* div.article_with_image_top, div.article_with_image_bottom img { 
+    text-align:center;
     width:80%;
     margin: 0 10%;
-}
+} */
 
 div.column_narrow {
     flex: 1;
