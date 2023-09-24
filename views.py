@@ -631,7 +631,7 @@ class ImageCreate(PermissionRequiredMixin, CreateView):
     permission_required = "tougcomsys.add_image"  
     model = Image
     form_class = ImageForm
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'Image_form.html')
+    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'image_form.html')
 
     def get_initial(self):
         
