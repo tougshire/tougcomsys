@@ -14,10 +14,12 @@
 
         {{ placements.management_form }}
         {% for form in placements.forms %}
-        <div id="div_allow_comments">
-            {% include 'touglates/form_field.html' with field=form.placement  %}
-            {% include 'touglates/form_field.html' with field=form.expiration_date  %}
-        </div>
+            {% if form.errors %}{{ form.errors }}{% endif %}
+            <div id="div_placement_{{ forloop.counter }}">
+                {{ form.id }}
+                {% include 'touglates/form_field.html' with field=form.placement  %}
+                {% include 'touglates/form_field.html' with field=form.expiration_date  %}
+            </div>
 
         {% endfor %}
 

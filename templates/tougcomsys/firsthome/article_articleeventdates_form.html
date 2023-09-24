@@ -14,12 +14,13 @@
 
         {{ articleeventdates.management_form }}
         {% for form in articleeventdates.forms %}
-        
-        <div id="div_allow_comments">
-            {% include 'touglates/form_field.html' with field=form.whendate  %}
-            {% include 'touglates/form_field.html' with field=form.whentime  %}
-            {% include 'touglates/form_field.html' with field=form.timelen  %}
-        </div>
+        {% if form.errors %}{{ form.errors }}{% endif %}
+            <div id="div_articleeventdate_{{ forloop.counter }}">
+                {{ form.id }}
+                {% include 'touglates/form_field.html' with field=form.whendate  %}
+                {% include 'touglates/form_field.html' with field=form.whentime  %}
+                {% include 'touglates/form_field.html' with field=form.timelen  %}
+            </div>
 
         {% endfor %}
 

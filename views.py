@@ -612,6 +612,9 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
     template_name = 'tougcomsys/editing/article_form.html'
     template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
 
+    def get_success_url(self):
+        return reverse( 'tougcomsys:article_articleeventdates', kwargs={'pk':self.object.pk})
+
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
     permission_required = "tougcomsys.change_article"  
@@ -692,6 +695,8 @@ class ArticlePlacements(PermissionRequiredMixin, UpdateView):
             articleplacements.save()
             return valid_response
         else:
+            for form in articleplacements.forms:
+                print('tp239nk16', form.errors )
             return super().form_invalid(form)
 
 
