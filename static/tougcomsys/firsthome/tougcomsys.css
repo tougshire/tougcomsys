@@ -143,12 +143,6 @@ div.article_with_image_top div.detail_image, div.article_with_image_bottom div.d
     margin: 0 20%;
 }
 
-/* div.article_with_image_top, div.article_with_image_bottom img { 
-    text-align:center;
-    width:80%;
-    margin: 0 10%;
-} */
-
 div.column_narrow {
     flex: 1;
 }
