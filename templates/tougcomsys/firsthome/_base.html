@@ -77,7 +77,12 @@
         </div>
 
         <div id="footer">
+            <div>
             {{ tougcomsys.FOOTER_CONTENT|safe }}
+            </div>
+            <div>
+            <a href="{% url 'login'%}">Log in</a>
+            </div>
         </div>
     </body>
 </html>
