@@ -2,74 +2,77 @@
 {% load static %}
 
 {% block content %}
-    <script src='{% static 'touglates\touglates.js' %}'></script>
-    <div class="form">
-        {% if form.errors %}{{ form.errors }}{% endif %}
-        <form id="frm_article" method="POST">
-            {{ form.media }}
-            {% csrf_token %}
-            {% for field in form.hidden_fields %}
-            {{ field }}
-            {% endfor %}
+<script src='{% static ' touglates\touglates.js' %}'></script>
+<div class="form">
+  {% if form.errors %}{{ form.errors }}{% endif %}
+  <form id="frm_article" method="POST">
+    {{ form.media }}
+    {% csrf_token %}
+    {% for field in form.hidden_fields %}
+    {{ field }}
+    {% endfor %}
 
-            <div id="div_show_author">
-                {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.discriptive_date.label_tag %}
-            </div>
-            {{ articleeventdates.management_form }}
-            {% for articleeventdateform in articleeventdates.forms %}
-            {% if articleeventdateform.id.value > 0 %}
-              <div id="div_articleeventdateform_{{ articleeventdateform.id.value }}" class="articleeventdateformsetform"  >
-                {% for hiddenfield in articleeventdateform.hidden_fields %}
-                  {{ hiddenfield }}
-                {% endfor %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
-              </div>
-            {% else %}
-              <div class="articleeventdateformsetform articleeventdatenewform" >
-                {% for hiddenfield in articleeventdateform.hidden_fields %}
-                  {{ hiddenfield }}
-                {% endfor %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
-                {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
-              </div>
-            {% endif %}
-          {% endfor %}
-          <table>
-            {% for articleeventdate in object.articleeventdate_set.all %}
-              <tr id="tr_articleeventdate_{{ articleeventdate.id }}">
-                <td><button type="button" id="button_editarticleeventdate_{{ articleeventdate.id }}" data-formid="div_articleeventdateform_{{ articleeventdate.id }}" data-displayid="tr_articleeventdate_{{ articleeventdate.id }}" class="articleeventdate_edit_button">edit</button></td><td>{{ articleeventdate.when }}</td><td>{{ articleeventdate.text }}</td><td>{{ articleeventdate.is_major_current }}</td>
-              </tr>
-            {% endfor %}
-            <tr>
-              <td><button type="button" id="button_addarticleeventdate">Add</button></td><td span="*"></td>
-            </tr>
-          </table>    
-            {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
-        </form>
-        <script>
-            let articleeventdateEditButtons = document.getElementsByClassName('articleeventdate_edit_button')
-            for( articleeventdateEditButton of articleeventdateEditButtons) {
-                articleeventdateEditButton.addEventListener('click', function(e){
-                    e.preventDefault()
-                    enableFormsetForm(e.target.dataset.formid, e.target.dataset.displayid)
-                })
-            }
-            document.getElementById('button_addarticleeventdate').addEventListener('click', function(e){
-                e.preventDefault()
-                let newforms = document.getElementsByClassName('articleeventdatenewform')
-                if( newforms.length > 0) {
-                    let newform = newforms[0]
-                    newform.style.display="block"
-                    newform.classList.remove('articleeventdatenewform')
-                } else {
-                    alert('please save before adding more notes')
-                }
-            })
-        </script>
+    <div id="div_show_author">
+      {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.discriptive_date.label_tag %}
     </div>
+    {{ articleeventdates.management_form }}
+    {% for articleeventdateform in articleeventdates.forms %}
+    {% if articleeventdateform.id.value > 0 %}
+    <div id="div_articleeventdateform_{{ articleeventdateform.id.value }}" class="articleeventdateformsetform">
+      {% for hiddenfield in articleeventdateform.hidden_fields %}
+      {{ hiddenfield }}
+      {% endfor %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
+    </div>
+    {% else %}
+    <div class="articleeventdateformsetform articleeventdatenewform" style="display:none">
+      {% for hiddenfield in articleeventdateform.hidden_fields %}
+      {{ hiddenfield }}
+      {% endfor %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
+      {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    <table>
+      {% for articleeventdate in object.articleeventdate_set.all %}
+      <tr id="tr_articleeventdate_{{ articleeventdate.id }}">
+        <td><button type="button" id="button_editarticleeventdate_{{ articleeventdate.id }}"
+            data-formid="div_articleeventdateform_{{ articleeventdate.id }}"
+            data-displayid="tr_articleeventdate_{{ articleeventdate.id }}"
+            class="articleeventdate_edit_button">edit</button></td>
+        <td>{{ articleeventdate.when }}</td>
+        <td>{{ articleeventdate.text }}</td>
+        <td>{{ articleeventdate.is_major_current }}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td><button type="button" id="button_addarticleeventdate">Add</button></td>
+        <td span="*"></td>
+      </tr>
+    </table>
+    {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+  </form>
+  <script>
+    let articleeventdateEditButtons = document.getElementsByClassName('articleeventdate_edit_button')
+    for (articleeventdateEditButton of articleeventdateEditButtons) {
+      articleeventdateEditButton.addEventListener('click', function (e) {
+        e.preventDefault()
+        enableFormsetForm(e.target.dataset.formid, e.target.dataset.displayid)
+      })
+    }
+    document.getElementById('button_addarticleeventdate').addEventListener('click', function(e) {
+      e.preventDefault()
+      showNewFormsetForm('articleeventdatenewform')
+    })
+  </script>
+  <script>
+  </script>
+
+</div>
 {% endblock %}
