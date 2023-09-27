@@ -25,6 +25,30 @@ class CommentForm(forms.ModelForm):
             'comment_text',
         ]
 
+# "headline",
+# "subheadline",
+# "content_format",
+# "content",
+# "hashtags",
+# "list_image",
+# "list_image_location",
+# "detail_image",
+# "detail_image_location",
+# "featured_image",
+# "summary_format",
+# "summary",
+# "readmore",
+# "author",
+# "descriptive_date",
+# "show_author",
+# "show_updated",
+# "sortable_date",
+# "sticky",
+# "draft_status",
+# "allow_comments",
+# "slug",
+#   'sortable_date':TouglateDateInput()
+ 
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
@@ -34,24 +58,69 @@ class ArticleForm(forms.ModelForm):
             "content_format",
             "content",
             "hashtags",
-            "list_image",
-            "list_image_location",
-            "detail_image",
-            "detail_image_location",
-            "featured_image",
             "summary_format",
             "summary",
             "readmore",
             "author",
-            "descriptive_date",
-            "show_author",
-            "show_updated",
-            "sortable_date",
-            "sticky",
             "draft_status",
-            "allow_comments",
             "slug",
         ]
+
+        widgets = {
+            'headline':forms.TextInput(attrs={'class':'width_050'}),
+            'subheadline':forms.TextInput(attrs={'class':'width_050'}),
+            'content':forms.Textarea(attrs={'class':'width_050'}),
+            'summary':forms.Textarea(attrs={'class':'width_050'}),
+        }
+
+# 1 "headline",
+# 1 "subheadline",
+# 1 "content_format",
+# 1 "content",
+# 1 "hashtags",
+# 2 "list_image",
+# 2 "list_image_location",
+# 2 "detail_image",
+# 2 "detail_image_location",
+# 2 "featured_image",
+# 1 "summary_format",
+# 1 "summary",
+# 1 "readmore",
+# 1 "author",
+# 4 "descriptive_date",
+# 3 "show_author",
+# 3 "show_updated",
+# 4 "sortable_date",
+# 3 "sticky",
+# 1 "draft_status",
+# 3 "allow_comments",
+# 1 "slug",
+#   'sortable_date':TouglateDateInput()
+
+
+# ArticleForm for creating and ArticleFormN for updating 
+# ArticleForm1 is mostly the same as ArticleForm, but also had slug 
+
+class ArticleForm1(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            "headline",
+            "subheadline",
+            "content_format",
+            "content",
+            "hashtags",
+            "summary_format",
+            "summary",
+            "readmore",
+            "author",
+            "draft_status",
+            'sortable_date',
+            "sticky",
+            "allow_comments",
+
+        ]
+
         widgets = {
             'headline':forms.TextInput(attrs={'class':'width_050'}),
             'subheadline':forms.TextInput(attrs={'class':'width_050'}),
@@ -59,6 +128,44 @@ class ArticleForm(forms.ModelForm):
             'summary':forms.Textarea(attrs={'class':'width_050'}),
             'sortable_date':TouglateDateInput()
         }
+
+# ArticleForm for creating and ArticleFormN for updating 
+# ArticleForm2 includes details  
+class ArticleForm2(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            "list_image",
+            "list_image_location",
+            "detail_image",
+            "detail_image_location",
+            "featured_image",
+        ]
+
+
+""" 
+ArticleForm for creating and ArticleFormN for updating 
+ArticleForm3 has no fields and is used as a placeholder for 
+a view which uses ArticlePlacementFormset  
+"""
+class ArticleForm3(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            "show_author",
+            "show_updated",
+        ]
+""" 
+ArticleForm for creating and ArticleFormN for updating 
+ArticleForm4 has no fields and is used as a placeholder for 
+a view which uses ArticleArticleEventDateFormset  
+"""
+class ArticleForm4(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            "descriptive_date",
+        ]
 
 class ImageForm(forms.ModelForm):
 

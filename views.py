@@ -25,8 +25,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from feeds.models import Post as FeedPost
 from feeds.models import Source as FeedSource
 
-from tougcomsys.forms import ArticleArticleEventDateFormSet, ArticleForm, ArticlePlacementFormSet, CommentForm, ImageForm
-from tougcomsys.models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
+from . import forms
+from .models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
                                Page, Placement, Subscription)
 from tougshire_vistas.models import Vista
 from tougshire_vistas.views import get_vista_queryset, make_vista_fields, vista_context_data
@@ -263,7 +263,7 @@ def get_page(request):
 
 class IcalEventView(TemplateView):
 
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'ical_event.html')
+    template_name = '{}/ical_event.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
 
@@ -290,7 +290,7 @@ class IcalEventView(TemplateView):
 
 class HomePage(TemplateView):
 
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'homepage.html')
+    template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
 
@@ -385,7 +385,7 @@ class ArticleDetail(DetailView):
 
     model = Article
 
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article.html')
+    template_name = '{}/article.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
 
@@ -439,7 +439,7 @@ class ArticleList(ListView):
     permission_required = 'sdcpeople.view_person'
     model = Article
 
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_list.html')
+    template_name = '{}/article_list.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def setup(self, request, *args, **kwargs):
 
@@ -546,12 +546,12 @@ def ical_detail_view(request, uuid):
 
                 break
 
-    return TemplateResponse( request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical } )
+    return TemplateResponse(request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical })
 
 class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
-    form_class = CommentForm
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'comment_form.html')
+    form_class = forms.CommentForm
+    template_name = '{}/comment_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -608,30 +608,93 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
 
     permission_required = "tougcomsys.add_article"  
     model = Article
-    form_class = ArticleForm
-    template_name = 'tougcomsys/editing/article_form.html'
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
+    form_class = forms.ArticleForm
+    template_name = '{}/article_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+
+    def get_initial(self):
+        
+        initial = super().get_initial()
+        initial['author'] = self.request.user
+        return initial
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article_articleeventdates', kwargs={'pk':self.object.pk})
+        return reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk})
 
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
     permission_required = "tougcomsys.change_article"  
     model = Article
-    form_class = ArticleForm
-    template_name = 'tougcomsys/editing/article_form.html'
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_form.html')
+    form_class = forms.ArticleForm
 
+    def get_form_class(self):
+
+        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
+        print('tp239gh52 get_form_class', self.kwargs.get('page'), page)
+        self.form_class = getattr(forms, 'ArticleForm{}'.format(page))
+        print('tp239gk33 get_form_class', self.form_class)
+
+        return super().get_form_class()
+
+    def get_template_names(self):
+
+        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
+        print('tp239gh49 get_template_names', self.kwargs.get('page'), page)
+        print('tp239gk35 get_template_names', '{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page))
+        return ['{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page)]
+        
     def get_success_url(self):
-        return reverse( 'tougcomsys:article_articleeventdates', kwargs={'pk':self.object.pk})
+        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
+        page = page + 1 if page < 4 else 1
+        print ('tp23926r43 get_success_url (adds 1)', self.kwargs.get('page'), page)
+
+        print('tp239qh48 get_success_url', reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk, 'page':page} ))
+        return reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk, 'page':page})
+
+    def get_context_data(self, **kwargs):
+
+        print('tp239gi08 get_context_data', self.kwargs.get('page'), self.kwargs.get('page'))
+        context_data = super().get_context_data(**kwargs)
+
+        if self.request.POST:
+            context_data['placements'] = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
+            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        else:
+            context_data['placements'] = forms.ArticlePlacementFormSet (instance=self.get_object())
+            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (instance=self.get_object())
+
+        return context_data
+
+    def form_valid(self, form):
+
+        valid = super().form_valid(form)
+        print('tp239gk45', valid)
+
+        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
+
+        print('tp239gi57 form_valid', self.kwargs.get('page'), self.kwargs.get('page'))
+
+        if page == 3:
+            placements = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            if placements.is_valid():
+                placements.save()
+            else:
+                return valid
+
+        if page == 4:    
+            articleeventdates = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            if articleeventdates.is_valid():
+                articleeventdates.save()
+            else:
+                return valid
+
+        return valid
 
 class ImageCreate(PermissionRequiredMixin, CreateView):
 
     permission_required = "tougcomsys.add_image"  
     model = Image
-    form_class = ImageForm
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'image_form.html')
+    form_class = forms.ImageForm
+    template_name = '{}/image_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_initial(self):
         
@@ -649,23 +712,23 @@ class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
     permission_required = "tougcomsys.change_article"  
     model=Article
     fields=[]
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_articleeventdates_form.html')
+    template_name = '{}/article_articleeventdates_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
 
         context_data = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
         else:
-            context_data['articleeventdates'] = ArticleArticleEventDateFormSet (instance=self.get_object())
+            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (instance=self.get_object())
 
         return context_data
 
     def form_valid(self, form):
         valid_response = super().form_valid(form)
 
-        articleeventdates = ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        articleeventdates = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
         if articleeventdates.is_valid():
             articleeventdates.save()
             return valid_response
@@ -680,15 +743,15 @@ class ArticlePlacements(PermissionRequiredMixin, UpdateView):
     permission_required = "tougcomsys.change_article"  
     model=Article
     fields=[]
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'article_articleplacements_form.html')
+    template_name = '{}/article_articleplacements_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
 
         context_data = super().get_context_data(**kwargs)
         if self.request.POST:
-            context_data['placements'] = ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
+            context_data['placements'] = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
         else:
-            context_data['placements'] = ArticlePlacementFormSet (instance=self.get_object())
+            context_data['placements'] = forms.ArticlePlacementFormSet (instance=self.get_object())
 
         return context_data
 
@@ -696,7 +759,7 @@ class ArticlePlacements(PermissionRequiredMixin, UpdateView):
     def form_valid(self, form):
         valid_response = super().form_valid(form)
 
-        articleplacements = ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
+        articleplacements = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
         if articleplacements.is_valid():
             articleplacements.save()
             return valid_response
@@ -710,7 +773,7 @@ class SubscriptionCreate(CreateView):
 
     model = Subscription
     fields = ['article']
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'subscription_form.html')
+    template_name = '{}/subscription_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -741,7 +804,7 @@ class SubscriptionDelete(DeleteView):
 
     model = Subscription
     fields = ['article']
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'subscription_delete.html')
+    template_name = '{}/subscription_delete.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -755,7 +818,7 @@ class SubscriptionDelete(DeleteView):
 class CommentDelete(LoginRequiredMixin, DeleteView):
 
     model = Comment
-    template_name = '{}/{}'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], 'comment_delete_confirm.html')
+    template_name = '{}/comment_delete_confirm.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)

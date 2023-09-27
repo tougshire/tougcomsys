@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block content %}
-    <h3>{{ object }}</h3>
     <script src='{% static 'touglates\touglates.js' %}'></script>
     <div class="form">
+        {% if form.errors %}{{ form.errors }}{% endif %}
         <form id="frm_article" method="POST">
         {{ form.media }}
         {% csrf_token %}
@@ -12,17 +12,12 @@
         {{ field }}
         {% endfor %}
 
-        {{ placements.management_form }}
-        {% for form in placements.forms %}
-            {% if form.errors %}{{ form.errors }}{% endif %}
-            <div id="div_placement_{{ forloop.counter }}">
-                {{ form.id }}
-                {% include 'touglates/form_field.html' with field=form.placement  %}
-                {% include 'touglates/form_field.html' with field=form.expiration_date  %}
-            </div>
-
-        {% endfor %}
-
+        <div id="div_show_author">
+            {% include 'touglates/form_field.html' with field=form.show_author label_tag=formshow_author.label_tag %}
+        </div>
+        <div id="div_show_updated">
+            {% include 'touglates/form_field.html' with field=form.show_updated label_tag=formshow_updated.label_tag %}
+        </div>
         {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
     </form>
     </div>

@@ -1,0 +1,58 @@
+{% extends './_base.html' %}
+{% load static %}
+
+{% block content %}
+    <script src='{% static 'touglates\touglates.js' %}'></script>
+    <div class="form">
+        {% if form.errors %}{{ form.errors }}{% endif %}
+        <form id="frm_article" method="POST">
+            {{ form.media }}
+            {% csrf_token %}
+            {% for field in form.hidden_fields %}
+            {{ field }}
+            {% endfor %}
+
+            <div id="div_headline">
+                {% include 'touglates/form_field.html' with field=form.headline label_tag=form.headline.label_tag %}
+            </div>
+            <div id="div_subheadline">
+                {% include 'touglates/form_field.html' with field=form.subheadline label_tag=form.subheadline.label_tag %}
+            </div>
+            <div id="div_content_format">
+                {% include 'touglates/form_field.html' with field=form.content_format label_tag=form.content_format.label_tag %}
+            </div>
+            <div id="div_content">
+                {% include 'touglates/form_field.html' with field=form.content label_tag=form.content.label_tag %}
+            </div>
+            <div id="div_summary_format">
+                {% include 'touglates/form_field.html' with field=form.summary_format label_tag=form.summary_format.label_tag %}
+            </div>
+            <div id="div_summary">
+                {% include 'touglates/form_field.html' with field=form.summary label_tag=form.summary.label_tag %}
+            </div>
+            <div id="div_hashtags">
+                {% include 'touglates/form_field.html' with field=form.hashtags label_tag=form.hashtags.label_tag %}
+            </div>
+            <div id="div_readmore">
+                {% include 'touglates/form_field.html' with field=form.readmore label_tag=form.readmore.label_tag %}
+            </div>
+            <div id="div_author">
+                {% include 'touglates/form_field.html' with field=form.author label_tag=form.author.label_tag %}
+            </div>
+            <div id="div_sortable_date">
+                {% include 'touglates/form_field.html' with field=form.sortable_date label_tag=form.sortable_date.label_tag %}
+            </div>
+            <div id="div_sticky">
+                {% include 'touglates/form_field.html' with field=form.sticky label_tag=form.sticky.label_tag %}
+            </div>
+            <div id="div_allow_comments">
+                {% include 'touglates/form_field.html' with field=form.allow_comments label_tag=form.allow_comments.label_tag %}
+            </div>
+            <div id="div_draft_status">
+                {% include 'touglates/form_field.html' with field=form.draft_status label_tag=form.draft_status.label_tag %}
+            </div>
+            {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+        </form>
+    </div>
+
+{% endblock %}
