@@ -24,7 +24,8 @@
           {% endfor %}
           {% include 'touglates/form_field.html' with field=placementform.placement %}
           {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
-          {% include 'touglates/form_field.html' with field=placementform.timelen %}
+          {% include 'touglates/form_field.html' with field=placementform.sortable_date %}
+          {% include 'touglates/form_field.html' with field=placementform.sticky %}
           {% include 'touglates/form_field.html' with field=placementform.DELETE %}
         </div>
       {% else %}
@@ -34,7 +35,8 @@
           {% endfor %}
           {% include 'touglates/form_field.html' with field=placementform.placement %}
           {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
-          {% include 'touglates/form_field.html' with field=placementform.timelen %}
+          {% include 'touglates/form_field.html' with field=placementform.sortable_date %}
+          {% include 'touglates/form_field.html' with field=placementform.sticky %}
           {% include 'touglates/form_field.html' with field=placementform.DELETE %}
         </div>
       {% endif %}

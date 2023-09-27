@@ -115,8 +115,6 @@ class ArticleForm1(forms.ModelForm):
             "readmore",
             "author",
             "draft_status",
-            'sortable_date',
-            "sticky",
             "allow_comments",
 
         ]
@@ -145,8 +143,7 @@ class ArticleForm2(forms.ModelForm):
 
 """
 ArticleForm for creating and ArticleFormN for updating
-ArticleForm3 has no fields and is used as a placeholder for
-a view which uses ArticlePlacementFormset
+ArticleForm3 works with ArticlePlacementFormset
 """
 class ArticleForm3(forms.ModelForm):
     class Meta:
@@ -155,8 +152,7 @@ class ArticleForm3(forms.ModelForm):
         ]
 """
 ArticleForm for creating and ArticleFormN for updating
-ArticleForm4 has no fields and is used as a placeholder for
-a view which uses ArticleArticleEventDateFormset
+ArticleForm4 works with ArticleArticleEventDateFormset
 """
 class ArticleForm4(forms.ModelForm):
     class Meta:
@@ -197,6 +193,9 @@ class ArticlePlacementForm(forms.ModelForm):
             'article',
             'placement',
             'expiration_date',
+            "sticky",
+            'sortable_date',
+
         ]
         widgets = {
             'expiration_date': TouglateDateInput()

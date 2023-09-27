@@ -50,7 +50,7 @@ class Image(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def save(self, *args, **kwargs):
         update_url = False
 
@@ -197,16 +197,16 @@ class Placement(models.Model):
     events_list_length = models.IntegerField(
         'event list length',
         default=366,
-        help_text='For event lists, length in days of the list' 
+        help_text='For event lists, length in days of the list'
     )
 
     def __str__(self):
         return '{} on page {}'.format( self.title, self.page )
-        
+
     class Meta:
         ordering = ('page', 'place_number',)
-    
-    
+
+
 class Article(models.Model):
 
     DRAFT_STATUS_PUBLISHED = 7
@@ -331,7 +331,7 @@ class Article(models.Model):
     readmore = models.CharField(
         'read more text',
         max_length=30,
-        default = 'Read More', 
+        default = 'Read More',
         blank=True,
         help_text='The text to use for the "read more" link '
     )
@@ -370,17 +370,6 @@ class Article(models.Model):
         auto_now=True,
         help_text="The date/time this article was created"
     )
-    sortable_date=models.DateTimeField(
-        'sortable date',
-        default=datetime.now,
-        null=True,
-        help_text="The modifiable date used for sorting, normally used only if this is a post, and in the admin panel for pages.  Later dates normally appear list earlier dates"
-    )
-    sticky=models.BooleanField(
-        'sticky',
-        default=False,
-        help_text='If this post is stuck to the top. This is used before sortable date'
-    )
     draft_status = models.IntegerField(
         "draft status",
         choices = [
@@ -404,12 +393,12 @@ class Article(models.Model):
         help_text = "The slug used to refer to this article"
     )
 
-    def save(self, *args, **kwargs):   
+    def save(self, *args, **kwargs):
         if not self.slug > "":
             self.slug = slugify(self.headline)
         hashtag_list = re.split('\s*[\s;,]\s*', self.hashtags )
         self.hashtags = ' '.join([ tag if tag[:1] == '#' else '#' + tag for tag in hashtag_list])
-        super().save(*args, **kwargs) 
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.headline
@@ -418,7 +407,7 @@ class Article(models.Model):
         return reverse('tougcomsys:article', kwargs={'slug': self.slug})
 
     class Meta:
-        ordering = ('-sticky', '-sortable_date',)
+        ordering = ('-created_date',)
 
 class Comment(models.Model):
 
@@ -429,7 +418,7 @@ class Comment(models.Model):
     )
     in_reply_to = models.ForeignKey(
         'Comment',
-        on_delete=models.SET_NULL,        
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
         help_text='The comment to which this comment is a reply'
@@ -507,6 +496,17 @@ class ArticlePlacement(models.Model):
         blank=True,
         help_text='The date that this article should be removed from this placement'
     )
+    sortable_date=models.DateTimeField(
+        'sortable date',
+        default=datetime.now,
+        null=True,
+        help_text="The modifiable date used for sorting posts, Later dates normally appear list earlier dates"
+    )
+    sticky=models.BooleanField(
+        'sticky',
+        default=False,
+        help_text='If this post is stuck to the top. This is used before sortable date'
+    )
 
     class Meta:
         ordering = ( 'article', )
@@ -551,7 +551,7 @@ class ICal(models.Model):
         'url',
         help_text = 'The URL of the external calendar'
     )
-    placement = models.ForeignKey( 
+    placement = models.ForeignKey(
         Placement,
         null=True,
         on_delete=models.SET_NULL,
@@ -561,7 +561,7 @@ class ICal(models.Model):
 
     def __str__( self ):
         return self.name if self.name > '' else self.url
-    
+
 class BlockedIcalEvent(models.Model):
 
     name = models.CharField(
@@ -646,7 +646,7 @@ class Menu(models.Model):
 
     def __str__(self):
         return '{} on page {}'.format( self.name, self.page )
-    
+
     class Meta:
         ordering = ( 'page', 'menu_number' )
 
@@ -697,7 +697,7 @@ class Menuitem(models.Model):
 
     def __str__(self):
         return '{} on menu {}'.format(self.label, self.menu, )
-    
+
     class Meta:
         ordering = ( Upper('sort_name'), )
 
@@ -706,7 +706,7 @@ class Menuitem(models.Model):
         if self.article and self.page:
             raise ValidationError('A menu item can link to an article or page, but not both')
 
-    def save(self, *args, **kwargs):   
+    def save(self, *args, **kwargs):
 
         update_url = False
 
@@ -714,11 +714,11 @@ class Menuitem(models.Model):
             update_url = True
 
         if update_url:
-            self.url = self.article.get_absolute_url() if self.article is not None else self.page.get_absolute_url() 
+            self.url = self.article.get_absolute_url() if self.article is not None else self.page.get_absolute_url()
 
         if not self.label > "":
             self.label = self.link.label
         if not self.sort_name > "":
             self.sort_name = slugify(self.label)
 
-        super().save(*args, **kwargs) 
+        super().save(*args, **kwargs)

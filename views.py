@@ -31,7 +31,7 @@ from .models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
 from tougshire_vistas.models import Vista
 from tougshire_vistas.views import get_vista_queryset, make_vista_fields, vista_context_data
 
-# ArticleImage, 
+# ArticleImage,
 
 class TestError(Exception):
     pass
@@ -47,7 +47,7 @@ def events_from_icals( placement ):
     blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
 
     for ical in placement.ical_set.all():
-    
+
         url = ical.url
 
         ical_string = requests.get(url).text
@@ -81,7 +81,7 @@ def events_from_icals( placement ):
                     if isinstance( ical_event['DTEND'].dt, datetime ):
                         event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
 
-                    event_dict['headline'] = article.headline 
+                    event_dict['headline'] = article.headline
                     event_dict['content'] = article.content
 
                     isokey = event_dict['whendate'].isoformat()
@@ -95,7 +95,7 @@ def events_from_icals( placement ):
                 event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
                 if isinstance( ical_event['DTEND'].dt, datetime ):
                     event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
-                 
+
                 event_dict['headline'] = str(ical_event['SUMMARY'])
                 event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
 
@@ -118,10 +118,10 @@ def events_from_articles( placement, do_preview=False ):
     if do_preview:
         articleplacements = placement.articleplacement_set.filter( Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
     else:
-        articleplacements = placement.articleplacement_set.filter( article__draft_status=Article.DRAFT_STATUS_PUBLISHED) 
+        articleplacements = placement.articleplacement_set.filter( article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
 
     for articleplacement in articleplacements:
-    
+
         for event_date in articleplacement.article.articleeventdate_set.all():
 
             if event_date.whendate >= start_date and event_date.whendate <= end_date:
@@ -140,7 +140,7 @@ def events_from_articles( placement, do_preview=False ):
                 else:
                     event_date_dict[ isokey ] = [ event_dict ]
 
-    return event_date_dict            
+    return event_date_dict
 
 def ical_from_events( placement, do_preview=False ):
     ical_text = 'BEGIN:VCALENDAR\n'
@@ -156,15 +156,15 @@ def ical_from_events( placement, do_preview=False ):
                 ical_text = ical_text + 'SUMMARY:{}\n'.format( article.headline )
 
                 if eventdate.whentime is not None:
-                    ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )  
+                    ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )
                 else:
                     ical_text = ical_text + 'DTSTART:{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day )
                 ical_text = ical_text + 'END:VEVENT\n'
 
     ical_text = ical_text + 'END:VCALENDAR\n'
 
-    return ical_text            
-            
+    return ical_text
+
 
 def event_date_dict( placement, do_preview=False ):
 
@@ -176,7 +176,7 @@ def event_date_dict( placement, do_preview=False ):
     for key, events in article_dict.items():
 
         if key in new_dict:
-            new_dict[ key ] = new_dict[ key ] + events 
+            new_dict[ key ] = new_dict[ key ] + events
         else:
             new_dict[ key ] = events
 
@@ -220,7 +220,7 @@ def single_event_date_dict( url, uid ):
                 if isinstance( ical_event['DTEND'].dt, datetime ):
                     event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
 
-                event_dict['headline'] = article.headline 
+                event_dict['headline'] = article.headline
                 event_dict['content'] = article.content
 
         else:
@@ -231,13 +231,13 @@ def single_event_date_dict( url, uid ):
             event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
             if isinstance( ical_event['DTEND'].dt, datetime ):
                 event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
-            
+
             event_dict['headline'] = str(ical_event['SUMMARY'])
             event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
 
     return event_dict
 
-    
+
 def condensify( value ):
     return slugify( value ).replace('-','')
 
@@ -272,18 +272,18 @@ class IcalEventView(TemplateView):
         if 'ical_url' in self.kwargs:
             ical_url = self.kwargs.get('ical_url').replace( '_%2f_', '/')
         else:
-            return context_data 
+            return context_data
 
         if 'uid' in self.kwargs:
             uid = self.kwargs.get('uid')
         else:
-            return context_data 
+            return context_data
 
         page = get_page(self.request)
         if page:
             context_data['menus'] = get_menu_items( page )
 
-        context_data['article'] = single_event_date_dict( ical_url, uid ) 
+        context_data['article'] = single_event_date_dict( ical_url, uid )
 
         return context_data
 
@@ -302,7 +302,7 @@ class HomePage(TemplateView):
 
         if page is None:
             return context_data
- 
+
         context_data['menus'] = get_menu_items( page )
 
         # Remember the page so if an article or ical event is clicked, the menu displayed will be the same menu displayed for thsi view
@@ -330,10 +330,10 @@ class HomePage(TemplateView):
             if placement.type == Placement.TYPE_ARTICLE_LIST:
                 if do_preview:
                     placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
-                    placement.articleplacements = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT))
+                    placement.articleplacements = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).order_by('sticky', '-sortable_date', '-article__created_date')
                 else:
                     placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
-                    placement.articleplacements = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+                    placement.articleplacements = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).order_by('sticky', '-sortable_date', '-article__created_date')
 
                 for articleplacement in placement.articleplacements:
 
@@ -348,7 +348,7 @@ class HomePage(TemplateView):
                             if article_eventdate.whendate > date.today():
                                 articleplacement.article.next_date = article_eventdate.whendate
                                 break
-                    
+
                     articleplacement.article.date_count = date_count
 
                     if articleplacement.article.summary == '':
@@ -368,14 +368,14 @@ class HomePage(TemplateView):
                     if articleplacement.article.show_author == Article.SHOW_COMPLY:
                         articleplacement.article.show_author = placement.show_author
                     if articleplacement.article.show_updated == Article.SHOW_COMPLY:
-                        articleplacement.article.show_updates = placement.show_created  
+                        articleplacement.article.show_updates = placement.show_created
 
             elif placement.type == Placement.TYPE_EVENT_LIST:
 
-                placement.events = event_date_dict( placement, do_preview ) 
+                placement.events = event_date_dict( placement, do_preview )
 
             elif placement.type == Placement.TYPE_FEED:
-                placement.feedposts = FeedPost.objects.filter( source__in=[feedsource.source.pk for feedsource in placement.feedsource_set.all()] ).order_by('-created') 
+                placement.feedposts = FeedPost.objects.filter( source__in=[feedsource.source.pk for feedsource in placement.feedsource_set.all()] ).order_by('-created')
 
             context_data['placements'].append(placement)
 
@@ -401,7 +401,7 @@ class ArticleDetail(DetailView):
         if self.object.show_author == Article.SHOW_COMPLY:
             self.object.show_author = True
         if self.object.show_updated == Article.SHOW_COMPLY:
-            self.object.show_updates = True  
+            self.object.show_updates = True
 
         date_count = self.object.articleeventdate_set.count()
 
@@ -414,10 +414,10 @@ class ArticleDetail(DetailView):
                 if article_eventdate.whendate > date.today():
                     context_data['next_date'] = article_eventdate.whendate
                     break
-        
+
         context_data['date_count'] = date_count
 
-        
+
         subscription = None
         if self.request.user.is_authenticated and self.object.allow_comments:
             try:
@@ -563,7 +563,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return context_data
 
     def get_initial(self):
-        
+
         initial_data = super().get_initial()
         if 'article' in self.kwargs:
             initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
@@ -572,7 +572,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return initial_data
 
     def form_valid(self, form):
-        
+
         comment = form.save(commit=False)
         comment.author = self.request.user
         if comment.in_reply_to is not None:
@@ -586,7 +586,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
             from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['FROM_EMAIL']
         else:
             from_email = None
-        
+
 
         for subscription in comment.article.subscription_set.all():
             try:
@@ -606,13 +606,13 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
 
-    permission_required = "tougcomsys.add_article"  
+    permission_required = "tougcomsys.add_article"
     model = Article
     form_class = forms.ArticleForm
     template_name = '{}/article_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_initial(self):
-        
+
         initial = super().get_initial()
         initial['author'] = self.request.user
         return initial
@@ -622,7 +622,7 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
 
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
-    permission_required = "tougcomsys.change_article"  
+    permission_required = "tougcomsys.change_article"
     model = Article
     form_class = forms.ArticleForm
 
@@ -641,7 +641,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         print('tp239gh49 get_template_names', self.kwargs.get('page'), page)
         print('tp239gk35 get_template_names', '{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page))
         return ['{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page)]
-        
+
     def get_success_url(self):
         page = self.kwargs.get('page') if 'page' in self.kwargs else 1
         page = page + 1 if page < 4 else 1
@@ -680,7 +680,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             else:
                 return valid
 
-        if page == 4:    
+        if page == 4:
             articleeventdates = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
             if articleeventdates.is_valid():
                 articleeventdates.save()
@@ -691,13 +691,13 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
 class ImageCreate(PermissionRequiredMixin, CreateView):
 
-    permission_required = "tougcomsys.add_image"  
+    permission_required = "tougcomsys.add_image"
     model = Image
     form_class = forms.ImageForm
     template_name = '{}/image_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
 
     def get_initial(self):
-        
+
         initial = super().get_initial()
         initial['author'] = self.request.user
         return initial
@@ -706,10 +706,10 @@ class ImageCreate(PermissionRequiredMixin, CreateView):
         if 'popup' in self.kwargs:
             return reverse('tougcomsys:window_closer', kwargs={'pk':self.object.pk, 'app_name':'tougcomsys', 'model_name':'Image'})
         return reverse('tougcomsys:homepage')
-    
+
 class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
 
-    permission_required = "tougcomsys.change_article"  
+    permission_required = "tougcomsys.change_article"
     model=Article
     fields=[]
     template_name = '{}/article_articleeventdates_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
@@ -740,7 +740,7 @@ class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
 
 class ArticlePlacements(PermissionRequiredMixin, UpdateView):
 
-    permission_required = "tougcomsys.change_article"  
+    permission_required = "tougcomsys.change_article"
     model=Article
     fields=[]
     template_name = '{}/article_articleplacements_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
@@ -790,7 +790,7 @@ class SubscriptionCreate(CreateView):
         return super().form_valid(form)
 
     def get_initial(self):
-        
+
         initial_data = super().get_initial()
         if 'article' in self.kwargs:
             initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))

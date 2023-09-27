@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image, Menu, Menuitem, Placement, Page, ICal, BlockedIcalEvent, Subscription, FeedSource
 
-# ArticleImage, 
+# ArticleImage,
 
 import icalendar
 import recurring_ical_events
@@ -39,12 +39,12 @@ admin.site.register(Placement, PlacementAdmin)
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('headline', 'slug', 'draft_status', 'sortable_date',  )
+    list_display = ('headline', 'slug', 'draft_status',   )
     ordering = list(Article._meta.ordering)
     prepopulated_fields={'slug': ["headline"]}
 
     inlines = [ArticlePlacementInline, ArticleEventdateInline, ]
-# ArticleImageInline, 
+# ArticleImageInline,
 
     def get_changeform_initial_data(self, request):
 
@@ -77,7 +77,7 @@ class ICalAdmin(admin.ModelAdmin):
         return 'To prevent an event from displaying,  Copy a UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
 
     def ICaltext( self, instance ):
-        
+
         icaltext = requests.get( instance.url ).text
         return icaltext
 
@@ -94,10 +94,10 @@ class BlockedIcalEventAdmin(admin.ModelAdmin):
         return 'To prevent an external event from displaying,  Copy its UUID from the text below and add it as a supressor.  To refresh the text, save after choosing URL.'
 
     def ICaltext( self, instance ):
-        return format_html('<div id="id_ical_text">-</div><div id="id_ical_text_url">' + reverse( 'tougcomsys:ical_text' ) + '</div>')        
-    
+        return format_html('<div id="id_ical_text">-</div><div id="id_ical_text_url">' + reverse( 'tougcomsys:ical_text' ) + '</div>')
 
-    
+
+
 admin.site.register(BlockedIcalEvent, BlockedIcalEventAdmin)
 
 admin.site.register( Page )
