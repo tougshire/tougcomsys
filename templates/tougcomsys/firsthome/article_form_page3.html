@@ -6,32 +6,47 @@
     <div class="form">
         {% if form.errors %}{{ form.errors }}{% endif %}
         <form id="frm_article" method="POST">
-        {{ form.media }}
-        {% csrf_token %}
-        {% for field in form.hidden_fields %}
-        {{ field }}
-        {% endfor %}
+            {{ form.media }}
+            {% csrf_token %}
+            {% for field in form.hidden_fields %}
+            {{ field }}
+            {% endfor %}
 
-        <div id="div_show_author">
-            {% include 'touglates/form_field.html' with field=form.show_author label_tag=formshow_author.label_tag %}
-        </div>
-        <div id="div_show_updated">
-            {% include 'touglates/form_field.html' with field=form.show_updated label_tag=formshow_updated.label_tag %}
-        </div>
-        {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
-    </form>
+            <div id="div_show_author">
+                {% include 'touglates/form_field.html' with field=form.show_author label_tag=formshow_author.label_tag %}
+            </div>
+            <div id="div_show_updated">
+                {% include 'touglates/form_field.html' with field=form.show_updated label_tag=formshow_updated.label_tag %}
+            </div>
+            {{ placements.management_form }}
+            {% for placementform in placements.forms %}
+            {% if placementform.id.value > 0 %}
+              <div id="div_placementform_{{ placementform.id.value }}" class="placementformsetform"  >
+                {% for hiddenfield in placementform.hidden_fields %}
+                  {{ hiddenfield }}
+                {% endfor %}
+                {% include 'touglates/form_field.html' with field=placementform.placement %}
+                {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
+                {% include 'touglates/form_field.html' with field=placementform.DELETE %}
+              </div>
+            {% else %}
+              <div class="placementformsetform placementnewform" >
+                {% for hiddenfield in placementform.hidden_fields %}
+                  {{ hiddenfield }}
+                {% endfor %}
+                {% include 'touglates/form_field.html' with field=placementform.placement %}
+                {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
+                {% include 'touglates/form_field.html' with field=placementform.DELETE %}
+              </div>
+            {% endif %}
+          {% endfor %}
+    
+
+
+
+
+
+            {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+        </form>
     </div>
-    <script>
-        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        function getControlIdsForPopups(modelName) {
-            controlIds={
-                'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
-            }
-        return controlIds[modelName]
-    }
-  </script>
-
-    </script>
 {% endblock %}
