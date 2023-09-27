@@ -12,7 +12,7 @@ urlpatterns = [
     path('page/<int:page>/', views.HomePage.as_view(), name='page'),
     path('article/<slug:slug>/', views.ArticleDetail.as_view(), name='article'),
     path('article/_/list/', views.ArticleList.as_view(), name='article_list'),
-    # path('article/_/update/<int:pk>/', views.ArticleUpdate.as_view(), name='article_update'),
+    path('article/_/update/<int:pk>/', views.ArticleUpdate.as_view(), name='article_update'),
     path('article/_/update/<int:pk>/page/<int:page>/', views.ArticleUpdate.as_view(), name='article_update'),
     path('article/_/create/', views.ArticleCreate.as_view(), name='article_create'),
     path('article/_/image/create/', views.ImageCreate.as_view(), name='article_image_create', kwargs={'popup':'popup'}),
@@ -29,4 +29,4 @@ urlpatterns = [
     path('ical_event/<str:uuid>/', views.ical_detail_view, name='ical_detail'),
     path('window_closer/<str:app_name>/<str:model_name>/<int:pk>/', window_closer, name='window_closer')
 
-]   
+]

@@ -2,51 +2,78 @@
 {% load static %}
 
 {% block content %}
-    <script src='{% static 'touglates\touglates.js' %}'></script>
-    <div class="form">
-        {% if form.errors %}{{ form.errors }}{% endif %}
-        <form id="frm_article" method="POST">
-            {{ form.media }}
-            {% csrf_token %}
-            {% for field in form.hidden_fields %}
-            {{ field }}
-            {% endfor %}
+<script src='{% static ' touglates\touglates.js' %}'></script>
+<div class="form">
+  {% if form.errors %}{{ form.errors }}{% endif %}
+  <form id="frm_article" method="POST">
+    {{ form.media }}
+    {% csrf_token %}
+    {% for field in form.hidden_fields %}
+    {{ field }}
+    {% endfor %}
 
-            <div id="div_show_author">
-                {% include 'touglates/form_field.html' with field=form.show_author label_tag=formshow_author.label_tag %}
-            </div>
-            <div id="div_show_updated">
-                {% include 'touglates/form_field.html' with field=form.show_updated label_tag=formshow_updated.label_tag %}
-            </div>
-            {{ placements.management_form }}
-            {% for placementform in placements.forms %}
-            {% if placementform.id.value > 0 %}
-              <div id="div_placementform_{{ placementform.id.value }}" class="placementformsetform"  >
-                {% for hiddenfield in placementform.hidden_fields %}
-                  {{ hiddenfield }}
-                {% endfor %}
-                {% include 'touglates/form_field.html' with field=placementform.placement %}
-                {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
-                {% include 'touglates/form_field.html' with field=placementform.DELETE %}
-              </div>
-            {% else %}
-              <div class="placementformsetform placementnewform" >
-                {% for hiddenfield in placementform.hidden_fields %}
-                  {{ hiddenfield }}
-                {% endfor %}
-                {% include 'touglates/form_field.html' with field=placementform.placement %}
-                {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
-                {% include 'touglates/form_field.html' with field=placementform.DELETE %}
-              </div>
-            {% endif %}
-          {% endfor %}
-    
-
-
-
-
-
-            {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
-        </form>
+    <div id="div_show_author">
+      {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.discriptive_date.label_tag %}
     </div>
+    {{ placements.management_form }}
+    {% for placementform in placements.forms %}
+      {% if placementform.id.value > 0 %}
+        <div id="div_placementform_{{ placementform.id.value }}" class="placementformsetform">
+          {% for hiddenfield in placementform.hidden_fields %}
+          {{ hiddenfield }}
+          {% endfor %}
+          {% include 'touglates/form_field.html' with field=placementform.placement %}
+          {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
+          {% include 'touglates/form_field.html' with field=placementform.timelen %}
+          {% include 'touglates/form_field.html' with field=placementform.DELETE %}
+        </div>
+      {% else %}
+        <div class="placementformsetform placementnewform" style="display:none">
+          {% for hiddenfield in placementform.hidden_fields %}
+          {{ hiddenfield }}
+          {% endfor %}
+          {% include 'touglates/form_field.html' with field=placementform.placement %}
+          {% include 'touglates/form_field.html' with field=placementform.expiration_date %}
+          {% include 'touglates/form_field.html' with field=placementform.timelen %}
+          {% include 'touglates/form_field.html' with field=placementform.DELETE %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    <table>
+      {% for placement in object.placement_set.all %}
+      <tr id="tr_placement_{{ placement.id }}">
+        <td>
+          <button type="button" id="button_editplacement_{{ placement.id }}"
+            data-formid="div_placementform_{{ placement.id }}"
+            data-displayid="tr_placement_{{ placement.id }}"
+            class="placement_edit_button">edit</button></td>
+        <td>{{ placement.when }}</td>
+        <td>{{ placement.text }}</td>
+        <td>{{ placement.is_major_current }}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td><button type="button" id="button_addplacement">Add Date</button></td>
+        <td span="*"></td>
+      </tr>
+    </table>
+    {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+  </form>
+  <script>
+    let placementEditButtons = document.getElementsByClassName('placement_edit_button')
+    for (placementEditButton of placementEditButtons) {
+      placementEditButton.addEventListener('click', function (e) {
+        e.preventDefault()
+        enableFormsetForm(e.target.dataset.formid, e.target.dataset.displayid)
+      })
+    }
+    document.getElementById('button_addplacement').addEventListener('click', function(e) {
+      e.preventDefault()
+      showNewFormsetForm('placementnewform')
+    })
+  </script>
+  <script>
+  </script>
+
+</div>
 {% endblock %}

@@ -17,32 +17,33 @@
     </div>
     {{ articleeventdates.management_form }}
     {% for articleeventdateform in articleeventdates.forms %}
-    {% if articleeventdateform.id.value > 0 %}
-    <div id="div_articleeventdateform_{{ articleeventdateform.id.value }}" class="articleeventdateformsetform">
-      {% for hiddenfield in articleeventdateform.hidden_fields %}
-      {{ hiddenfield }}
-      {% endfor %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
-    </div>
-    {% else %}
-    <div class="articleeventdateformsetform articleeventdatenewform" style="display:none">
-      {% for hiddenfield in articleeventdateform.hidden_fields %}
-      {{ hiddenfield }}
-      {% endfor %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
-      {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
-    </div>
-    {% endif %}
+      {% if articleeventdateform.id.value > 0 %}
+        <div id="div_articleeventdateform_{{ articleeventdateform.id.value }}" class="articleeventdateformsetform">
+          {% for hiddenfield in articleeventdateform.hidden_fields %}
+          {{ hiddenfield }}
+          {% endfor %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
+        </div>
+      {% else %}
+        <div class="articleeventdateformsetform articleeventdatenewform" style="display:none">
+          {% for hiddenfield in articleeventdateform.hidden_fields %}
+          {{ hiddenfield }}
+          {% endfor %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.whendate %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.whentime %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.timelen %}
+          {% include 'touglates/form_field.html' with field=articleeventdateform.DELETE %}
+        </div>
+      {% endif %}
     {% endfor %}
     <table>
       {% for articleeventdate in object.articleeventdate_set.all %}
       <tr id="tr_articleeventdate_{{ articleeventdate.id }}">
-        <td><button type="button" id="button_editarticleeventdate_{{ articleeventdate.id }}"
+        <td>
+          <button type="button" id="button_editarticleeventdate_{{ articleeventdate.id }}"
             data-formid="div_articleeventdateform_{{ articleeventdate.id }}"
             data-displayid="tr_articleeventdate_{{ articleeventdate.id }}"
             class="articleeventdate_edit_button">edit</button></td>
@@ -52,7 +53,7 @@
       </tr>
       {% endfor %}
       <tr>
-        <td><button type="button" id="button_addarticleeventdate">Add</button></td>
+        <td><button type="button" id="button_addarticleeventdate">Add Date</button></td>
         <td span="*"></td>
       </tr>
     </table>

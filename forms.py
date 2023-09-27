@@ -48,7 +48,7 @@ class CommentForm(forms.ModelForm):
 # "allow_comments",
 # "slug",
 #   'sortable_date':TouglateDateInput()
- 
+
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
@@ -98,8 +98,8 @@ class ArticleForm(forms.ModelForm):
 #   'sortable_date':TouglateDateInput()
 
 
-# ArticleForm for creating and ArticleFormN for updating 
-# ArticleForm1 is mostly the same as ArticleForm, but also had slug 
+# ArticleForm for creating and ArticleFormN for updating
+# ArticleForm1 is mostly the same as ArticleForm, but also had slug
 
 class ArticleForm1(forms.ModelForm):
     class Meta:
@@ -129,8 +129,8 @@ class ArticleForm1(forms.ModelForm):
             'sortable_date':TouglateDateInput()
         }
 
-# ArticleForm for creating and ArticleFormN for updating 
-# ArticleForm2 includes details  
+# ArticleForm for creating and ArticleFormN for updating
+# ArticleForm2 includes details
 class ArticleForm2(forms.ModelForm):
     class Meta:
         model = Article
@@ -143,22 +143,20 @@ class ArticleForm2(forms.ModelForm):
         ]
 
 
-""" 
-ArticleForm for creating and ArticleFormN for updating 
-ArticleForm3 has no fields and is used as a placeholder for 
-a view which uses ArticlePlacementFormset  
+"""
+ArticleForm for creating and ArticleFormN for updating
+ArticleForm3 has no fields and is used as a placeholder for
+a view which uses ArticlePlacementFormset
 """
 class ArticleForm3(forms.ModelForm):
     class Meta:
         model = Article
         fields = [
-            "show_author",
-            "show_updated",
         ]
-""" 
-ArticleForm for creating and ArticleFormN for updating 
-ArticleForm4 has no fields and is used as a placeholder for 
-a view which uses ArticleArticleEventDateFormset  
+"""
+ArticleForm for creating and ArticleFormN for updating
+ArticleForm4 has no fields and is used as a placeholder for
+a view which uses ArticleArticleEventDateFormset
 """
 class ArticleForm4(forms.ModelForm):
     class Meta:
