@@ -143,6 +143,12 @@ div.article_with_image_top div.detail_image, div.article_with_image_bottom div.d
     margin: 0 20%;
 }
 
+div.article_with_image_top div.detail_image img, div.article_with_image_bottom div.detail_image img {
+    text-align: center; 
+    width:60%;
+    margin: 0 20%;
+}
+
 div.column_narrow {
     flex: 1;
 }
@@ -240,14 +246,20 @@ div.form-field-control, div.form-field-help-text {
         border-left: none;
     }
 
-    div.article_with_image_top div.list_image {
+    div.article_with_image_side div.list_image {
         float:right;
-        width:60%;
+        width:50%;
     }
 
     div.article_with_image_top div.list_image {
+        width:80%;
+        margin: 10% auto;
+    }
+
+    div.list_image img{
         width:100%;
     }
+
 
     div.article_with_image_side div.list_image {
         float:right;
