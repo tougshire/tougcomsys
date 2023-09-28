@@ -59,7 +59,7 @@
         <td span="*"></td>
       </tr>
     </table>
-    {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+    {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save and </button>' field_2='<select name="save_go"><option value="stay">Stay Here</option><option value="prev">Go to page 2</option><option value="next" selected>Continue</option></select>' %}
   </form>
   <script>
     let placementEditButtons = document.getElementsByClassName('placement_edit_button')

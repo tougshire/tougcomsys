@@ -45,7 +45,7 @@
             <div id="div_draft_status">
                 {% include 'touglates/form_field.html' with field=form.draft_status label_tag=form.draft_status.label_tag %}
             </div>
-            {% include 'touglates/form_field.html' with label="Submit Form" field='<button type="submit">Save and Continue</button>' %}
+            {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save and </button>' field_2='<select name="save_go"><option value="stay">Stay Here</option><option value="next" selected>Continue</option></select>' %}
         </form>
     </div>
 

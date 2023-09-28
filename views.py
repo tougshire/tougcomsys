@@ -10,8 +10,7 @@ import recurring_ical_events
 import requests
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import (LoginRequiredMixin,
-                                        PermissionRequiredMixin)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import HttpResponse, QueryDict
@@ -26,28 +25,41 @@ from feeds.models import Post as FeedPost
 from feeds.models import Source as FeedSource
 
 from . import forms
-from .models import (Article, BlockedIcalEvent, Comment, ICal, Image, Menu,
-                               Page, Placement, Subscription)
+from .models import (
+    Article,
+    BlockedIcalEvent,
+    Comment,
+    ICal,
+    Image,
+    Menu,
+    Page,
+    Placement,
+    Subscription,
+)
 from tougshire_vistas.models import Vista
-from tougshire_vistas.views import get_vista_queryset, make_vista_fields, vista_context_data
+from tougshire_vistas.views import (
+    get_vista_queryset,
+    make_vista_fields,
+    vista_context_data,
+)
 
 # ArticleImage,
+
 
 class TestError(Exception):
     pass
 
-def events_from_icals( placement ):
 
-    start_date = date.today() + timedelta( days=placement.event_list_start )
-    end_date =   start_date + timedelta( days=placement.events_list_length )
+def events_from_icals(placement):
+    start_date = date.today() + timedelta(days=placement.event_list_start)
+    end_date = start_date + timedelta(days=placement.events_list_length)
 
     event_date_dict = {}
 
     blocked_ical_events = BlockedIcalEvent.objects.all()
-    blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
+    blocked_ical_uids = [blocked_event.uuid for blocked_event in blocked_ical_events]
 
     for ical in placement.ical_set.all():
-
         url = ical.url
 
         ical_string = requests.get(url).text
@@ -55,15 +67,15 @@ def events_from_icals( placement ):
         ical_events = recurring_ical_events.of(calendar).between(start_date, end_date)
 
         for ical_event in ical_events:
-
             event_dict = {}
-            event_dict['uid'] = str(ical_event['UID']) if ical_event.has_key('UID') else ''
-            if not event_dict['uid'] > '':
+            event_dict["uid"] = (
+                str(ical_event["UID"]) if ical_event.has_key("UID") else ""
+            )
+            if not event_dict["uid"] > "":
                 continue
 
-            if event_dict['uid'] in blocked_ical_uids:
-
-                blocks = blocked_ical_events.filter( uuid=event_dict['uid'] )
+            if event_dict["uid"] in blocked_ical_uids:
+                blocks = blocked_ical_events.filter(uuid=event_dict["uid"])
 
                 if blocks.exists():
                     block = blocks.first()
@@ -72,121 +84,178 @@ def events_from_icals( placement ):
                     if not article:
                         continue
 
-                    event_dict['slug'] = article.slug
+                    event_dict["slug"] = article.slug
 
-                    event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
-                    if isinstance( ical_event['DTSTART'].dt, datetime ):
-                        event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
-                    event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
-                    if isinstance( ical_event['DTEND'].dt, datetime ):
-                        event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+                    event_dict["whendate"] = date(
+                        ical_event["DTSTART"].dt.year,
+                        ical_event["DTSTART"].dt.month,
+                        ical_event["DTSTART"].dt.day,
+                    )
+                    if isinstance(ical_event["DTSTART"].dt, datetime):
+                        event_dict["whentime"] = datetime(
+                            100,
+                            1,
+                            1,
+                            ical_event["DTSTART"].dt.hour,
+                            ical_event["DTSTART"].dt.minute,
+                        )
+                    event_dict["enddate"] = date(
+                        ical_event["DTEND"].dt.year,
+                        ical_event["DTEND"].dt.month,
+                        ical_event["DTEND"].dt.day,
+                    )
+                    if isinstance(ical_event["DTEND"].dt, datetime):
+                        event_dict["endtime"] = datetime(
+                            100,
+                            1,
+                            1,
+                            ical_event["DTEND"].dt.hour,
+                            ical_event["DTEND"].dt.minute,
+                        )
 
-                    event_dict['headline'] = article.headline
-                    event_dict['content'] = article.content
+                    event_dict["headline"] = article.headline
+                    event_dict["content"] = article.content
 
-                    isokey = event_dict['whendate'].isoformat()
+                    isokey = event_dict["whendate"].isoformat()
 
             else:
+                event_dict["ical_url"] = url.replace("/", "_%2f_")
+                event_dict["whendate"] = date(
+                    ical_event["DTSTART"].dt.year,
+                    ical_event["DTSTART"].dt.month,
+                    ical_event["DTSTART"].dt.day,
+                )
+                if isinstance(ical_event["DTSTART"].dt, datetime):
+                    event_dict["whentime"] = datetime(
+                        100,
+                        1,
+                        1,
+                        ical_event["DTSTART"].dt.hour,
+                        ical_event["DTSTART"].dt.minute,
+                    )
+                event_dict["enddate"] = date(
+                    ical_event["DTEND"].dt.year,
+                    ical_event["DTEND"].dt.month,
+                    ical_event["DTEND"].dt.day,
+                )
+                if isinstance(ical_event["DTEND"].dt, datetime):
+                    event_dict["endtime"] = datetime(
+                        100,
+                        1,
+                        1,
+                        ical_event["DTEND"].dt.hour,
+                        ical_event["DTEND"].dt.minute,
+                    )
 
-                event_dict['ical_url'] = url.replace('/', '_%2f_')
-                event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
-                if isinstance( ical_event['DTSTART'].dt, datetime ):
-                    event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
-                event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
-                if isinstance( ical_event['DTEND'].dt, datetime ):
-                    event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+                event_dict["headline"] = str(ical_event["SUMMARY"])
+                event_dict["content"] = (
+                    str(ical_event["DESCRIPTION"])
+                    if ical_event.has_key("DESCRIPTION")
+                    else ""
+                )
 
-                event_dict['headline'] = str(ical_event['SUMMARY'])
-                event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
-
-                isokey = event_dict['whendate'].isoformat()
+                isokey = event_dict["whendate"].isoformat()
 
             if isokey in event_date_dict:
-                event_date_dict[ isokey ].append( event_dict )
+                event_date_dict[isokey].append(event_dict)
             else:
-                event_date_dict[ isokey ] = [ event_dict ]
+                event_date_dict[isokey] = [event_dict]
 
     return event_date_dict
 
-def events_from_articles( placement, do_preview=False ):
 
-    start_date = date.today() + timedelta( days=placement.event_list_start )
-    end_date =   start_date + timedelta( days=placement.events_list_length )
+def events_from_articles(placement, do_preview=False):
+    start_date = date.today() + timedelta(days=placement.event_list_start)
+    end_date = start_date + timedelta(days=placement.events_list_length)
 
     event_date_dict = {}
 
     if do_preview:
-        articleplacements = placement.articleplacement_set.filter( Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT) )
+        articleplacements = placement.articleplacement_set.filter(
+            Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+            | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)
+        )
     else:
-        articleplacements = placement.articleplacement_set.filter( article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+        articleplacements = placement.articleplacement_set.filter(
+            article__draft_status=Article.DRAFT_STATUS_PUBLISHED
+        )
 
     for articleplacement in articleplacements:
-
         for event_date in articleplacement.article.articleeventdate_set.all():
-
             if event_date.whendate >= start_date and event_date.whendate <= end_date:
-
                 event_dict = {}
-                event_dict['whendate'] = event_date.whendate
-                event_dict['whentime'] = event_date.whentime
-                event_dict['endtime'] = event_date.whendate + timedelta( minutes=event_date.timelen )
-                event_dict['slug'] = articleplacement.article.slug
-                event_dict['headline'] = articleplacement.article.headline
-                event_dict['content'] = articleplacement.article.content
+                event_dict["whendate"] = event_date.whendate
+                event_dict["whentime"] = event_date.whentime
+                event_dict["endtime"] = event_date.whendate + timedelta(
+                    minutes=event_date.timelen
+                )
+                event_dict["slug"] = articleplacement.article.slug
+                event_dict["headline"] = articleplacement.article.headline
+                event_dict["content"] = articleplacement.article.content
 
-                isokey = event_dict['whendate'].isoformat()
+                isokey = event_dict["whendate"].isoformat()
                 if isokey in event_date_dict:
-                    event_date_dict[ isokey ].append( event_dict )
+                    event_date_dict[isokey].append(event_dict)
                 else:
-                    event_date_dict[ isokey ] = [ event_dict ]
+                    event_date_dict[isokey] = [event_dict]
 
     return event_date_dict
 
-def ical_from_events( placement, do_preview=False ):
-    ical_text = 'BEGIN:VCALENDAR\n'
+
+def ical_from_events(placement, do_preview=False):
+    ical_text = "BEGIN:VCALENDAR\n"
     placementarticles = placement.articleplacement_set.all()
     for placementarticle in placementarticles:
         article = placementarticle.article
         eventdates = article.articleeventdate_set.all()
         if eventdates.exists():
             for eventdate in eventdates:
-                ical_text = ical_text + 'BEGIN:VEVENT\n'
-                ical_text = ical_text + 'DTSTAMP:{}\n'.format( date.today().isoformat() )
-                ical_text = ical_text + 'UID:{}\n'.format( article.pk )
-                ical_text = ical_text + 'SUMMARY:{}\n'.format( article.headline )
+                ical_text = ical_text + "BEGIN:VEVENT\n"
+                ical_text = ical_text + "DTSTAMP:{}\n".format(date.today().isoformat())
+                ical_text = ical_text + "UID:{}\n".format(article.pk)
+                ical_text = ical_text + "SUMMARY:{}\n".format(article.headline)
 
                 if eventdate.whentime is not None:
-                    ical_text = ical_text + 'DTSTART:{}{}{}T{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day, eventdate.whentime.hour, eventdate.whentime.minute, 00 )
+                    ical_text = ical_text + "DTSTART:{}{}{}T{}{}{}\n".format(
+                        eventdate.whendate.year,
+                        eventdate.whendate.month,
+                        eventdate.whendate.day,
+                        eventdate.whentime.hour,
+                        eventdate.whentime.minute,
+                        00,
+                    )
                 else:
-                    ical_text = ical_text + 'DTSTART:{}{}{}\n'.format( eventdate.whendate.year, eventdate.whendate.month, eventdate.whendate.day )
-                ical_text = ical_text + 'END:VEVENT\n'
+                    ical_text = ical_text + "DTSTART:{}{}{}\n".format(
+                        eventdate.whendate.year,
+                        eventdate.whendate.month,
+                        eventdate.whendate.day,
+                    )
+                ical_text = ical_text + "END:VEVENT\n"
 
-    ical_text = ical_text + 'END:VCALENDAR\n'
+    ical_text = ical_text + "END:VCALENDAR\n"
 
     return ical_text
 
 
-def event_date_dict( placement, do_preview=False ):
-
-    ical_dict = events_from_icals( placement )
-    article_dict = events_from_articles( placement, do_preview )
+def event_date_dict(placement, do_preview=False):
+    ical_dict = events_from_icals(placement)
+    article_dict = events_from_articles(placement, do_preview)
 
     new_dict = ical_dict
 
     for key, events in article_dict.items():
-
         if key in new_dict:
-            new_dict[ key ] = new_dict[ key ] + events
+            new_dict[key] = new_dict[key] + events
         else:
-            new_dict[ key ] = events
+            new_dict[key] = events
 
-    new_dict = dict(sorted( new_dict.items() ) )
+    new_dict = dict(sorted(new_dict.items()))
     return new_dict
 
-def single_event_date_dict( url, uid ):
 
+def single_event_date_dict(url, uid):
     blocked_ical_events = BlockedIcalEvent.objects.all()
-    blocked_ical_uids = [ blocked_event.uuid for blocked_event in blocked_ical_events ]
+    blocked_ical_uids = [blocked_event.uuid for blocked_event in blocked_ical_events]
 
     ical_string = requests.get(url).text
     calendar = icalendar.Calendar.from_ical(ical_string)
@@ -195,14 +264,12 @@ def single_event_date_dict( url, uid ):
     event_dict = {}
 
     for ical_event in ical_events:
-
-        event_dict['uid'] = str(ical_event['UID']) if ical_event.has_key('UID') else ''
-        if not event_dict['uid'] == uid:
+        event_dict["uid"] = str(ical_event["UID"]) if ical_event.has_key("UID") else ""
+        if not event_dict["uid"] == uid:
             continue
 
-        if event_dict['uid'] in blocked_ical_uids:
-
-            blocks = blocked_ical_events.filter( uuid=event_dict['uid'] )
+        if event_dict["uid"] in blocked_ical_uids:
+            blocks = blocked_ical_events.filter(uuid=event_dict["uid"])
 
             if blocks.exists():
                 block = blocks.first()
@@ -211,47 +278,94 @@ def single_event_date_dict( url, uid ):
                 if not article:
                     continue
 
-                event_dict['slug'] = article.slug
+                event_dict["slug"] = article.slug
 
-                event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
-                if isinstance( ical_event['DTSTART'].dt, datetime ):
-                    event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
-                event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
-                if isinstance( ical_event['DTEND'].dt, datetime ):
-                    event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
+                event_dict["whendate"] = date(
+                    ical_event["DTSTART"].dt.year,
+                    ical_event["DTSTART"].dt.month,
+                    ical_event["DTSTART"].dt.day,
+                )
+                if isinstance(ical_event["DTSTART"].dt, datetime):
+                    event_dict["whentime"] = datetime(
+                        100,
+                        1,
+                        1,
+                        ical_event["DTSTART"].dt.hour,
+                        ical_event["DTSTART"].dt.minute,
+                    )
+                event_dict["enddate"] = date(
+                    ical_event["DTEND"].dt.year,
+                    ical_event["DTEND"].dt.month,
+                    ical_event["DTEND"].dt.day,
+                )
+                if isinstance(ical_event["DTEND"].dt, datetime):
+                    event_dict["endtime"] = datetime(
+                        100,
+                        1,
+                        1,
+                        ical_event["DTEND"].dt.hour,
+                        ical_event["DTEND"].dt.minute,
+                    )
 
-                event_dict['headline'] = article.headline
-                event_dict['content'] = article.content
+                event_dict["headline"] = article.headline
+                event_dict["content"] = article.content
 
         else:
+            event_dict["whendate"] = date(
+                ical_event["DTSTART"].dt.year,
+                ical_event["DTSTART"].dt.month,
+                ical_event["DTSTART"].dt.day,
+            )
+            if isinstance(ical_event["DTSTART"].dt, datetime):
+                event_dict["whentime"] = datetime(
+                    100,
+                    1,
+                    1,
+                    ical_event["DTSTART"].dt.hour,
+                    ical_event["DTSTART"].dt.minute,
+                )
+            event_dict["enddate"] = date(
+                ical_event["DTEND"].dt.year,
+                ical_event["DTEND"].dt.month,
+                ical_event["DTEND"].dt.day,
+            )
+            if isinstance(ical_event["DTEND"].dt, datetime):
+                event_dict["endtime"] = datetime(
+                    100,
+                    1,
+                    1,
+                    ical_event["DTEND"].dt.hour,
+                    ical_event["DTEND"].dt.minute,
+                )
 
-            event_dict['whendate'] = date( ical_event['DTSTART'].dt.year, ical_event['DTSTART'].dt.month, ical_event['DTSTART'].dt.day )
-            if isinstance( ical_event['DTSTART'].dt, datetime ):
-                event_dict['whentime'] = datetime( 100, 1, 1, ical_event['DTSTART'].dt.hour, ical_event['DTSTART'].dt.minute )
-            event_dict['enddate'] = date( ical_event['DTEND'].dt.year, ical_event['DTEND'].dt.month, ical_event['DTEND'].dt.day )
-            if isinstance( ical_event['DTEND'].dt, datetime ):
-                event_dict['endtime'] = datetime( 100, 1, 1, ical_event['DTEND'].dt.hour, ical_event['DTEND'].dt.minute )
-
-            event_dict['headline'] = str(ical_event['SUMMARY'])
-            event_dict['content'] = str(ical_event['DESCRIPTION']) if ical_event.has_key('DESCRIPTION') else ''
+            event_dict["headline"] = str(ical_event["SUMMARY"])
+            event_dict["content"] = (
+                str(ical_event["DESCRIPTION"])
+                if ical_event.has_key("DESCRIPTION")
+                else ""
+            )
 
     return event_dict
 
 
-def condensify( value ):
-    return slugify( value ).replace('-','')
+def condensify(value):
+    return slugify(value).replace("-", "")
 
-def get_menu_items( page ):
+
+def get_menu_items(page):
     menus = []
-    for menuobject in Menu.objects.filter( page=page ):
-        menu = [{'href':menuitem.url, 'label':menuitem.label} for menuitem in menuobject.menuitem_set.all() ]
+    for menuobject in Menu.objects.filter(page=page):
+        menu = [
+            {"href": menuitem.url, "label": menuitem.label}
+            for menuitem in menuobject.menuitem_set.all()
+        ]
         menus.append(menu)
     return menus
 
-def get_page(request):
 
+def get_page(request):
     try:
-        page = Page.objects.get(pk=request.session.get('page'))
+        page = Page.objects.get(pk=request.session.get("page"))
     except:
         try:
             page = Page.objects.first()
@@ -262,105 +376,144 @@ def get_page(request):
 
 
 class IcalEventView(TemplateView):
-
-    template_name = '{}/ical_event.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/ical_event.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
 
-        if 'ical_url' in self.kwargs:
-            ical_url = self.kwargs.get('ical_url').replace( '_%2f_', '/')
+        if "ical_url" in self.kwargs:
+            ical_url = self.kwargs.get("ical_url").replace("_%2f_", "/")
         else:
             return context_data
 
-        if 'uid' in self.kwargs:
-            uid = self.kwargs.get('uid')
+        if "uid" in self.kwargs:
+            uid = self.kwargs.get("uid")
         else:
             return context_data
 
         page = get_page(self.request)
         if page:
-            context_data['menus'] = get_menu_items( page )
+            context_data["menus"] = get_menu_items(page)
 
-        context_data['article'] = single_event_date_dict( ical_url, uid )
+        context_data["article"] = single_event_date_dict(ical_url, uid)
 
         return context_data
 
 
 class HomePage(TemplateView):
-
-    template_name = '{}/homepage.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/homepage.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
 
         page = Page.objects.first()
-        if 'page' in self.kwargs:
-            page = Page.objects.get(pk=self.kwargs.get('page'))
+        if "page" in self.kwargs:
+            page = Page.objects.get(pk=self.kwargs.get("page"))
 
         if page is None:
             return context_data
 
-        context_data['menus'] = get_menu_items( page )
+        context_data["menus"] = get_menu_items(page)
 
         # Remember the page so if an article or ical event is clicked, the menu displayed will be the same menu displayed for thsi view
-        self.request.session['page'] = page.pk
+        self.request.session["page"] = page.pk
 
-        context_data['placement_types'] = {}
+        context_data["placement_types"] = {}
         for placement_type in Placement.TYPE_CHOICES:
-            context_data['placement_types'][ condensify( placement_type[1] ) ] = placement_type[0]
+            context_data["placement_types"][
+                condensify(placement_type[1])
+            ] = placement_type[0]
 
-        context_data['font_sizes'] = {}
+        context_data["font_sizes"] = {}
         for font_size in Placement.FONT_SIZE_CHOICES:
-            context_data['font_sizes'][ condensify( font_size[1] ) ] = font_size[0]
+            context_data["font_sizes"][condensify(font_size[1])] = font_size[0]
 
-        do_preview = self.request.user.is_staff == True and self.request.GET.get('preview').lower() == "true"[:len(self.request.GET.get('preview'))].lower() if 'preview' in self.request.GET else False
+        do_preview = (
+            self.request.user.is_staff == True
+            and self.request.GET.get("preview").lower()
+            == "true"[: len(self.request.GET.get("preview"))].lower()
+            if "preview" in self.request.GET
+            else False
+        )
 
         if do_preview:
-            placements = Placement.objects.filter( page=page ).order_by('place_number')
+            placements = Placement.objects.filter(page=page).order_by("place_number")
         else:
-            placements = Placement.objects.filter( page=page ).order_by('place_number')
+            placements = Placement.objects.filter(page=page).order_by("place_number")
 
-        context_data['placements'] = []
+        context_data["placements"] = []
 
         for placement in placements:
-
             if placement.type == Placement.TYPE_ARTICLE_LIST:
                 if do_preview:
-                    placement.count = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).count()
-                    placement.articleplacements = placement.articleplacement_set.filter(Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED) | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)).order_by('sticky', '-sortable_date', '-article__created_date')
+                    placement.count = placement.articleplacement_set.filter(
+                        Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+                        | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)
+                    ).count()
+                    placement.articleplacements = placement.articleplacement_set.filter(
+                        Q(article__draft_status=Article.DRAFT_STATUS_PUBLISHED)
+                        | Q(article__draft_status=Article.DRAFT_STATUS_DRAFT)
+                    ).order_by("sticky", "-sortable_date", "-article__created_date")
                 else:
-                    placement.count = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).count()
-                    placement.articleplacements = placement.articleplacement_set.filter(article__draft_status=Article.DRAFT_STATUS_PUBLISHED).order_by('sticky', '-sortable_date', '-article__created_date')
+                    placement.count = placement.articleplacement_set.filter(
+                        article__draft_status=Article.DRAFT_STATUS_PUBLISHED
+                    ).count()
+                    placement.articleplacements = placement.articleplacement_set.filter(
+                        article__draft_status=Article.DRAFT_STATUS_PUBLISHED
+                    ).order_by("sticky", "-sortable_date", "-article__created_date")
 
                 for articleplacement in placement.articleplacements:
-
                     date_count = articleplacement.article.articleeventdate_set.count()
 
                     if date_count == 1:
-                        articleplacement.article.date = articleplacement.article.articleeventdate_set.first().whendate
+                        articleplacement.article.date = (
+                            articleplacement.article.articleeventdate_set.first().whendate
+                        )
                     else:
-                        for article_eventdate in articleplacement.article.articleeventdate_set.all():
+                        for (
+                            article_eventdate
+                        ) in articleplacement.article.articleeventdate_set.all():
                             if article_eventdate.whendate < date.today():
-                                articleplacement.article.prev_date = article_eventdate.whendate
+                                articleplacement.article.prev_date = (
+                                    article_eventdate.whendate
+                                )
                             if article_eventdate.whendate > date.today():
-                                articleplacement.article.next_date = article_eventdate.whendate
+                                articleplacement.article.next_date = (
+                                    article_eventdate.whendate
+                                )
                                 break
 
                     articleplacement.article.date_count = date_count
 
-                    if articleplacement.article.summary == '':
-                        articleplacement.article.summary = articleplacement.article.content
-                    if articleplacement.article.summary == '__none__':
-                        articleplacement.article.summary = ''
-                    if articleplacement.article.content_format == 'markdown':
-                        articleplacement.article.content = md.markdown(articleplacement.article.content, extensions=['markdown.extensions.fenced_code'])
-                    if articleplacement.article.summary_format == 'markdown' or ( articleplacement.article.summary_format == 'same' and articleplacement.article.content_format == 'markdown' ):
-                        articleplacement.article.summary = md.markdown(articleplacement.article.summary, extensions=['markdown.extensions.fenced_code'])
+                    if articleplacement.article.summary == "":
+                        articleplacement.article.summary = (
+                            articleplacement.article.content
+                        )
+                    if articleplacement.article.summary == "__none__":
+                        articleplacement.article.summary = ""
+                    if articleplacement.article.content_format == "markdown":
+                        articleplacement.article.content = md.markdown(
+                            articleplacement.article.content,
+                            extensions=["markdown.extensions.fenced_code"],
+                        )
+                    if articleplacement.article.summary_format == "markdown" or (
+                        articleplacement.article.summary_format == "same"
+                        and articleplacement.article.content_format == "markdown"
+                    ):
+                        articleplacement.article.summary = md.markdown(
+                            articleplacement.article.summary,
+                            extensions=["markdown.extensions.fenced_code"],
+                        )
 
-                    if articleplacement.article.summary != articleplacement.article.content and articleplacement.article.readmore > '':
+                    if (
+                        articleplacement.article.summary
+                        != articleplacement.article.content
+                        and articleplacement.article.readmore > ""
+                    ):
                         articleplacement.article.show_readmore = True
                     else:
                         articleplacement.article.show_readmore = False
@@ -371,33 +524,40 @@ class HomePage(TemplateView):
                         articleplacement.article.show_updates = placement.show_created
 
             elif placement.type == Placement.TYPE_EVENT_LIST:
-
-                placement.events = event_date_dict( placement, do_preview )
+                placement.events = event_date_dict(placement, do_preview)
 
             elif placement.type == Placement.TYPE_FEED:
-                placement.feedposts = FeedPost.objects.filter( source__in=[feedsource.source.pk for feedsource in placement.feedsource_set.all()] ).order_by('-created')
+                placement.feedposts = FeedPost.objects.filter(
+                    source__in=[
+                        feedsource.source.pk
+                        for feedsource in placement.feedsource_set.all()
+                    ]
+                ).order_by("-created")
 
-            context_data['placements'].append(placement)
+            context_data["placements"].append(placement)
 
         return context_data
 
-class ArticleDetail(DetailView):
 
+class ArticleDetail(DetailView):
     model = Article
 
-    template_name = '{}/article.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/article.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
 
         page = get_page(self.request)
 
         if page:
-            context_data['menus'] = get_menu_items( page )
+            context_data["menus"] = get_menu_items(page)
 
-        if self.object.content_format == 'markdown':
-            self.object.content = md.markdown(self.object.content, extensions=['markdown.extensions.fenced_code'])
+        if self.object.content_format == "markdown":
+            self.object.content = md.markdown(
+                self.object.content, extensions=["markdown.extensions.fenced_code"]
+            )
         if self.object.show_author == Article.SHOW_COMPLY:
             self.object.show_author = True
         if self.object.show_updated == Article.SHOW_COMPLY:
@@ -406,72 +566,98 @@ class ArticleDetail(DetailView):
         date_count = self.object.articleeventdate_set.count()
 
         if date_count == 1:
-            context_data['date'] = self.object.articleeventdate_set.first().whendate
+            context_data["date"] = self.object.articleeventdate_set.first().whendate
         else:
             for article_eventdate in self.object.articleeventdate_set.all():
                 if article_eventdate.whendate < date.today():
-                    context_data['prev_date'] = article_eventdate.whendate
+                    context_data["prev_date"] = article_eventdate.whendate
                 if article_eventdate.whendate > date.today():
-                    context_data['next_date'] = article_eventdate.whendate
+                    context_data["next_date"] = article_eventdate.whendate
                     break
 
-        context_data['date_count'] = date_count
-
+        context_data["date_count"] = date_count
 
         subscription = None
         if self.request.user.is_authenticated and self.object.allow_comments:
             try:
-                subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+                subscription = Subscription.objects.get(
+                    article=self.get_object(), subscriber=self.request.user
+                )
             except Subscription.MultipleObjectsReturned:
-                subscriptions_delete = Subscription.objects.filter(article=self.get_object(), subscriber=self.request.user)[1:]
+                subscriptions_delete = Subscription.objects.filter(
+                    article=self.get_object(), subscriber=self.request.user
+                )[1:]
                 for subscription in subscriptions_delete:
                     subscription.delete()
-                subscription = Subscription.objects.get(article=self.get_object(), subscriber=self.request.user)
+                subscription = Subscription.objects.get(
+                    article=self.get_object(), subscriber=self.request.user
+                )
             except Subscription.DoesNotExist:
                 pass
 
-        context_data['subscription'] = subscription
+        context_data["subscription"] = subscription
 
         return context_data
 
-class ArticleList(ListView):
 
-    permission_required = 'sdcpeople.view_person'
+class ArticleList(ListView):
+    permission_required = "sdcpeople.view_person"
     model = Article
 
-    template_name = '{}/article_list.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/article_list.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def setup(self, request, *args, **kwargs):
-
-        self.vista_settings={
-            'max_search_keys':5,
-            'fields':[],
+        self.vista_settings = {
+            "max_search_keys": 5,
+            "fields": [],
         }
 
-        self.vista_settings['fields'] = make_vista_fields(Article, field_names=[
-            'headline',
-            'draft_status',
-            'articleplacement__placement'
-        ])
+        self.vista_settings["fields"] = make_vista_fields(
+            Article,
+            field_names=["headline", "draft_status", "articleplacement__placement"],
+        )
 
-        if 'by_value' in kwargs and 'by_parameter' in kwargs:
+        if "by_value" in kwargs and "by_parameter" in kwargs:
+            self.vista_get_by = QueryDict(
+                urlencode(
+                    [
+                        ("filter__fieldname__0", [kwargs.get("by_parameter")]),
+                        ("filter__op__0", ["exact"]),
+                        ("filter__value__0", [kwargs.get("by_value")]),
+                        (
+                            "order_by",
+                            [
+                                "name_last",
+                                "name_common",
+                            ],
+                        ),
+                        ("paginate_by", self.paginate_by),
+                    ],
+                    doseq=True,
+                )
+            )
 
-            self.vista_get_by = QueryDict(urlencode([
-                ('filter__fieldname__0', [kwargs.get('by_parameter')]),
-                ('filter__op__0', ['exact']),
-                ('filter__value__0', [kwargs.get('by_value')]),
-                ('order_by', ['name_last', 'name_common', ]),
-                ('paginate_by',self.paginate_by),
-            ],doseq=True) )
-
-
-        self.vista_defaults = QueryDict(urlencode([
-            ('filter__fieldname__0', ['draft_status']),
-            ('filter__op__0', ['exact']),
-            ('filter__value__0', [Article.DRAFT_STATUS_PUBLISHED]),
-            ('order_by', ['updated_date', 'headline', ]),
-            ('paginate_by',self.paginate_by),
-        ],doseq=True),mutable=True )
+        self.vista_defaults = QueryDict(
+            urlencode(
+                [
+                    ("filter__fieldname__0", ["draft_status"]),
+                    ("filter__op__0", ["exact"]),
+                    ("filter__value__0", [Article.DRAFT_STATUS_PUBLISHED]),
+                    (
+                        "order_by",
+                        [
+                            "updated_date",
+                            "headline",
+                        ],
+                    ),
+                    ("paginate_by", self.paginate_by),
+                ],
+                doseq=True,
+            ),
+            mutable=True,
+        )
 
         return super().setup(request, *args, **kwargs)
 
@@ -479,38 +665,38 @@ class ArticleList(ListView):
         return super().get(request, *args, **kwargs)
 
     def get_queryset(self, **kwargs):
-
         queryset = super().get_queryset()
 
-        self.vistaobj = {'querydict':QueryDict(), 'queryset':queryset}
+        self.vistaobj = {"querydict": QueryDict(), "queryset": queryset}
 
-        return get_vista_queryset( self )
+        return get_vista_queryset(self)
 
     def get_paginate_by(self, queryset):
-
-        if 'paginate_by' in self.vistaobj['querydict'] and isinstance(self.vistaobj['querydict']['paginate_by'], int):
-            print('tp239i644', self.vistaobj['querydict']['paginate_by'])
-            return self.vistaobj['querydict']['paginate_by']
+        if "paginate_by" in self.vistaobj["querydict"] and isinstance(
+            self.vistaobj["querydict"]["paginate_by"], int
+        ):
+            print("tp239i644", self.vistaobj["querydict"]["paginate_by"])
+            return self.vistaobj["querydict"]["paginate_by"]
 
         return super().get_paginate_by(queryset)
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
 
-        vista_data = vista_context_data(self.vista_settings, self.vistaobj['querydict'])
-
+        vista_data = vista_context_data(self.vista_settings, self.vistaobj["querydict"])
 
         context_data = {**context_data, **vista_data}
-        context_data['vista_default'] = dict(self.vista_defaults)
+        context_data["vista_default"] = dict(self.vista_defaults)
 
         if self.request.user.is_authenticated:
-            context_data['vistas'] = Vista.objects.filter(user=self.request.user, model_name='sdcpeople.Article').all() # for choosing saved vistas
+            context_data["vistas"] = Vista.objects.filter(
+                user=self.request.user, model_name="sdcpeople.Article"
+            ).all()  # for choosing saved vistas
 
-        if self.request.POST.get('vista_name'):
-            context_data['vista_name'] = self.request.POST.get('vista_name')
+        if self.request.POST.get("vista_name"):
+            context_data["vista_name"] = self.request.POST.get("vista_name")
 
-        context_data['count'] = self.object_list.count()
+        context_data["count"] = self.object_list.count()
 
         return context_data
 
@@ -519,60 +705,67 @@ def get_ical_text(request, pk=0):
     if not pk > 0:
         return HttpResponse("-")
     ical = ICal.objects.get(pk=pk)
-    return  HttpResponse(requests.get(ical.url).text)
+    return HttpResponse(requests.get(ical.url).text)
+
 
 def ical_detail_view(request, uuid):
-
     ical_calendars = []
     event_from_ical = {}
 
     for ical in ICal.objects.all():
         ical_string = requests.get(ical.url).text
         calendar = icalendar.Calendar.from_ical(ical_string)
-        ical_calendars.append( calendar )
-
+        ical_calendars.append(calendar)
 
     for ical_calendar in ical_calendars:
         # for icalevent in recurring_ical_events.of(calendar).between( event_start_date, event_end_date ):
         for icalevent in recurring_ical_events.of(ical_calendar).all():
             dict_items = dict(icalevent.items())
             if dict_items["UID"] == uuid:
-
-                event_from_ical['slug'] = ''
-                event_from_ical['headline'] = str(icalevent["SUMMARY"])
-                event_from_ical['summary'] = ''
-                if 'DESCRIPTION' in dict_items:
-                    event_from_ical['content'] = dict_items['DESCRIPTION']
+                event_from_ical["slug"] = ""
+                event_from_ical["headline"] = str(icalevent["SUMMARY"])
+                event_from_ical["summary"] = ""
+                if "DESCRIPTION" in dict_items:
+                    event_from_ical["content"] = dict_items["DESCRIPTION"]
 
                 break
 
-    return TemplateResponse(request, '{}/article.html'.format(settings.TOUGCOMSYS['TEMPLATE_DIR']), { "article": event_from_ical })
+    return TemplateResponse(
+        request,
+        "{}/article.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"]),
+        {"article": event_from_ical},
+    )
+
 
 class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = forms.CommentForm
-    template_name = '{}/comment_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/comment_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        if 'article' in self.kwargs:
-            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
-        if 'to' in self.kwargs:
-            context_data['article'] = Comment.objects.get(pk=self.kwargs.get('to'))
+        if "article" in self.kwargs:
+            context_data["article"] = Article.objects.get(
+                slug=self.kwargs.get("article")
+            )
+        if "to" in self.kwargs:
+            context_data["article"] = Comment.objects.get(pk=self.kwargs.get("to"))
 
         return context_data
 
     def get_initial(self):
-
         initial_data = super().get_initial()
-        if 'article' in self.kwargs:
-            initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
-        if 'to' in self.kwargs:
-            initial_data['article'] = Comment.objects.get(pk=self.kwargs.get('to'))
+        if "article" in self.kwargs:
+            initial_data["article"] = Article.objects.get(
+                slug=self.kwargs.get("article")
+            )
+        if "to" in self.kwargs:
+            initial_data["article"] = Comment.objects.get(pk=self.kwargs.get("to"))
         return initial_data
 
     def form_valid(self, form):
-
         comment = form.save(commit=False)
         comment.author = self.request.user
         if comment.in_reply_to is not None:
@@ -582,106 +775,146 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
         form.save()
 
-        if 'FROM_EMAIL' in settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]:
-            from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['FROM_EMAIL']
+        if "FROM_EMAIL" in settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]:
+            from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]][
+                "FROM_EMAIL"
+            ]
         else:
             from_email = None
-
 
         for subscription in comment.article.subscription_set.all():
             try:
                 send_mail(
-                    settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['SITE_NAME'] + ' new comment',
+                    settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["SITE_NAME"]
+                    + " new comment",
                     comment.comment_text,
                     from_email,
-                    [subscription.subscriber.email]
+                    [subscription.subscriber.email],
                 )
             except Exception as e:
-                print('{} {}'.format(type(e), e))
+                print("{} {}".format(type(e), e))
 
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
-
     permission_required = "tougcomsys.add_article"
     model = Article
     form_class = forms.ArticleForm
-    template_name = '{}/article_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/article_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_initial(self):
-
         initial = super().get_initial()
-        initial['author'] = self.request.user
+        initial["author"] = self.request.user
         return initial
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk})
+        return reverse("tougcomsys:article_update", kwargs={"pk": self.object.pk})
+
 
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
-
     permission_required = "tougcomsys.change_article"
     model = Article
     form_class = forms.ArticleForm
 
     def get_form_class(self):
-
-        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
-        print('tp239gh52 get_form_class', self.kwargs.get('page'), page)
-        self.form_class = getattr(forms, 'ArticleForm{}'.format(page))
-        print('tp239gk33 get_form_class', self.form_class)
+        page = self.kwargs.get("page") if "page" in self.kwargs else 1
+        print("tp239gh52 get_form_class", self.kwargs.get("page"), page)
+        self.form_class = getattr(forms, "ArticleForm{}".format(page))
+        print("tp239gk33 get_form_class", self.form_class)
 
         return super().get_form_class()
 
     def get_template_names(self):
-
-        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
-        print('tp239gh49 get_template_names', self.kwargs.get('page'), page)
-        print('tp239gk35 get_template_names', '{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page))
-        return ['{}/article_form_page{}.html'.format( settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'], page)]
+        page = self.kwargs.get("page") if "page" in self.kwargs else 1
+        print("tp239gh49 get_template_names", self.kwargs.get("page"), page)
+        print(
+            "tp239gk35 get_template_names",
+            "{}/article_form_page{}.html".format(
+                settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"], page
+            ),
+        )
+        return [
+            "{}/article_form_page{}.html".format(
+                settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"], page
+            )
+        ]
 
     def get_success_url(self):
-        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
-        page = page + 1 if page < 4 else 1
-        print ('tp23926r43 get_success_url (adds 1)', self.kwargs.get('page'), page)
+        page = self.kwargs.get("page") if "page" in self.kwargs else 1
+        if "save_go" in self.request.POST:
+            print(
+                "tp239sr54",
+            )
+            save_go = self.request.POST.get("save_go")
+            if save_go == "prev":
+                page = page - 1 if page > 1 else 1
+            elif save_go == "next":
+                page = page + 1 if page < 4 else 1
 
-        print('tp239qh48 get_success_url', reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk, 'page':page} ))
-        return reverse( 'tougcomsys:article_update', kwargs={'pk':self.object.pk, 'page':page})
+        print("tp23926r43 get_success_url (adds 1)", self.kwargs.get("page"), page)
+
+        print(
+            "tp239qh48 get_success_url",
+            reverse(
+                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
+            ),
+        )
+        return reverse(
+            "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
+        )
 
     def get_context_data(self, **kwargs):
-
-        print('tp239gi08 get_context_data', self.kwargs.get('page'), self.kwargs.get('page'))
+        print(
+            "tp239gi08 get_context_data",
+            self.kwargs.get("page"),
+            self.kwargs.get("page"),
+        )
         context_data = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context_data['placements'] = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
-            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            context_data["placements"] = forms.ArticlePlacementFormSet(
+                self.request.POST, instance=self.get_object()
+            )
+            context_data["articleeventdates"] = forms.ArticleArticleEventDateFormSet(
+                self.request.POST, instance=self.get_object()
+            )
         else:
-            context_data['placements'] = forms.ArticlePlacementFormSet (instance=self.get_object())
-            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (instance=self.get_object())
+            context_data["placements"] = forms.ArticlePlacementFormSet(
+                instance=self.get_object()
+            )
+            context_data["articleeventdates"] = forms.ArticleArticleEventDateFormSet(
+                instance=self.get_object()
+            )
 
         return context_data
 
     def form_valid(self, form):
-
         valid = super().form_valid(form)
-        print('tp239gk45', valid)
+        print("tp239gk45", valid)
 
-        page = self.kwargs.get('page') if 'page' in self.kwargs else 1
+        page = self.kwargs.get("page") if "page" in self.kwargs else 1
 
-        print('tp239gi57 form_valid', self.kwargs.get('page'), self.kwargs.get('page'))
+        print("tp239gi57 form_valid", self.kwargs.get("page"), self.kwargs.get("page"))
 
         if page == 3:
-            placements = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            placements = forms.ArticleArticleEventDateFormSet(
+                self.request.POST, instance=self.get_object()
+            )
             if placements.is_valid():
                 placements.save()
             else:
                 return valid
 
         if page == 4:
-            articleeventdates = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            articleeventdates = forms.ArticleArticleEventDateFormSet(
+                self.request.POST, instance=self.get_object()
+            )
             if articleeventdates.is_valid():
                 articleeventdates.save()
             else:
@@ -689,46 +922,61 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
         return valid
 
-class ImageCreate(PermissionRequiredMixin, CreateView):
 
+class ImageCreate(PermissionRequiredMixin, CreateView):
     permission_required = "tougcomsys.add_image"
     model = Image
     form_class = forms.ImageForm
-    template_name = '{}/image_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/image_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_initial(self):
-
         initial = super().get_initial()
-        initial['author'] = self.request.user
+        initial["author"] = self.request.user
         return initial
 
     def get_success_url(self):
-        if 'popup' in self.kwargs:
-            return reverse('tougcomsys:window_closer', kwargs={'pk':self.object.pk, 'app_name':'tougcomsys', 'model_name':'Image'})
-        return reverse('tougcomsys:homepage')
+        if "popup" in self.kwargs:
+            return reverse(
+                "tougcomsys:window_closer",
+                kwargs={
+                    "pk": self.object.pk,
+                    "app_name": "tougcomsys",
+                    "model_name": "Image",
+                },
+            )
+        return reverse("tougcomsys:homepage")
+
 
 class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
-
     permission_required = "tougcomsys.change_article"
-    model=Article
-    fields=[]
-    template_name = '{}/article_articleeventdates_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    model = Article
+    fields = []
+    template_name = "{}/article_articleeventdates_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+            context_data["articleeventdates"] = forms.ArticleArticleEventDateFormSet(
+                self.request.POST, instance=self.get_object()
+            )
         else:
-            context_data['articleeventdates'] = forms.ArticleArticleEventDateFormSet (instance=self.get_object())
+            context_data["articleeventdates"] = forms.ArticleArticleEventDateFormSet(
+                instance=self.get_object()
+            )
 
         return context_data
 
     def form_valid(self, form):
         valid_response = super().form_valid(form)
 
-        articleeventdates = forms.ArticleArticleEventDateFormSet (self.request.POST, instance=self.get_object())
+        articleeventdates = forms.ArticleArticleEventDateFormSet(
+            self.request.POST, instance=self.get_object()
+        )
         if articleeventdates.is_valid():
             articleeventdates.save()
             return valid_response
@@ -736,49 +984,58 @@ class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
             return super().form_invalid(form)
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article_placements', kwargs={'pk':self.object.pk})
+        return reverse("tougcomsys:article_placements", kwargs={"pk": self.object.pk})
+
 
 class ArticlePlacements(PermissionRequiredMixin, UpdateView):
-
     permission_required = "tougcomsys.change_article"
-    model=Article
-    fields=[]
-    template_name = '{}/article_articleplacements_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    model = Article
+    fields = []
+    template_name = "{}/article_articleplacements_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
-
         context_data = super().get_context_data(**kwargs)
         if self.request.POST:
-            context_data['placements'] = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
+            context_data["placements"] = forms.ArticlePlacementFormSet(
+                self.request.POST, instance=self.get_object()
+            )
         else:
-            context_data['placements'] = forms.ArticlePlacementFormSet (instance=self.get_object())
+            context_data["placements"] = forms.ArticlePlacementFormSet(
+                instance=self.get_object()
+            )
 
         return context_data
-
 
     def form_valid(self, form):
         valid_response = super().form_valid(form)
 
-        articleplacements = forms.ArticlePlacementFormSet (self.request.POST, instance=self.get_object())
+        articleplacements = forms.ArticlePlacementFormSet(
+            self.request.POST, instance=self.get_object()
+        )
         if articleplacements.is_valid():
             articleplacements.save()
             return valid_response
         else:
             for form in articleplacements.forms:
-                print('tp239nk16', form.errors )
+                print("tp239nk16", form.errors)
             return super().form_invalid(form)
 
 
 class SubscriptionCreate(CreateView):
-
     model = Subscription
-    fields = ['article']
-    template_name = '{}/subscription_form.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    fields = ["article"]
+    template_name = "{}/subscription_form.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        if 'article' in self.kwargs:
-            context_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        if "article" in self.kwargs:
+            context_data["article"] = Article.objects.get(
+                slug=self.kwargs.get("article")
+            )
         return context_data
 
     def form_valid(self, form):
@@ -790,50 +1047,51 @@ class SubscriptionCreate(CreateView):
         return super().form_valid(form)
 
     def get_initial(self):
-
         initial_data = super().get_initial()
-        if 'article' in self.kwargs:
-            initial_data['article'] = Article.objects.get(slug=self.kwargs.get('article'))
+        if "article" in self.kwargs:
+            initial_data["article"] = Article.objects.get(
+                slug=self.kwargs.get("article")
+            )
 
         return initial_data
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+
 
 class SubscriptionDelete(DeleteView):
-
     model = Subscription
-    fields = ['article']
-    template_name = '{}/subscription_delete.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    fields = ["article"]
+    template_name = "{}/subscription_delete.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['article'] = self.object.article
+        context_data["article"] = self.object.article
         return context_data
 
     def get_success_url(self):
-        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
+        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
 
 
 class CommentDelete(LoginRequiredMixin, DeleteView):
-
     model = Comment
-    template_name = '{}/comment_delete_confirm.html'.format(settings.TOUGCOMSYS[settings.TOUGCOMSYS['active']]['TEMPLATE_DIR'])
+    template_name = "{}/comment_delete_confirm.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['article'] = self.object.article
+        context_data["article"] = self.object.article
         return context_data
 
     def form_valid(self, form):
-
         if self.request.user != self.object.author:
-            messages.error(self.request, 'You can only delete your own comments')
+            messages.error(self.request, "You can only delete your own comments")
             return super().form_invalid(form)
 
         return super().form_valid(form)
 
-
     def get_success_url(self):
-        return reverse( 'tougcomsys:article', kwargs={'slug':self.object.article.slug} )
-
+        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
