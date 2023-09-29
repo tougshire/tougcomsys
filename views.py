@@ -853,6 +853,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             else "view"
         )
         high_page = 4
+
         if aftersave == "prev":
             page = page - 1 if page > 1 else 1
             return reverse(
