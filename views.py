@@ -847,27 +847,29 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
     def get_success_url(self):
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
-        if "save_go" in self.request.POST:
-            print(
-                "tp239sr54",
-            )
-            save_go = self.request.POST.get("save_go")
-            if save_go == "prev":
-                page = page - 1 if page > 1 else 1
-            elif save_go == "next":
-                page = page + 1 if page < 4 else 1
-
-        print("tp23926r43 get_success_url (adds 1)", self.kwargs.get("page"), page)
-
-        print(
-            "tp239qh48 get_success_url",
-            reverse(
+        aftersave = (
+            self.request.POST.get("aftersave")
+            if "aftersave" in self.request.POST
+            else "view"
+        )
+        high_page = 4
+        if aftersave == "prev":
+            page = page - 1 if page > 1 else 1
+            return reverse(
                 "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
-            ),
-        )
-        return reverse(
-            "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
-        )
+            )
+
+        elif aftersave == "next":
+            page = page + 1 if page < high_page else 1
+            return reverse(
+                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
+            )
+        elif aftersave == "view":
+            return reverse("tougcomsys:article", kwargs={"slug": self.object.slug})
+        else:
+            return reverse(
+                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": 1}
+            )
 
     def get_context_data(self, **kwargs):
         print(
