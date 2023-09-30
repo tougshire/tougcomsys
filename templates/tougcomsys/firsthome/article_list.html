@@ -28,9 +28,9 @@
                             </div>
                             <div>
                                 {% if article.slug > "" %}
-                                    <a href="{% url 'tougcomsys:article' {pk=article.pk, slug=article.slug %}">View</a>
+                                    <a href="{% url 'tougcomsys:article' pk=article.pk slug=article.slug %}">View</a>
                                 {% else %}
-                                    <a href="{% url 'tougcomsys:article' {pk=article.pk %}">View</a>
+                                    <a href="{% url 'tougcomsys:article' pk=article.pk %}">View</a>
                                 {% endif %}
                             </div>
                         </td>
@@ -42,9 +42,9 @@
                         <td>
                             <div>
                                 {% if article.slug > "" %}
-                                    <a href="{% url 'tougcomsys:article' {pk=article.pk, slug=article.slug} %}">{{ article.headline }}</a>
+                                    <a href="{% url 'tougcomsys:article' pk=article.pk slug=article.slug %}">{{ article.headline }}</a>
                                 {% else %}
-                                    <a href="{% url 'tougcomsys:article' {pk=article.pk} %}">{{ article.headline }}</a>
+                                    <a href="{% url 'tougcomsys:article' pk=article.pk %}">{{ article.headline }}</a>
                                 {% endif %}
                             </div>
                             <div>{{ article.subheadline }}</div>
