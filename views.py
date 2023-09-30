@@ -84,7 +84,7 @@ def events_from_icals(placement):
                     if not article:
                         continue
 
-                    event_dict["slug"] = article.slug
+                    event_dict["pk"] = article.pk
 
                     event_dict["whendate"] = date(
                         ical_event["DTSTART"].dt.year,
@@ -189,7 +189,7 @@ def events_from_articles(placement, do_preview=False):
                 event_dict["endtime"] = event_date.whendate + timedelta(
                     minutes=event_date.timelen
                 )
-                event_dict["slug"] = articleplacement.article.slug
+                event_dict["pk"] = articleplacement.article.pk
                 event_dict["headline"] = articleplacement.article.headline
                 event_dict["content"] = articleplacement.article.content
 
@@ -278,7 +278,7 @@ def single_event_date_dict(url, uid):
                 if not article:
                     continue
 
-                event_dict["slug"] = article.slug
+                event_dict["pk"] = article.pk
 
                 event_dict["whendate"] = date(
                     ical_event["DTSTART"].dt.year,
@@ -616,7 +616,13 @@ class ArticleList(ListView):
 
         self.vista_settings["fields"] = make_vista_fields(
             Article,
-            field_names=["headline", "draft_status", "articleplacement__placement"],
+            field_names=[
+                "headline",
+                "draft_status",
+                "articleplacement__placement",
+                "created_date",
+                "updated_date",
+            ],
         )
 
         if "by_value" in kwargs and "by_parameter" in kwargs:
@@ -747,9 +753,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         if "article" in self.kwargs:
-            context_data["article"] = Article.objects.get(
-                slug=self.kwargs.get("article")
-            )
+            context_data["article"] = Article.objects.get(pk=self.kwargs.get("article"))
         if "to" in self.kwargs:
             context_data["article"] = Comment.objects.get(pk=self.kwargs.get("to"))
 
@@ -758,9 +762,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     def get_initial(self):
         initial_data = super().get_initial()
         if "article" in self.kwargs:
-            initial_data["article"] = Article.objects.get(
-                slug=self.kwargs.get("article")
-            )
+            initial_data["article"] = Article.objects.get(pk=self.kwargs.get("article"))
         if "to" in self.kwargs:
             initial_data["article"] = Comment.objects.get(pk=self.kwargs.get("to"))
         return initial_data
@@ -797,7 +799,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+        return reverse("tougcomsys:article", kwargs={"pk": self.object.article.pk})
 
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
@@ -866,7 +868,14 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
                 "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
             )
         elif aftersave == "view":
-            return reverse("tougcomsys:article", kwargs={"slug": self.object.slug})
+            if self.object.slug > "":
+                return reverse(
+                    "tougcomsys:article",
+                    kwargs={"pk": self.object.pk, "slug": self.object.slug},
+                )
+            else:
+                return reverse("tougcomsys:article", kwargs={"pk": self.object.pk})
+
         else:
             return reverse(
                 "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": 1}
@@ -1036,9 +1045,7 @@ class SubscriptionCreate(CreateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         if "article" in self.kwargs:
-            context_data["article"] = Article.objects.get(
-                slug=self.kwargs.get("article")
-            )
+            context_data["article"] = Article.objects.get(pk=self.kwargs.get("article"))
         return context_data
 
     def form_valid(self, form):
@@ -1052,14 +1059,18 @@ class SubscriptionCreate(CreateView):
     def get_initial(self):
         initial_data = super().get_initial()
         if "article" in self.kwargs:
-            initial_data["article"] = Article.objects.get(
-                slug=self.kwargs.get("article")
-            )
+            initial_data["article"] = Article.objects.get(pk=self.kwargs.get("article"))
 
         return initial_data
 
     def get_success_url(self):
-        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+        if self.object.article.slug > "":
+            return reverse(
+                "tougcomsys:article",
+                kwargs={"pk": self.object.article.pk, "slug": self.object.article.slug},
+            )
+        else:
+            return reverse("tougcomsys:article", kwargs={"pk": self.object.article.pk})
 
 
 class SubscriptionDelete(DeleteView):
@@ -1075,7 +1086,16 @@ class SubscriptionDelete(DeleteView):
         return context_data
 
     def get_success_url(self):
-        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+        if self.object.article.slug > "":
+            return reverse(
+                "tougcomsys:article",
+                kwargs={"pk": self.object.article.pk, "slug": self.object.article.slug},
+            )
+        else:
+            return reverse(
+                "tougcomsys:article",
+                kwargs={"pk": self.object.article.pk},
+            )
 
 
 class CommentDelete(LoginRequiredMixin, DeleteView):
@@ -1097,4 +1117,10 @@ class CommentDelete(LoginRequiredMixin, DeleteView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("tougcomsys:article", kwargs={"slug": self.object.article.slug})
+        if self.object.article.slug > "":
+            return reverse(
+                "tougcomsys:article",
+                kwargs={"pk": self.object.article.pk, "slug": self.object.article.slug},
+            )
+        else:
+            return reverse("tougcomsys:article", kwargs={"pk": self.object.article.pk})

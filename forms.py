@@ -4,11 +4,18 @@ from django.core.validators import EmailValidator
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from tougcomsys.models import Article, ArticleEventdate, ArticlePlacement, Comment, Image
+from tougcomsys.models import (
+    Article,
+    ArticleEventdate,
+    ArticlePlacement,
+    Comment,
+    Image,
+)
 from touglates.widgets import TouglateDateInput
 
+
 def validate_blank(value):
-    if value=='':
+    if value == "":
         return
     else:
         raise ValidationError(
@@ -16,14 +23,16 @@ def validate_blank(value):
             params={"value": value},
         )
 
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = [
-            'article',
-            'in_reply_to',
-            'comment_text',
+            "article",
+            "in_reply_to",
+            "comment_text",
         ]
+
 
 # "headline",
 # "subheadline",
@@ -49,6 +58,7 @@ class CommentForm(forms.ModelForm):
 # "slug",
 #   'sortable_date':TouglateDateInput()
 
+
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
@@ -67,11 +77,12 @@ class ArticleForm(forms.ModelForm):
         ]
 
         widgets = {
-            'headline':forms.TextInput(attrs={'class':'width_050'}),
-            'subheadline':forms.TextInput(attrs={'class':'width_050'}),
-            'content':forms.Textarea(attrs={'class':'width_050'}),
-            'summary':forms.Textarea(attrs={'class':'width_050'}),
+            "headline": forms.TextInput(attrs={"class": "width_050"}),
+            "subheadline": forms.TextInput(attrs={"class": "width_050"}),
+            "content": forms.Textarea(attrs={"class": "width_050"}),
+            "summary": forms.Textarea(attrs={"class": "width_050"}),
         }
+
 
 # 1 "headline",
 # 1 "subheadline",
@@ -101,6 +112,7 @@ class ArticleForm(forms.ModelForm):
 # ArticleForm for creating and ArticleFormN for updating
 # ArticleForm1 is mostly the same as ArticleForm, but also had slug
 
+
 class ArticleForm1(forms.ModelForm):
     class Meta:
         model = Article
@@ -116,16 +128,16 @@ class ArticleForm1(forms.ModelForm):
             "author",
             "draft_status",
             "allow_comments",
-
         ]
 
         widgets = {
-            'headline':forms.TextInput(attrs={'class':'width_050'}),
-            'subheadline':forms.TextInput(attrs={'class':'width_050'}),
-            'content':forms.Textarea(attrs={'class':'width_050'}),
-            'summary':forms.Textarea(attrs={'class':'width_050'}),
-            'sortable_date':TouglateDateInput()
+            "headline": forms.TextInput(attrs={"class": "width_050"}),
+            "subheadline": forms.TextInput(attrs={"class": "width_050"}),
+            "content": forms.Textarea(attrs={"class": "width_050"}),
+            "summary": forms.Textarea(attrs={"class": "width_050"}),
+            "sortable_date": TouglateDateInput(),
         }
+
 
 # ArticleForm for creating and ArticleFormN for updating
 # ArticleForm2 includes details
@@ -145,15 +157,20 @@ class ArticleForm2(forms.ModelForm):
 ArticleForm for creating and ArticleFormN for updating
 ArticleForm3 works with ArticlePlacementFormset
 """
+
+
 class ArticleForm3(forms.ModelForm):
     class Meta:
         model = Article
-        fields = [
-        ]
+        fields = []
+
+
 """
 ArticleForm for creating and ArticleFormN for updating
 ArticleForm4 works with ArticleArticleEventDateFormset
 """
+
+
 class ArticleForm4(forms.ModelForm):
     class Meta:
         model = Article
@@ -161,8 +178,8 @@ class ArticleForm4(forms.ModelForm):
             "descriptive_date",
         ]
 
-class ImageForm(forms.ModelForm):
 
+class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         fields = [
@@ -173,33 +190,39 @@ class ImageForm(forms.ModelForm):
             "url",
         ]
 
+
 class ArticleArticleEventDateForm(forms.ModelForm):
     class Meta:
         model = ArticleEventdate
         fields = [
-            'article',
-            'whendate',
-            'whentime',
-            'timelen',
+            "article",
+            "whendate",
+            "whentime",
+            "timelen",
         ]
-        widgets = {
-            'whendate': TouglateDateInput()
-        }
+        widgets = {"whendate": TouglateDateInput()}
+
 
 class ArticlePlacementForm(forms.ModelForm):
     class Meta:
         model = ArticlePlacement
         fields = [
-            'article',
-            'placement',
-            'expiration_date',
+            "article",
+            "placement",
+            "expiration_date",
             "sticky",
-            'sortable_date',
-
+            "sortable_date",
         ]
-        widgets = {
-            'expiration_date': TouglateDateInput()
-        }
+        widgets = {"expiration_date": TouglateDateInput()}
 
-ArticleArticleEventDateFormSet = forms.inlineformset_factory(Article, ArticleEventdate, form=ArticleArticleEventDateForm, extra=1, can_delete=True)
-ArticlePlacementFormSet = forms.inlineformset_factory(Article, ArticlePlacement, form=ArticlePlacementForm, extra=1, can_delete=True)
+
+ArticleArticleEventDateFormSet = forms.inlineformset_factory(
+    Article,
+    ArticleEventdate,
+    form=ArticleArticleEventDateForm,
+    extra=1,
+    can_delete=True,
+)
+ArticlePlacementFormSet = forms.inlineformset_factory(
+    Article, ArticlePlacement, form=ArticlePlacementForm, extra=5, can_delete=True
+)

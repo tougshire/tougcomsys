@@ -27,7 +27,11 @@
                                 <a href="{% url 'tougcomsys:article_update' article.pk %}">Edit</a>
                             </div>
                             <div>
-                                <a href="{% url 'tougcomsys:article' article.slug %}">View</a>
+                                {% if article.slug > "" %}
+                                    <a href="{% url 'tougcomsys:article' {pk=article.pk, slug=article.slug %}">View</a>
+                                {% else %}
+                                    <a href="{% url 'tougcomsys:article' {pk=article.pk %}">View</a>
+                                {% endif %}
                             </div>
                         </td>
                         <td>
@@ -36,7 +40,13 @@
                         </td>
                     {% else %}
                         <td>
-                            <div><a href="{% url 'tougcomsys:article' article.slug %}">{{ article.headline }}</a></div>
+                            <div>
+                                {% if article.slug > "" %}
+                                    <a href="{% url 'tougcomsys:article' {pk=article.pk, slug=article.slug} %}">{{ article.headline }}</a>
+                                {% else %}
+                                    <a href="{% url 'tougcomsys:article' {pk=article.pk} %}">{{ article.headline }}</a>
+                                {% endif %}
+                            </div>
                             <div>{{ article.subheadline }}</div>
                         </td>
                     {% endif %}

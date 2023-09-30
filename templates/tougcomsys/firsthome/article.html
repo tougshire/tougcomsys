@@ -60,11 +60,11 @@
                 </div>
             {% endfor %}
             {% if article.allow_comments == 1 %}
-`                    <a href="{% url 'tougcomsys:comment_create' article.slug %}">Comment</a>
+`                    <a href="{% url 'tougcomsys:comment_create' article.pk %}">Comment</a>
                     {% if subscription %}
                         <a href="{% url 'tougcomsys:subscription_delete' subscription.id %}">Unsubscribe</a>
                     {% else %}
-                        <a href="{% url 'tougcomsys:subscription_create' article.slug %}">Subscribe</a>
+                        <a href="{% url 'tougcomsys:subscription_create' article.pk %}">Subscribe</a>
                     {% endif %}
             {% endif %}
         {% endif %}

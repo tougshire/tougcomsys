@@ -19,14 +19,26 @@
                             <div class="article article_with_image_{{ articleplacement.article.list_image_location }} font_size_{{ placement.font_size }}">
 
                                 <div class="headline">   
-                                    <a href="{% url 'tougcomsys:article' slug=articleplacement.article.slug %}">                                          
-                                        <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                    </a>
+                                    {% if articleplacement.article.slug > "" %}
+                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">                                          
+                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">
+                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                        </a>
+                                    {% endif %}
                                 </div>
                                 <div class="subheadline">
-                                    <a href="{% url 'tougcomsys:article' slug=articleplacement.article.slug %}"> 
-                                        {{ articleplacement.article.subheadline|safe }}
-                                    </a>
+                                    {% if articleplacement.article.slug > "" %}
+                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}"> 
+                                            {{ articleplacement.article.subheadline|safe }}
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}"> 
+                                            {{ articleplacement.article.subheadline|safe }}
+                                        </a>
+                                    {% endif %}
                                 </div>
 
                                 {% if articleplacement.article.date %}
@@ -47,7 +59,11 @@
                                         {{ articleplacement.article.summary|safe }}
                                         {% if articleplacement.article.show_readmore %}
                                             <div class="readmore article_readmore">
-                                                <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                                {% if articleplacement.article.slug > "" %}
+                                                    <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                                {% else %}
+                                                    <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk  %}">{{ articleplacement.article.readmore }}</a>
+                                                {% endif %}
                                             </div>        
                                         {% endif %}
 
@@ -60,9 +76,15 @@
                                 <div class="article font_size_{{ placement.font_size }}">
                                     <div class="list_textfields">
                                         <div class="headline">    
-                                            <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">                                          
-                                                <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                            </a>
+                                            {% if articleplacement.article.slug > "" %}
+                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">                                          
+                                                    <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk  %}">                                          
+                                                    <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                                </a>
+                                            {% endif %}
                                         </div>
 
                                         {% if articleplacement.article.date %}
@@ -81,7 +103,11 @@
                                             {{ articleplacement.article.summary|safe }}
                                             {% if articleplacement.article.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                                    {% if articleplacement.article.slug > "" %}
+                                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                                    {% else %}
+                                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">{{ articleplacement.article.readmore }}</a>
+                                                    {% endif %}
                                                 </div>        
                                             {% endif %}
     
@@ -112,14 +138,14 @@
                             {% for event in events %}
                                 <div class="article event font_size_{{ placement.font_size }}">
                                     <div class="list_textfields">
-                                        {% if event.slug %}
-                                            <a href="{% url 'tougcomsys:article' event.slug %}">
+                                        {% if event.pk %}
+                                            <a href="{% url 'tougcomsys:article' event.pk 'x' %}">
                                                 <div class="headline">    
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
                                             </a>
-                                        {% elif event.uid %}
-                                            <a href="{% url 'tougcomsys:ical_event' event.ical_url event.uid %}">
+                                        {% elif event.ical_url and event.uid %}
+                                            <a href="{ % url 'tougcomsys:ical_event' event.ical_url event.uid %}">
                                                 <div class="headline">    
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
@@ -133,7 +159,11 @@
                                             {{ event.summary|safe }}
                                             {% if event.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' event.slug %}">{{ event.readmore }}</a>
+                                                    {% if event.slug > "" %}
+                                                        <a href="{% url 'tougcomsys:article' pk=event.pk slug=event.slug %}">{{ event.readmore }}</a>
+                                                    {% else %}
+                                                        <a href="{% url 'tougcomsys:article' pk=event.pk %}">{{ event.readmore }}</a>
+                                                    {% endif %}
                                                 </div>        
                                             {% endif %}
     
@@ -142,8 +172,12 @@
                                             {{ articleplacement.article.summary|safe }}
                                             {% if articleplacement.article.show_readmore %}
                                                 <div class="readmore article_readmore">
-                                                    <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
-                                                </div>        
+                                                    {% if articleplacement.article.slug > "" %}
+                                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">{{ articleplacement.article.readmore }}</a>
+                                                    {% else %}
+                                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">{{ articleplacement.article.readmore }}</a>
+                                                    {% endif %}
+                                                    </div>        
                                             {% endif %}
     
                                         </div>
