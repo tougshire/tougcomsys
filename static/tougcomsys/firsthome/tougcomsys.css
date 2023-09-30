@@ -213,9 +213,8 @@ div.form-field-control, div.form-field-help-text {
         margin-right:0;
     }
 
-    div.article_with_image_top div.list_image {
-        width:80%;
-        margin: 10% auto;
+    div.article_with_image_top div.list_image, div.article_with_image_top div.list_image {
+        width:100%;
     }
 
     div.list_image img{
