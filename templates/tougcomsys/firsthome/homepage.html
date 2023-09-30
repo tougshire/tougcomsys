@@ -56,6 +56,7 @@
                                             <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text|addslashes }}"{% endif %}>
                                         </a>
                                     {% else %}
+                                        <a href="{% url 'tougcomsys:article' articleplacement.article.pk articleplacement.article.slug %}">
                                         <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text|addslashes }}"{% endif %}>
                                     {% endif %}
                                 </div>
