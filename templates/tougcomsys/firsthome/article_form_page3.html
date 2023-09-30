@@ -15,8 +15,12 @@
     <div id="div_show_author">
       {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.discriptive_date.label_tag %}
     </div>
-    {{ placements.management_form }}
+    >>{{ placements.management_form }}
+    {% if placementform.errors %}{{ placementform.errors }}{% endif %}
+
     {% for placementform in placements.forms %}
+      {% if placementform.errors %}{{ placementform.errors }}{% endif %}
+
       {% if placementform.id.value > 0 %}
         <div id="div_placementform_{{ placementform.id.value }}" class="placementformsetform">
           {% for hiddenfield in placementform.hidden_fields %}

@@ -799,7 +799,9 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("tougcomsys:article", kwargs={"pk": self.object.article.pk})
+        return reverse(
+            "tougcomsys:article_update", kwargs={"pk": self.object.article.pk}
+        )
 
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
@@ -824,11 +826,13 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
     model = Article
     form_class = forms.ArticleForm
 
+    def __init__(self, *args, **kwargs):
+        print("tp239ua17")
+        return super().__init__(*args, **kwargs)
+
     def get_form_class(self):
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
-        print("tp239gh52 get_form_class", self.kwargs.get("page"), page)
         self.form_class = getattr(forms, "ArticleForm{}".format(page))
-        print("tp239gk33 get_form_class", self.form_class)
 
         return super().get_form_class()
 
@@ -885,7 +889,6 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         print(
             "tp239gi08 get_context_data",
             self.kwargs.get("page"),
-            self.kwargs.get("page"),
         )
         context_data = super().get_context_data(**kwargs)
 
@@ -915,13 +918,18 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         print("tp239gi57 form_valid", self.kwargs.get("page"), self.kwargs.get("page"))
 
         if page == 3:
-            placements = forms.ArticleArticleEventDateFormSet(
+            placements = forms.ArticlePlacementFormSet(
                 self.request.POST, instance=self.get_object()
             )
+            print("tp239ub15", placements)
+
             if placements.is_valid():
                 placements.save()
             else:
-                return valid
+                print("tp239ub09", placements.errors)
+                for form in placements.forms:
+                    print("tp239ub10", form.errors)
+                return self.form_invalid(form)
 
         if page == 4:
             articleeventdates = forms.ArticleArticleEventDateFormSet(
@@ -930,7 +938,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             if articleeventdates.is_valid():
                 articleeventdates.save()
             else:
-                return valid
+                return self.form_invalid(form)
 
         return valid
 

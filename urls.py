@@ -12,7 +12,7 @@ urlpatterns = [
     path("page/<int:page>/", views.HomePage.as_view(), name="page"),
     path("article/<int:pk>/", views.ArticleDetail.as_view(), name="article"),
     path(
-        "article/<int:pk>/<slug:slug>/", views.ArticleDetail.as_view(), name="article"
+        "article/<int:pk>-<slug:slug>/", views.ArticleDetail.as_view(), name="article"
     ),
     path("article/list/", views.ArticleList.as_view(), name="article_list"),
     path(
