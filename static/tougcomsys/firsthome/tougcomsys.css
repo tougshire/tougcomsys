@@ -213,6 +213,38 @@ div.form-field-control, div.form-field-help-text {
         margin-right:0;
     }
 
+    div.article_with_image_top div.list_image {
+        width:80%;
+        margin: 10% auto;
+    }
+
+    div.list_image img{
+        width:100%;
+    }
+
+    div.article_with_image_side div.list_image {
+        float:right;
+        width:60%;
+    }
+
+    div.article_with_image_side div.list_image img {
+        width:90%;
+    }
+
+    div.article_with_image_side::after {
+        clear:both;
+        content: "";
+        display:block;
+    }
+
+    div.event {
+        margin-left:3em;
+    }
+
+
+
+
+
 }
 
 @media only screen and (min-width: 600px) {
