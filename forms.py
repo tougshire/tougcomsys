@@ -147,8 +147,10 @@ class ArticleForm2(forms.ModelForm):
         fields = [
             "list_image",
             "list_image_location",
+            "list_image_link",
             "detail_image",
             "detail_image_location",
+            "detail_image_link",
             "featured_image",
         ]
 

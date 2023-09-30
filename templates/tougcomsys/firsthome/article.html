@@ -20,7 +20,15 @@
                 </div>
                 {% if article.detail_image_location == "top" %}
                     <div class="detail_image" >
-                        <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                        {% if article.detail_image_link %}
+                            <a href="{  article.detail_image_link }">
+                                <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                            </a>
+                        {% else %}
+                            <a href="{{ article.detail_image.url }}">
+                                <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
                 <div class="content" >
@@ -28,7 +36,15 @@
                 </div>
                 {% if article.detail_image_location == "bottom" %}
                     <div class="detail_image" >
-                        <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                        {% if article.detail_image_link %}
+                            <a href="{  article.detail_image_link }">
+                                <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                            </a>
+                        {% else %}
+                            <a href="{{ article.detail_image.url }}">
+                                <img src="{{ article.detail_image.url }}"{% if article.detail_image.alt_text %} alt="{{ article.detail_image.alt_text|addslashes }}"{% endif %}>
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
 

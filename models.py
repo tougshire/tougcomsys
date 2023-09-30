@@ -277,6 +277,10 @@ class Article(models.Model):
         default=IMAGE_LOCATION_CHOICES[0],
         help_text="The location of the image. This is just a flag which indicates a preference",
     )
+    list_image_link = models.URLField(
+        "list image link",
+        help_text="The link that clicking on the image will take you to.  By default clicking on the list image will take you to the article",
+    )
     detail_image = models.ForeignKey(
         Image,
         verbose_name="detail image",
@@ -293,6 +297,11 @@ class Article(models.Model):
         default=IMAGE_LOCATION_CHOICES[0],
         help_text="The location of the image. This is just a flag which indicates a preference",
     )
+    detail_image_link = models.URLField(
+        "detail image link",
+        help_text="The link that clicking on the image will take you to.  By default clicking on the image will open the image in a new link",
+    )
+
     featured_image = models.ForeignKey(
         Image,
         verbose_name="featured image",

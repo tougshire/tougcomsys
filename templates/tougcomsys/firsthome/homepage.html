@@ -51,7 +51,13 @@
 
 
                                 <div class="list_image">
-                                    <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text|addslashes }}"{% endif %}>
+                                    {% if articleplacement.article.list_image_link %}
+                                        <a href="{{ articleplacement.article.list_image_link }}">
+                                            <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text|addslashes }}"{% endif %}>
+                                        </a>
+                                    {% else %}
+                                        <img src="{{ articleplacement.article.list_image.url }}"{% if articleplacement.article.list_image.alt_text %} alt="{{ articleplacement.article.list_image.alt_text|addslashes }}"{% endif %}>
+                                    {% endif %}
                                 </div>
 
                                 <div class="list_textfields">
