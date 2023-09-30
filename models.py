@@ -279,6 +279,7 @@ class Article(models.Model):
     )
     list_image_link = models.URLField(
         "list image link",
+        blank=True,
         help_text="The link that clicking on the image will take you to.  By default clicking on the list image will take you to the article",
     )
     detail_image = models.ForeignKey(
@@ -299,6 +300,7 @@ class Article(models.Model):
     )
     detail_image_link = models.URLField(
         "detail image link",
+        blank=True,
         help_text="The link that clicking on the image will take you to.  By default clicking on the image will open the image in a new link",
     )
 
