@@ -292,7 +292,7 @@ div.form-field-control, div.form-field-help-text {
     div.article_with_image_top div.detail_image, div.article_with_image_bottom div.detail_image {
         text-align: center; 
         width:80%;
-        margin:10 auto;
+        margin:10% auto;
     }
     
     div.article_with_image_top div.detail_image img, div.article_with_image_bottom div.detail_image img {
@@ -302,7 +302,7 @@ div.form-field-control, div.form-field-help-text {
     
     div.article_with_image_top div.list_image, div.article_with_image_top div.list_image {
         width:80%;
-        margin:10 auto;
+        margin:10% auto;
     }
 
 
