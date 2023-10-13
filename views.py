@@ -885,7 +885,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             "And Add Event Dates",
             "And Preview or Publish",
         ]
-        aftersave_pages[page] = "Stay Here"
+        aftersave_pages[page] = "And Stay Here"
         selected = ""
         for eachpage in range(1, 6):
             selected = 'selected="SELECTED" ' if eachpage == (page + 1) else ""

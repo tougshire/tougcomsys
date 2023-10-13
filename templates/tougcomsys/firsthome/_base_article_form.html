@@ -17,5 +17,5 @@
     </form>
   </div>
   {% block afterform %}{% endblock %}
-
+  <div><a href="{% url 'tougcomsys:article' pk=object.pk %}" target="preview_{{object.pk}}">Preview</a></div>
 {% endblock %}

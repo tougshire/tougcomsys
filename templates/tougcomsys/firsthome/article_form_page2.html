@@ -1,54 +1,44 @@
-{% extends './_base.html' %}
+{% extends './_base_article_form.html' %}
 {% load static %}
 
-{% block content %}
-    <script src='{% static 'touglates\touglates.js' %}'></script>
-    <div class="form">
-        {% if form.errors %}{{ form.errors }}{% endif %}
-        <form id="frm_article" method="POST">
-            {{ form.media }}
-            {% csrf_token %}
-            {% for field in form.hidden_fields %}
-            {{ field }}
-            {% endfor %}
+{% block form_fields %}
+  <div id="div_list_image">
+      {% include 'touglates/form_field.html' with field=form.list_image label_tag=form.list_image.label_tag %}
+  </div>
+  <div id="div_list_image_location">
+      {% include 'touglates/form_field.html' with field=form.list_image_location label_tag=form.list_image_location.label_tag %}
+  </div>
+  <div id="div_list_image_link">
+      {% include 'touglates/form_field.html' with field=form.list_image_link label_tag=form.list_image_link.label_tag %}
+  </div>
 
-            <div id="div_list_image">
-                {% include 'touglates/form_field.html' with field=form.list_image label_tag=form.list_image.label_tag %}
-            </div>
-            <div id="div_list_image_location">
-                {% include 'touglates/form_field.html' with field=form.list_image_location label_tag=form.list_image_location.label_tag %}
-            </div>
-            <div id="div_list_image_link">
-                {% include 'touglates/form_field.html' with field=form.list_image_link label_tag=form.list_image_link.label_tag %}
-            </div>
-
-            <div id="div_detail_image">
-                {% include 'touglates/form_field.html' with field=form.detail_image label_tag=form.detail_image.label_tag %}
-            </div>
-            <div id="div_detail_image_location">
-                {% include 'touglates/form_field.html' with field=form.detail_image_location label_tag=form.detail_image_location.label_tag %}
-            </div>
-            <div id="div_detail_image_link">
-                {% include 'touglates/form_field.html' with field=form.detail_image_link label_tag=form.detail_image_link.label_tag %}
-            </div>
-            <div id="div_featured_image">
-                {% include 'touglates/form_field.html' with field=form.featured_image label_tag=form.featured_image.label_tag %}
-            </div>
-            <div id="save">
-              {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
-            </div>
-        </form>
-    </div>
-    <script>
-        addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-        function getControlIdsForPopups(modelName) {
-            controlIds={
-                'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
-            }
-        return controlIds[modelName]
+  <div id="div_detail_image">
+      {% include 'touglates/form_field.html' with field=form.detail_image label_tag=form.detail_image.label_tag %}
+  </div>
+  <div id="div_detail_image_location">
+      {% include 'touglates/form_field.html' with field=form.detail_image_location label_tag=form.detail_image_location.label_tag %}
+  </div>
+  <div id="div_detail_image_link">
+      {% include 'touglates/form_field.html' with field=form.detail_image_link label_tag=form.detail_image_link.label_tag %}
+  </div>
+  <div id="div_featured_image">
+      {% include 'touglates/form_field.html' with field=form.featured_image label_tag=form.featured_image.label_tag %}
+  </div>
+  <div id="save">
+    {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
+  </div>
+{% endblock %}
+{% block after_form %}
+  <script>
+    addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+    addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+    addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+    function getControlIdsForPopups(modelName) {
+        controlIds={
+            'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
         }
-    </script>
+    return controlIds[modelName]
+    }
+  </script>
 
 {% endblock %}

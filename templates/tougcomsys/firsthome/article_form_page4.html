@@ -1,19 +1,10 @@
-{% extends './_base.html' %}
+{% extends './_base_article_form.html' %}
 {% load static %}
 
-{% block content %}
-<script src='{% static ' touglates\touglates.js' %}'></script>
-<div class="form">
-  {% if form.errors %}{{ form.errors }}{% endif %}
-  <form id="frm_article" method="POST">
-    {{ form.media }}
-    {% csrf_token %}
-    {% for field in form.hidden_fields %}
-    {{ field }}
-    {% endfor %}
+{% block form_fields %}
 
-    <div id="div_show_author">
-      {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.discriptive_date.label_tag %}
+    <div id="div_descriptive_date">
+      {% include 'touglates/form_field.html' with field=form.descriptive_date label_tag=form.descriptive_date.label_tag %}
     </div>
     {{ articleeventdates.management_form }}
     {% for articleeventdateform in articleeventdates.forms %}
@@ -60,8 +51,8 @@
     <div id="save">
       {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
     </div>
-
-  </form>
+  {% endblock %}
+  {% block after_form %}
   <script>
     let articleeventdateEditButtons = document.getElementsByClassName('articleeventdate_edit_button')
     for (articleeventdateEditButton of articleeventdateEditButtons) {
@@ -75,8 +66,4 @@
       showNewFormsetForm('articleeventdatenewform')
     })
   </script>
-  <script>
-  </script>
-
-</div>
 {% endblock %}
