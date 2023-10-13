@@ -846,8 +846,18 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         ]
 
     def get_success_url(self):
+        if self.request.POST.get("save-stay"):
+            return reverse(
+                "tougcomsys:article_update",
+                kwargs={
+                    "pk": self.object.pk,
+                    "page": self.request.POST.get("staypage"),
+                },
+            )
+
         high_page = 5
         try:
+            print("tp23ad819")
             aftersave = self.request.POST.get("aftersave")
             page = int(aftersave) if int(aftersave) <= high_page else high_page
         except:
@@ -879,13 +889,14 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         aftersave = '<select name="aftersave">'
         aftersave_pages = [
             "",
-            "And Go to Article Fields",
-            "And Go to Article Images",
-            "And Place Article",
-            "And Add Event Dates",
-            "And Preview or Publish",
+            "to Article Fields",
+            "to Article Images",
+            "to Article Locations",
+            "to Event Dates",
+            "to Publishing status",
         ]
-        aftersave_pages[page] = "And Stay Here"
+
+        aftersave_pages[page] = "-"
         selected = ""
         for eachpage in range(1, 6):
             selected = 'selected="SELECTED" ' if eachpage == (page + 1) else ""
@@ -894,6 +905,8 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             )
         aftersave = aftersave + "</select>"
         context_data["aftersave"] = aftersave
+        context_data["staypage"] = page
+
         return context_data
 
     def form_valid(self, form):
