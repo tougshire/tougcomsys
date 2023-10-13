@@ -600,17 +600,22 @@ class ArticleDetail(DetailView):
         return context_data
 
 
-def article_raw_view(reuquest, pk):
-    article = Article.objects.get(pk=pk)
-    if article.content_format == "markdown":
-        content = md.markdown(
-            article.content,
-            extensions=["markdown.extensions.fenced_code"],
-        )
-    else:
-        content = article.content
+class ArticleContent(DetailView):
+    model = Article
 
-    return HttpResponse(content)
+    template_name = "{}/article_content_only.html".format(
+        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+    )
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        if self.object.content_format == "markdown":
+            self.object.content = md.markdown(
+                self.object.content, extensions=["markdown.extensions.fenced_code"]
+            )
+
+        return context_data
 
 
 class ArticleList(ListView):
