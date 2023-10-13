@@ -57,6 +57,7 @@ urlpatterns = [
         views.SubscriptionCreate.as_view(),
         name="subscription_create",
     ),
+    path("article/<int:pk>/raw/", views.article_raw_view, name="article_raw"),
     path(
         "subscription/<int:pk>/delete/",
         views.SubscriptionDelete.as_view(),

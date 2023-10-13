@@ -600,6 +600,19 @@ class ArticleDetail(DetailView):
         return context_data
 
 
+def article_raw_view(reuquest, pk):
+    article = Article.objects.get(pk=pk)
+    if article.content_format == "markdown":
+        content = md.markdown(
+            article.content,
+            extensions=["markdown.extensions.fenced_code"],
+        )
+    else:
+        content = article.content
+
+    return HttpResponse(content)
+
+
 class ArticleList(ListView):
     permission_required = "sdcpeople.view_person"
     model = Article
