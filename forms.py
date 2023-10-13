@@ -68,12 +68,6 @@ class ArticleForm(forms.ModelForm):
             "content_format",
             "content",
             "hashtags",
-            "summary_format",
-            "summary",
-            "readmore",
-            "author",
-            "draft_status",
-            "slug",
         ]
 
         widgets = {
@@ -126,7 +120,6 @@ class ArticleForm1(forms.ModelForm):
             "summary",
             "readmore",
             "author",
-            "draft_status",
             "allow_comments",
         ]
 
@@ -178,6 +171,20 @@ class ArticleForm4(forms.ModelForm):
         model = Article
         fields = [
             "descriptive_date",
+        ]
+
+
+"""
+ArticleForm for creating and ArticleFormN for updating
+ArticleForm5 is for publishing the post
+"""
+
+
+class ArticleForm5(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            "draft_status",
         ]
 
 

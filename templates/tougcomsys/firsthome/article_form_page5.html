@@ -1,0 +1,25 @@
+{% extends './_base.html' %}
+{% load static %}
+
+{% block content %}
+    <script src='{% static 'touglates\touglates.js' %}'></script>
+    <div class="form">
+        {% if form.errors %}{{ form.errors }}{% endif %}
+        <form id="frm_article" method="POST">
+            {{ form.media }}
+            {% csrf_token %}
+            {% for field in form.hidden_fields %}
+            {{ field }}
+            {% endfor %}
+
+            <div id="div_draft_status">
+                {% include 'touglates/form_field.html' with field=form.draft_status label_tag=form.draft_status.label_tag %}
+            </div>
+            <div id="save">
+              {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
+          </div>
+
+      </form>
+  </div>
+
+{% endblock %}

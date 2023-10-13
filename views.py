@@ -837,14 +837,8 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         return super().get_form_class()
 
     def get_template_names(self):
+        # this page parameter refers to the pages that the article form is broken into #
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
-        print("tp239gh49 get_template_names", self.kwargs.get("page"), page)
-        print(
-            "tp239gk35 get_template_names",
-            "{}/article_form_page{}.html".format(
-                settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"], page
-            ),
-        )
         return [
             "{}/article_form_page{}.html".format(
                 settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"], page
@@ -852,44 +846,18 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         ]
 
     def get_success_url(self):
-        page = self.kwargs.get("page") if "page" in self.kwargs else 1
-        aftersave = (
-            self.request.POST.get("aftersave")
-            if "aftersave" in self.request.POST
-            else "view"
+        high_page = 5
+        try:
+            aftersave = self.request.POST.get("aftersave")
+            page = int(aftersave) if int(aftersave) <= high_page else high_page
+        except:
+            page = 1
+
+        return reverse(
+            "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
         )
-        high_page = 4
-
-        if aftersave == "prev":
-            page = page - 1 if page > 1 else 1
-            return reverse(
-                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
-            )
-
-        elif aftersave == "next":
-            page = page + 1 if page < high_page else 1
-            return reverse(
-                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": page}
-            )
-        elif aftersave == "view":
-            if self.object.slug > "":
-                return reverse(
-                    "tougcomsys:article",
-                    kwargs={"pk": self.object.pk, "slug": self.object.slug},
-                )
-            else:
-                return reverse("tougcomsys:article", kwargs={"pk": self.object.pk})
-
-        else:
-            return reverse(
-                "tougcomsys:article_update", kwargs={"pk": self.object.pk, "page": 1}
-            )
 
     def get_context_data(self, **kwargs):
-        print(
-            "tp239gi08 get_context_data",
-            self.kwargs.get("page"),
-        )
         context_data = super().get_context_data(**kwargs)
 
         if self.request.POST:
@@ -907,21 +875,36 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
                 instance=self.get_object()
             )
 
+        page = self.kwargs.get("page") if "page" in self.kwargs else 1
+        aftersave = '<select name="aftersave">'
+        aftersave_pages = [
+            "",
+            "And Go to Article Fields",
+            "And Go to Article Images",
+            "And Place Article",
+            "And Add Event Dates",
+            "And Preview or Publish",
+        ]
+        aftersave_pages[page] = "Stay Here"
+        selected = ""
+        for eachpage in range(1, 6):
+            selected = 'selected="SELECTED" ' if eachpage == (page + 1) else ""
+            aftersave = aftersave + '<option {}value="{}">{}</option> \n'.format(
+                selected, eachpage, aftersave_pages[eachpage]
+            )
+        aftersave = aftersave + "</select>"
+        context_data["aftersave"] = aftersave
         return context_data
 
     def form_valid(self, form):
         valid = super().form_valid(form)
-        print("tp239gk45", valid)
 
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
-
-        print("tp239gi57 form_valid", self.kwargs.get("page"), self.kwargs.get("page"))
 
         if page == 3:
             placements = forms.ArticlePlacementFormSet(
                 self.request.POST, instance=self.get_object()
             )
-            print("tp239ub15", placements)
 
             if placements.is_valid():
                 placements.save()

@@ -64,9 +64,7 @@
       </tr>
     </table>
     <div id="save">
-      {% with aftersave='<select name="aftersave"><option value="prev">And Go to Previous</option><option value="stay">And Stay Here</option><option value="next" selected>And Continue</option><option value="view">And View Article</option></select>' %}
-          {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave %}
-      {% endwith %}
+      {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
     </div>
 
   </form>

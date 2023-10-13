@@ -1,17 +1,7 @@
-{% extends './_base.html' %}
+{% extends './_base_article_form.html' %}
 {% load static %}
 
-{% block content %}
-    <script src='{% static 'touglates\touglates.js' %}'></script>
-    <div class="form">
-        {% if form.errors %}{{ form.errors }}{% endif %}
-        <form id="frm_article" method="POST">
-            {{ form.media }}
-            {% csrf_token %}
-            {% for field in form.hidden_fields %}
-            {{ field }}
-            {% endfor %}
-
+{% block form_fields %}
             <div id="div_headline">
                 {% include 'touglates/form_field.html' with field=form.headline label_tag=form.headline.label_tag %}
             </div>
@@ -42,14 +32,10 @@
             <div id="div_allow_comments">
                 {% include 'touglates/form_field.html' with field=form.allow_comments label_tag=form.allow_comments.label_tag %}
             </div>
-            <div id="div_draft_status">
-                {% include 'touglates/form_field.html' with field=form.draft_status label_tag=form.draft_status.label_tag %}
-            </div>
             <div id="save">
-                {% with aftersave='<select name="aftersave"><option value="stay">And Stay Here</option><option value="next" selected>And Continue</option><option value="view">And View Article</option></select>' %}
-                    {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave %}
-                {% endwith %}
+                {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit">Save</button>' field_2=aftersave|safe %}
             </div>
+
         </form>
     </div>
 

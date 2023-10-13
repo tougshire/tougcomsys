@@ -1,0 +1,21 @@
+{% extends './_base.html' %}
+{% load static %}
+
+{% block content %}
+  <script src='{% static 'touglates\touglates.js' %}'></script>
+  <div class="form">
+    {% if form.errors %}{{ form.errors }}{% endif %}
+    <form id="frm_article" method="POST">
+      {{ form.media }}
+      {% csrf_token %}
+      {% for field in form.hidden_fields %}
+      {{ field }}
+      {% endfor %}
+
+      {% block form_fields %}{% endblock %}
+
+    </form>
+  </div>
+  {% block afterform %}{% endblock %}
+
+{% endblock %}
