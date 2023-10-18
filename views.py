@@ -1,3 +1,4 @@
+from django.views.decorators.clickjacking import xframe_options_exempt
 from datetime import date, datetime, timedelta
 from typing import Any, Dict
 from urllib.parse import urlencode
@@ -600,6 +601,7 @@ class ArticleDetail(DetailView):
         return context_data
 
 
+@method_decorator(xframe_options_exempt, name="dispatch")
 class ArticleContent(DetailView):
     model = Article
 
