@@ -4,6 +4,7 @@ from typing import Any, Dict
 from urllib.parse import urlencode
 from django.apps import apps
 from django.forms.models import BaseModelForm
+from django.utils.decorators import method_decorator
 
 import icalendar
 import markdown as md
