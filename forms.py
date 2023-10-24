@@ -11,7 +11,7 @@ from tougcomsys.models import (
     Comment,
     Image,
 )
-from touglates.widgets import TouglateDateInput
+from touglates.widgets import TouglateDateInput, TouglateRelatedSelect
 
 
 def validate_blank(value):
@@ -146,6 +146,26 @@ class ArticleForm2(forms.ModelForm):
             "detail_image_link",
             "featured_image",
         ]
+        widgets = {
+            "list_image": TouglateRelatedSelect(
+                related_data={
+                    "model": "Image",
+                    "add_url": reverse_lazy("tougcomsys:article_image_create"),
+                }
+            ),
+            "detail_image": TouglateRelatedSelect(
+                related_data={
+                    "model": "Image",
+                    "add_url": reverse_lazy("tougcomsys:article_image_create"),
+                }
+            ),
+            "featured_image": TouglateRelatedSelect(
+                related_data={
+                    "model": "Image",
+                    "add_url": reverse_lazy("tougcomsys:article_image_create"),
+                }
+            ),
+        }
 
 
 """
