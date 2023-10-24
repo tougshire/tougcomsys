@@ -14,6 +14,7 @@ urlpatterns = [
     path(
         "article/<int:pk>-<slug:slug>/", views.ArticleDetail.as_view(), name="article"
     ),
+    path("articles", views.ArticleList.as_view(), name="article_list"),
     path("article/list/", views.ArticleList.as_view(), name="article_list"),
     path(
         "article/<int:pk>/update/",
