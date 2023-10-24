@@ -976,7 +976,7 @@ class ImageCreate(PermissionRequiredMixin, CreateView):
     def get_success_url(self):
         if "popup" in self.kwargs:
             return reverse(
-                "tougcomsys:window_closer",
+                "tougcomsys:popup_closer",
                 kwargs={
                     "pk": self.object.pk,
                     "app_name": "tougcomsys",

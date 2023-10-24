@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views.generic.base import RedirectView
 from django.urls import path, reverse_lazy
-from touglates.views import window_closer
+from touglates.views import popup_closer
 from . import views
 
 app_name = "tougcomsys"
@@ -79,8 +79,8 @@ urlpatterns = [
     path("ical_text/<int:pk>/", views.get_ical_text, name="ical_text"),
     path("ical_event/<str:uuid>/", views.ical_detail_view, name="ical_detail"),
     path(
-        "window_closer/<str:app_name>/<str:model_name>/<int:pk>/",
-        window_closer,
-        name="window_closer",
+        "popup_closer/<str:app_name>/<str:model_name>/<int:pk>/",
+        popup_closer,
+        name="popup_closer",
     ),
 ]
