@@ -25,7 +25,7 @@
       {% include 'touglates/form_field.html' with field=form.featured_image label_tag=form.featured_image.label_tag %}
   </div>
 {% endblock %}
-{% block after_form %}
+{% block afterform %}
   <script>
     addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
     addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
