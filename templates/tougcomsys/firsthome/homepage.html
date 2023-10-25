@@ -152,12 +152,12 @@
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
                                             </a>
-                                        <!-- {% elif event.ical_url and event.uid %}
+                                        {% elif event.ical_url and event.uid %}
                                             <a href="{ % url 'tougcomsys:ical_event' event.ical_url event.uid %}">
                                                 <div class="headline">    
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
-                                            </a>      -->
+                                            </a>     
                                         {% else %}
                                             <div class="headline">    
                                                 <h3 >{{ event.headline|safe }}</h3>
