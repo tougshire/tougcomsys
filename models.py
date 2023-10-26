@@ -555,6 +555,7 @@ class ICal(models.Model):
         limit_choices_to={"type": Placement.TYPE_EVENT_LIST},
         help_text="The placement which should display this ical",
     )
+    ical_text = models.TextField("ical_text", blank=True)
 
     def __str__(self):
         return self.name if self.name > "" else self.url

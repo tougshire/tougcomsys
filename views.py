@@ -62,10 +62,7 @@ def events_from_icals(placement):
     blocked_ical_uids = [blocked_event.uuid for blocked_event in blocked_ical_events]
 
     for ical in placement.ical_set.all():
-        url = ical.url
-
-        ical_string = requests.get(url).text
-        calendar = icalendar.Calendar.from_ical(ical_string)
+        calendar = icalendar.Calendar.from_ical(ical.ical_string)
         ical_events = recurring_ical_events.of(calendar).between(start_date, end_date)
 
         for ical_event in ical_events:
