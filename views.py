@@ -240,7 +240,10 @@ def ical_from_events(placement, do_preview=False):
 
 
 def event_date_dict(placement, do_preview=False):
-    ical_dict = events_from_icals(placement)
+    if "do_ical" in settings.TOUGCOMSYS and settings.TOUGCOMSYS["do_ical"]:
+        ical_dict = events_from_icals(placement)
+    else:
+        ical_dict = {}
     article_dict = events_from_articles(placement, do_preview)
 
     new_dict = ical_dict
