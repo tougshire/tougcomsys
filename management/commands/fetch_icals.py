@@ -9,4 +9,4 @@ from datetime import date
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        import_icals_task()
+        fetch_icals_task()

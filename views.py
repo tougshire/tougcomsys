@@ -1,3 +1,4 @@
+import logging
 from django.views.decorators.clickjacking import xframe_options_exempt
 from datetime import date, datetime, timedelta
 from typing import Any, Dict
@@ -45,7 +46,7 @@ from tougshire_vistas.views import (
     vista_context_data,
 )
 
-# ArticleImage,
+logger = logging.getLogger(__name__)
 
 
 class TestError(Exception):
@@ -62,7 +63,11 @@ def events_from_icals(placement):
     blocked_ical_uids = [blocked_event.uuid for blocked_event in blocked_ical_events]
 
     for ical in placement.ical_set.all():
-        calendar = icalendar.Calendar.from_ical(ical.ical_string)
+        try:
+            calendar = icalendar.Calendar.from_ical(ical.ical_text)
+        except Exception as e:
+            logger.warning(e)
+            calendar = icalendar.Calendar.from_ical("BEGIN:VCALENDAR\nEND:VCALENDAR")
         ical_events = recurring_ical_events.of(calendar).between(start_date, end_date)
 
         for ical_event in ical_events:
@@ -259,8 +264,8 @@ def single_event_date_dict(url, uid):
     blocked_ical_events = BlockedIcalEvent.objects.all()
     blocked_ical_uids = [blocked_event.uuid for blocked_event in blocked_ical_events]
 
-    ical_string = requests.get(url).text
-    calendar = icalendar.Calendar.from_ical(ical_string)
+    ical_text = requests.get(url).text
+    calendar = icalendar.Calendar.from_ical(ical_text)
     ical_events = recurring_ical_events.of(calendar).all()
 
     event_dict = {}
@@ -740,8 +745,8 @@ def ical_detail_view(request, uuid):
     event_from_ical = {}
 
     for ical in ICal.objects.all():
-        ical_string = requests.get(ical.url).text
-        calendar = icalendar.Calendar.from_ical(ical_string)
+        ical_text = requests.get(ical.url).text
+        calendar = icalendar.Calendar.from_ical(ical_text)
         ical_calendars.append(calendar)
 
     for ical_calendar in ical_calendars:
