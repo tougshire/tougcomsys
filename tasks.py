@@ -3,7 +3,8 @@ from datetime import date
 import requests
 from tougcomsys.models import ArticlePlacement, Placement
 from celery import shared_task
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
+
+# from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 
 @shared_task(name="delete_expired_articleplacements")

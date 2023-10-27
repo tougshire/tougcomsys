@@ -123,7 +123,7 @@ def events_from_icals(placement):
                     isokey = event_dict["whendate"].isoformat()
 
             else:
-                event_dict["ical_url"] = url.replace("/", "_%2f_")
+                event_dict["ical_url"] = ical.url.replace("/", "_%2f_")
                 event_dict["whendate"] = date(
                     ical_event["DTSTART"].dt.year,
                     ical_event["DTSTART"].dt.month,
