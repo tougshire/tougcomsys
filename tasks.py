@@ -11,7 +11,7 @@ from celery import shared_task
 def delete_expired_articleplacements():
     for articleplacement in ArticlePlacement.objects.all():
         if articleplacement.expiration_date is not None:
-            if articleplacement.expiration_date < date.today():
+            if articleplacement.expiration_date <= date.today():
                 articleplacement.delete()
 
 
