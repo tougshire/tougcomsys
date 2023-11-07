@@ -707,7 +707,6 @@ class ArticleList(ListView):
         if "paginate_by" in self.vistaobj["querydict"] and isinstance(
             self.vistaobj["querydict"]["paginate_by"], int
         ):
-            print("tp239i644", self.vistaobj["querydict"]["paginate_by"])
             return self.vistaobj["querydict"]["paginate_by"]
 
         return super().get_paginate_by(queryset)
