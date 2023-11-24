@@ -13,14 +13,14 @@
                 <th>Status</th>
                 <th>Placements</th>
             </tr>
-            {% if user.is_authenticated %}
+            {% if perms.add_article %}
                 <tr>
                     <td><a href="{% url 'tougcomsys:article_create' %}">new</a><td colspan="*"></td>
                 </tr>
             {% endif %}
             {% for article in object_list %}
                 <tr class="{% cycle 'listRowOdd' 'ListRowEven' %}" style="background-color: {% cycle '#eee' '#fff' %};">
-                    
+
                     {% if user.is_authenticated %}
                         <td>
                             <div>

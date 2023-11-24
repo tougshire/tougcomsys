@@ -824,9 +824,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse(
-            "tougcomsys:article_update", kwargs={"pk": self.object.article.pk}
-        )
+        return reverse("tougcomsys:article", kwargs={"pk": self.object.article.pk})
 
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
