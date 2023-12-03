@@ -383,9 +383,7 @@ def get_page(request):
 
 
 class IcalEventView(TemplateView):
-    template_name = "{}/ical_event.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/ical_event.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -410,9 +408,7 @@ class IcalEventView(TemplateView):
 
 
 class HomePage(TemplateView):
-    template_name = "{}/homepage.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/homepage.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -549,9 +545,7 @@ class HomePage(TemplateView):
 class ArticleDetail(DetailView):
     model = Article
 
-    template_name = "{}/article.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/article.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -612,7 +606,7 @@ class ArticleContent(DetailView):
     model = Article
 
     template_name = "{}/article_content_only.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):
@@ -630,9 +624,7 @@ class ArticleList(ListView):
     permission_required = "sdcpeople.view_person"
     model = Article
 
-    template_name = "{}/article_list.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/article_list.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def setup(self, request, *args, **kwargs):
         self.vista_settings = {
@@ -771,9 +763,7 @@ def ical_detail_view(request, uuid):
 class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = forms.CommentForm
-    template_name = "{}/comment_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/comment_form.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -802,18 +792,15 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
         form.save()
 
-        if "FROM_EMAIL" in settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]:
-            from_email = settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]][
-                "FROM_EMAIL"
-            ]
+        if "FROM_EMAIL" in settings.TOUGCOMSYS:
+            from_email = settings.TOUGCOMSYS["FROM_EMAIL"]
         else:
             from_email = None
 
         for subscription in comment.article.subscription_set.all():
             try:
                 send_mail(
-                    settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["SITE_NAME"]
-                    + " new comment",
+                    settings.TOUGCOMSYS["SITE_NAME"] + " new comment",
                     comment.comment_text,
                     from_email,
                     [subscription.subscriber.email],
@@ -831,9 +818,7 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
     permission_required = "tougcomsys.add_article"
     model = Article
     form_class = forms.ArticleForm
-    template_name = "{}/article_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/article_form.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_initial(self):
         initial = super().get_initial()
@@ -864,7 +849,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
         return [
             "{}/article_form_page{}.html".format(
-                settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"], page
+                settings.TOUGCOMSYS["TEMPLATE_DIR"], page
             )
         ]
 
@@ -966,9 +951,7 @@ class ImageCreate(PermissionRequiredMixin, CreateView):
     permission_required = "tougcomsys.add_image"
     model = Image
     form_class = forms.ImageForm
-    template_name = "{}/image_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
-    )
+    template_name = "{}/image_form.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_initial(self):
         initial = super().get_initial()
@@ -993,7 +976,7 @@ class ArticleArticleEventDates(PermissionRequiredMixin, UpdateView):
     model = Article
     fields = []
     template_name = "{}/article_articleeventdates_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):
@@ -1031,7 +1014,7 @@ class ArticlePlacements(PermissionRequiredMixin, UpdateView):
     model = Article
     fields = []
     template_name = "{}/article_articleplacements_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):
@@ -1066,7 +1049,7 @@ class SubscriptionCreate(CreateView):
     model = Subscription
     fields = ["article"]
     template_name = "{}/subscription_form.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):
@@ -1104,7 +1087,7 @@ class SubscriptionDelete(DeleteView):
     model = Subscription
     fields = ["article"]
     template_name = "{}/subscription_delete.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):
@@ -1128,7 +1111,7 @@ class SubscriptionDelete(DeleteView):
 class CommentDelete(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = "{}/comment_delete_confirm.html".format(
-        settings.TOUGCOMSYS[settings.TOUGCOMSYS["active"]]["TEMPLATE_DIR"]
+        settings.TOUGCOMSYS["TEMPLATE_DIR"]
     )
 
     def get_context_data(self, **kwargs):

@@ -23,11 +23,9 @@
         {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ tougcomsys.SITE_NAME }}</title>
-        <link rel="stylesheet" href="{% static 'tougcomsys/'|add:tougcomsys.active|add:'/tougcomsys.css' %}">
+        <link rel="stylesheet" href="{% static tougcomsys.STATIC_DIR|add:'/tougcomsys.css' %}">
         {% if tougcomsys.COLORSCHEME %}
-            {% with tougcomsys.COLORSCHEME as colorscheme %}
-                <link rel="stylesheet" href="{% static 'tougcomsys/tougcomsys_' %}{{ tougcomsys.COLORSCHEME }}.css">
-            {% endwith %}
+          <link rel="stylesheet" href="{% static tougcomsys.STATIC_DIR|add:tougcomsys.COLORSCHEME|add:'.css' %}">
         {% endif %}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +43,7 @@
         <div id="head">
             <a href="{% url 'tougcomsys:homepage' %}">
                 {% if tougcomsys.BANNER_IMAGE %}
-                    <img src="{{ tougcomsys.BANNER_IMAGE }}" alt="{{ tougcomsys.BANNER_ALT }}" />
+                    <img src="{% static tougcomsys.BANNER_IMAGE %}" alt="{{ tougcomsys.BANNER_ALT }}" />
                 {% endif %}
                 {% if tougcomsys.BANNER_TEXT %}
                     <div id="bannertext">
