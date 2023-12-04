@@ -26,10 +26,7 @@
   </div>
 {% endblock %}
 {% block afterform %}
-  <script>
-    addRelatedPopupButton( 'id_list_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-    addRelatedPopupButton( 'id_detail_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
-    addRelatedPopupButton( 'id_featured_image', 'Image', '{% url 'tougcomsys:article_image_create' %}', editUrl='', addLabel='add', editLabel='edit' )
+<!--  <script>
     function getControlIdsForPopups(modelName) {
         controlIds={
             'Image': ['id_list_image', 'id_detail_image', 'id_featured_image'],
@@ -37,5 +34,5 @@
     return controlIds[modelName]
     }
   </script>
-
+-->
 {% endblock %}
