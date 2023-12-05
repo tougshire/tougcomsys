@@ -15,7 +15,8 @@
       {% block form_fields %}{% endblock %}
       {% if object %}
         <div id="save">
-          {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit" name="save-stay" value="1">Save and Stay</button>' field_2='<button type="submit">Save and Go</button>' field_3=aftersave|safe %}
+          {% include 'touglates/form_field.html' with label="Submit Form" field_1='<button type="submit" name="save-stay" value="1">Save and Stay</button>' field_2_label=' Save and go to ' field_3='<button type="submit">Go</button>' field_2=aftersave|safe %}
+
         </div>
         <input type="hidden" name="staypage" value="{{ staypage }}">
       {% else %}
