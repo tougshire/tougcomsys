@@ -542,7 +542,6 @@ class HomePage(TemplateView):
         return context_data
 
 
-@method_decorator(xframe_options_exempt, name="dispatch")
 class ArticleDetail(DetailView):
     model = Article
 
