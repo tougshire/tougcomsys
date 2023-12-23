@@ -605,9 +605,7 @@ class ArticleDetail(DetailView):
 class ArticleEmbedded(DetailView):
     model = Article
 
-    template_name = "{}/article_content_only.html".format(
-        settings.TOUGCOMSYS["TEMPLATE_DIR"]
-    )
+    template_name = "{}/article_embed.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
 
     def get_context_data(self, **kwargs):
         if not self.get_object().embeddable:

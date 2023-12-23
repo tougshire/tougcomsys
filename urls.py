@@ -61,7 +61,7 @@ urlpatterns = [
     path(
         "article/<int:pk>/embed/",
         views.ArticleEmbedded.as_view(),
-        name="article_content_only",
+        name="article_embed",
     ),
     path(
         "subscription/<int:pk>/delete/",
