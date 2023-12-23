@@ -34,31 +34,6 @@ class CommentForm(forms.ModelForm):
         ]
 
 
-# "headline",
-# "subheadline",
-# "content_format",
-# "content",
-# "hashtags",
-# "list_image",
-# "list_image_location",
-# "detail_image",
-# "detail_image_location",
-# "featured_image",
-# "summary_format",
-# "summary",
-# "readmore",
-# "author",
-# "descriptive_date",
-# "show_author",
-# "show_updated",
-# "sortable_date",
-# "sticky",
-# "draft_status",
-# "allow_comments",
-# "slug",
-#   'sortable_date':TouglateDateInput()
-
-
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
@@ -76,35 +51,6 @@ class ArticleForm(forms.ModelForm):
             "content": forms.Textarea(attrs={"class": "width_050"}),
             "summary": forms.Textarea(attrs={"class": "width_050"}),
         }
-
-
-# 1 "headline",
-# 1 "subheadline",
-# 1 "content_format",
-# 1 "content",
-# 1 "hashtags",
-# 2 "list_image",
-# 2 "list_image_location",
-# 2 "detail_image",
-# 2 "detail_image_location",
-# 2 "featured_image",
-# 1 "summary_format",
-# 1 "summary",
-# 1 "readmore",
-# 1 "author",
-# 4 "descriptive_date",
-# 3 "show_author",
-# 3 "show_updated",
-# 4 "sortable_date",
-# 3 "sticky",
-# 1 "draft_status",
-# 3 "allow_comments",
-# 1 "slug",
-#   'sortable_date':TouglateDateInput()
-
-
-# ArticleForm for creating and ArticleFormN for updating
-# ArticleForm1 is mostly the same as ArticleForm, but also had slug
 
 
 class ArticleForm1(forms.ModelForm):
@@ -206,6 +152,12 @@ class ArticleForm5(forms.ModelForm):
         fields = [
             "draft_status",
         ]
+
+
+class ArticleForm6(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = ["embeddable", "embed_headlines"]
 
 
 class ImageForm(forms.ModelForm):

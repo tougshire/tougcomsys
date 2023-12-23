@@ -382,6 +382,15 @@ class Article(models.Model):
         default=0,
         help_text="If comments are allowed",
     )
+    embeddable = models.BooleanField(
+        "embeddable", default=False, help_text="If this article can be embedded"
+    )
+    embed_headlines = models.BooleanField(
+        "embed headlines",
+        default=True,
+        help_text="If the headline and subheadline are included with the embed",
+    )
+
     slug = models.SlugField(
         "slug",
         max_length=150,

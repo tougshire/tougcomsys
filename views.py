@@ -602,7 +602,7 @@ class ArticleDetail(DetailView):
 
 
 @method_decorator(xframe_options_exempt, name="dispatch")
-class ArticleContent(DetailView):
+class ArticleEmbedded(DetailView):
     model = Article
 
     template_name = "{}/article_content_only.html".format(
@@ -610,11 +610,24 @@ class ArticleContent(DetailView):
     )
 
     def get_context_data(self, **kwargs):
+        if not self.get_object().embeddable:
+            return None
+
         context_data = super().get_context_data(**kwargs)
 
         if self.object.content_format == "markdown":
             self.object.content = md.markdown(
                 self.object.content, extensions=["markdown.extensions.fenced_code"]
+            )
+
+        if self.object.embed_headlines:
+            if self.object.subheadline > "":
+                self.object.content = (
+                    f"<h2>{ self.object.subheadline }</h2>" + self.object.content
+                )
+
+            self.object.content = (
+                f"<h1>{ self.object.headline }</h1>" + self.object.content
             )
 
         return context_data
@@ -834,8 +847,17 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
     model = Article
     form_class = forms.ArticleForm
 
+    aftersave_pages = [
+        "",
+        "to Article Fields",
+        "to Article Images",
+        "to Article Locations",
+        "to Event Dates",
+        "to Publishing status",
+        "to Embedding",
+    ]
+
     def __init__(self, *args, **kwargs):
-        print("tp239ua17")
         return super().__init__(*args, **kwargs)
 
     def get_form_class(self):
@@ -863,9 +885,8 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
                 },
             )
 
-        high_page = 5
+        high_page = len(self.aftersave_pages) - 1
         try:
-            print("tp23ad819")
             aftersave = self.request.POST.get("aftersave")
             page = int(aftersave) if int(aftersave) <= high_page else high_page
         except:
@@ -895,21 +916,13 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
 
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
         aftersave = '<select name="aftersave">'
-        aftersave_pages = [
-            "",
-            "to Article Fields",
-            "to Article Images",
-            "to Article Locations",
-            "to Event Dates",
-            "to Publishing status",
-        ]
 
-        aftersave_pages[page] = "-"
+        self.aftersave_pages[page] = "-"
         selected = ""
-        for eachpage in range(1, 6):
+        for eachpage in range(1, len(self.aftersave_pages)):
             selected = 'selected="SELECTED" ' if eachpage == (page + 1) else ""
             aftersave = aftersave + '<option {}value="{}">{}</option> \n'.format(
-                selected, eachpage, aftersave_pages[eachpage]
+                selected, eachpage, self.aftersave_pages[eachpage]
             )
         aftersave = aftersave + "</select>"
         context_data["aftersave"] = aftersave
@@ -930,7 +943,6 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
             if placements.is_valid():
                 placements.save()
             else:
-                print("tp239ub09", placements.errors)
                 for form in placements.forms:
                     print("tp239ub10", form.errors)
                 return self.form_invalid(form)
@@ -1040,8 +1052,6 @@ class ArticlePlacements(PermissionRequiredMixin, UpdateView):
             articleplacements.save()
             return valid_response
         else:
-            for form in articleplacements.forms:
-                print("tp239nk16", form.errors)
             return super().form_invalid(form)
 
 

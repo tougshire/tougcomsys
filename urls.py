@@ -59,8 +59,8 @@ urlpatterns = [
         name="subscription_create",
     ),
     path(
-        "article/<int:pk>/content/",
-        views.ArticleContent.as_view(),
+        "article/<int:pk>/embed/",
+        views.ArticleEmbedded.as_view(),
         name="article_content_only",
     ),
     path(

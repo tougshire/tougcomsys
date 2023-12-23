@@ -1,0 +1,14 @@
+{% extends './_base_article_form.html' %}
+{% load static %}
+
+{% block form_fields %}
+
+  <div id="div_draft_status">
+      {% include 'touglates/form_field.html' with field=form.embeddable label_tag=form.embeddable.label_tag %}
+      {% include 'touglates/form_field.html' with field=form.embed_headlines label_tag=form.embed_headlines.label_tag %}
+
+  </div>
+
+{% endblock %}
+{% block afterform %}
+{% endblock %}
