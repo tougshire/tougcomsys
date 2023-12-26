@@ -1,7 +1,7 @@
 from datetime import date
 
 import requests
-from tougcomsys.models import ArticlePlacement, Placement
+from tougcomsys.models import Article, ArticlePlacement, Placement
 from celery import shared_task
 
 # from django_celery_beat.models import PeriodicTask, IntervalSchedule
@@ -23,3 +23,17 @@ def fetch_icals():
             ical_text = requests.get(url).text
             ical.ical_text = ical_text
             ical.save()
+
+
+@shared_task(name="set_status_by_date")
+def set_status_by_date():
+    for article in Article.objects.filter(
+        draft_status=Article.DRAFT_STATUS_PUBLISHED
+    ).filter(publish_date__gt=date.today()):
+        article.draft_status = Article.DRAFT_STATUS_DRAFT
+        article.save()
+    for article in Article.objects.filter(
+        draft_status=Article.DRAFT_STATUS_DRAFT
+    ).filter(publish_date__Lte=date.today()):
+        article.draft_status = Article.DRAFT_STATUS_PUBLISHED
+        article.save()

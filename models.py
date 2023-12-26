@@ -376,6 +376,12 @@ class Article(models.Model):
         default=0,
         help_text="If this post is a draft, which only displays in preview mode",
     )
+    publish_date = models.DateField(
+        "publish date",
+        blank=True,
+        null=True,
+        help_text='The publish date. If so configured, and unless the draft status is "archived", an automatic process will ensure the draft status is "published" if the system date is greater than or equal to the publish date, or "draft" if the system date is earlier than the publish date',
+    )
     allow_comments = models.IntegerField(
         "allow comments",
         choices=COMMENTS_CHOICES,
