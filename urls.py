@@ -9,13 +9,21 @@ app_name = "tougcomsys"
 urlpatterns = [
     path("", RedirectView.as_view(url=reverse_lazy("tougcomsys:homepage"))),
     path("homepage/", views.HomePage.as_view(), name="homepage"),
-    path("page/<int:page>/", views.HomePage.as_view(), name="page"),
-    path("article/<int:pk>/", views.ArticleDetail.as_view(), name="article"),
-    path(
-        "article/<int:pk>-<slug:slug>/", views.ArticleDetail.as_view(), name="article"
-    ),
-    path("articles/", views.ArticleList.as_view(), name="article_list"),
     path("article/list/", views.ArticleList.as_view(), name="article_list"),
+    path(
+        "article/<slug:pk_or_slug>/view/",
+        views.ArticleDetail.as_view(),
+        name="article",
+    ),
+    path(
+        "article/<slug:pk_or_slug>/crude/",
+        views.ArticleCrudeView.as_view(),
+        name="article_crude",
+    ),
+    # path(
+    #     "article/<int:pk>-<slug:slug>/", views.ArticleDetail.as_view(), name="article"
+    # ),
+    path("articles/", views.ArticleList.as_view(), name="article_list"),
     path(
         "article/<int:pk>/update/",
         views.ArticleUpdate.as_view(),
@@ -57,11 +65,6 @@ urlpatterns = [
         "article/<int:pk>/subscription/create/",
         views.SubscriptionCreate.as_view(),
         name="subscription_create",
-    ),
-    path(
-        "article/<int:pk>/embed/",
-        views.ArticleEmbedded.as_view(),
-        name="article_embed",
     ),
     path(
         "subscription/<int:pk>/delete/",

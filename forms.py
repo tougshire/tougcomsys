@@ -149,15 +149,7 @@ ArticleForm5 is for publishing the post
 class ArticleForm5(forms.ModelForm):
     class Meta:
         model = Article
-        fields = [
-            "draft_status",
-        ]
-
-
-class ArticleForm6(forms.ModelForm):
-    class Meta:
-        model = Article
-        fields = ["embeddable", "embed_headlines"]
+        fields = ["slug", "draft_status", "embeddable", "embed_headlines"]
 
 
 class ImageForm(forms.ModelForm):

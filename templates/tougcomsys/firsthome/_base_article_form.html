@@ -28,6 +28,6 @@
   </div>
   {% block afterform %}{% endblock %}
   {% if object %}
-    <div><a href="{% url 'tougcomsys:article' pk=object.pk %}" target="preview_{{object.pk}}">Preview</a></div>
+    <div><a href="{% url 'tougcomsys:article' object.pk %}" target="preview_{{object.pk}}">Preview</a></div>
   {% endif %}
 {% endblock %}

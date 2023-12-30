@@ -28,9 +28,9 @@
                             </div>
                             <div>
                                 {% if article.slug > "" %}
-                                    <a href="{% url 'tougcomsys:article' pk=article.pk slug=article.slug %}">View</a>
+                                    <a href="{% url 'tougcomsys:article' article.slug %}">View</a>
                                 {% else %}
-                                    <a href="{% url 'tougcomsys:article' pk=article.pk %}">View</a>
+                                    <a href="{% url 'tougcomsys:article' article.pk %}">View</a>
                                 {% endif %}
                             </div>
                         </td>

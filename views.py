@@ -1,4 +1,6 @@
 import logging
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.views.decorators.clickjacking import xframe_options_exempt
 from datetime import date, datetime, timedelta
 from typing import Any, Dict
@@ -16,7 +18,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.http import HttpResponse, QueryDict
+from django.http import Http404, HttpResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.urls import reverse
@@ -166,6 +168,16 @@ def events_from_icals(placement):
                 event_date_dict[isokey] = [event_dict]
 
     return event_date_dict
+
+
+def crude_article_by_slug(request):
+    try:
+        article = Article.objects.get(pk=request.pk)
+        return ArticleEmbedded.as_view()
+
+    except Article.MultipleObjectsReturned:
+        articles = Article.objects.get(pk=request.pk)
+        return HttpResponse("Multiple articles use that slug")
 
 
 def events_from_articles(placement, do_preview=False):
@@ -542,7 +554,19 @@ class HomePage(TemplateView):
         return context_data
 
 
-class ArticleDetail(DetailView):
+class DetailByPKOrSlug(DetailView):
+    def get_object(self, queryset=None):
+        if self.kwargs.get("pk_or_slug"):
+            pk_or_slug = self.kwargs.get("pk_or_slug")
+            try:
+                self.kwargs[self.pk_url_kwarg] = int(pk_or_slug)
+            except ValueError:
+                self.kwargs[self.slug_url_kwarg] = pk_or_slug
+
+        return super().get_object(queryset)
+
+
+class ArticleDetail(DetailByPKOrSlug):
     model = Article
 
     template_name = "{}/article.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
@@ -602,7 +626,7 @@ class ArticleDetail(DetailView):
 
 
 @method_decorator(xframe_options_exempt, name="dispatch")
-class ArticleEmbedded(DetailView):
+class ArticleCrudeView(DetailByPKOrSlug):
     model = Article
 
     template_name = "{}/article_embed.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
@@ -632,7 +656,7 @@ class ArticleEmbedded(DetailView):
 
 
 class ArticleList(ListView):
-    permission_required = "sdcpeople.view_person"
+    permission_required = "tougcomsys.view_person"
     model = Article
 
     template_name = "{}/article_list.html".format(settings.TOUGCOMSYS["TEMPLATE_DIR"])
@@ -702,7 +726,11 @@ class ArticleList(ListView):
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset()
 
-        self.vistaobj = {"querydict": QueryDict(), "queryset": queryset}
+        self.vistaobj = {
+            "querydict": QueryDict(),
+            "queryset": queryset,
+            "model_name": "Article",
+        }
 
         return get_vista_queryset(self)
 
@@ -724,7 +752,7 @@ class ArticleList(ListView):
 
         if self.request.user.is_authenticated:
             context_data["vistas"] = Vista.objects.filter(
-                user=self.request.user, model_name="sdcpeople.Article"
+                user=self.request.user, model_name="tougcomsys.Article"
             ).all()  # for choosing saved vistas
 
         if self.request.POST.get("vista_name"):
@@ -852,7 +880,6 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         "to Article Locations",
         "to Event Dates",
         "to Publishing status",
-        "to Embedding",
     ]
 
     def __init__(self, *args, **kwargs):
@@ -883,7 +910,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
                 },
             )
 
-        high_page = len(self.aftersave_pages) - 1
+        high_page = len(self.aftersave_pages)
         try:
             aftersave = self.request.POST.get("aftersave")
             page = int(aftersave) if int(aftersave) <= high_page else high_page
@@ -915,12 +942,11 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
         page = self.kwargs.get("page") if "page" in self.kwargs else 1
         aftersave = '<select name="aftersave">'
 
-        self.aftersave_pages[page] = "-"
-        selected = ""
         for eachpage in range(1, len(self.aftersave_pages)):
+            eachpage_label = "-" if eachpage == page else self.aftersave_pages[eachpage]
             selected = 'selected="SELECTED" ' if eachpage == (page + 1) else ""
             aftersave = aftersave + '<option {}value="{}">{}</option> \n'.format(
-                selected, eachpage, self.aftersave_pages[eachpage]
+                selected, eachpage, eachpage_label
             )
         aftersave = aftersave + "</select>"
         context_data["aftersave"] = aftersave
