@@ -441,12 +441,7 @@ class Article(models.Model):
         return "{} {}".format(self.headline, self.slug)
 
     def get_absolute_url(self):
-        if self.slug:
-            return reverse(
-                "tougcomsys:article", kwargs={"pk": self.pk, "slug": self.slug}
-            )
-        else:
-            return reverse("tougcomsys:article", kwargs={"pk": self.pk})
+        return reverse("tougcomsys:article", kwargs={"pk_or_slug": self.slug})
 
     class Meta:
         ordering = ("-created_date",)
