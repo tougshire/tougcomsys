@@ -3,7 +3,7 @@
 {% block content %}
     <div id="tougcomsys" class="list">
 
-        <div id="columns" class="columns"> 
+        <div id="columns" class="columns">
             {% for placement in placements %}
 
                 {% if placement.type == placement_types.articlelist %}
@@ -14,31 +14,20 @@
                         {% endif %}
 
                         {% for articleplacement in placement.articleplacements %}
-            
+
                             {% if articleplacement.article.list_image %}
                             <div class="article article_with_image_{{ articleplacement.article.list_image_location }} font_size_{{ placement.font_size }}">
 
-                                <div class="headline">   
-                                    {% if articleplacement.article.slug > "" %}
-                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">                                          
-                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">
-                                            <h3>{{ articleplacement.article.headline|safe }}</h3>
-                                        </a>
-                                    {% endif %}
+                                <div class="headline">
+                                  <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
+                                    <h3>{{ articleplacement.article.headline|safe }}</h3>
+                                  </a>
                                 </div>
                                 <div class="subheadline">
-                                    {% if articleplacement.article.slug > "" %}
-                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}"> 
-                                            {{ articleplacement.article.subheadline|safe }}
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}"> 
-                                            {{ articleplacement.article.subheadline|safe }}
-                                        </a>
-                                    {% endif %}
+                                  <a href="{% url 'tougcomsys:article' articleplacement.article.slug %}">
+                                      {{ articleplacement.article.subheadline|safe }}
+                                  </a>
+
                                 </div>
 
                                 {% if articleplacement.article.date %}
@@ -72,7 +61,7 @@
                                                 {% else %}
                                                     <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk  %}">{{ articleplacement.article.readmore }}</a>
                                                 {% endif %}
-                                            </div>        
+                                            </div>
                                         {% endif %}
 
                                     </div>
@@ -83,13 +72,13 @@
 
                                 <div class="article font_size_{{ placement.font_size }}">
                                     <div class="list_textfields">
-                                        <div class="headline">    
+                                        <div class="headline">
                                             {% if articleplacement.article.slug > "" %}
-                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">                                          
+                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk slug=articleplacement.article.slug %}">
                                                     <h3>{{ articleplacement.article.headline|safe }}</h3>
                                                 </a>
                                             {% else %}
-                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk  %}">                                          
+                                                <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk  %}">
                                                     <h3>{{ articleplacement.article.headline|safe }}</h3>
                                                 </a>
                                             {% endif %}
@@ -102,7 +91,7 @@
                                         {% elif articleplacement.article.prev_date %}
                                             {{ articleplacement.article.prev_date }}
                                         {% endif %}
-    
+
 
                                         <div class="subheadline">
                                             {{ articleplacement.article.subheadline|safe }}
@@ -116,9 +105,9 @@
                                                     {% else %}
                                                         <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">{{ articleplacement.article.readmore }}</a>
                                                     {% endif %}
-                                                </div>        
+                                                </div>
                                             {% endif %}
-    
+
                                         </div>
                                     </div>
 
@@ -148,18 +137,18 @@
                                     <div class="list_textfields">
                                         {% if event.pk %}
                                             <a href="{% url 'tougcomsys:article' event.pk 'x' %}">
-                                                <div class="headline">    
+                                                <div class="headline">
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
                                             </a>
                                         {% elif event.ical_url and event.uid %}
                                             <a href="{ % url 'tougcomsys:ical_event' event.ical_url event.uid %}">
-                                                <div class="headline">    
+                                                <div class="headline">
                                                         <h3 >{{ event.headline|safe }}</h3>
                                                 </div>
-                                            </a>     
+                                            </a>
                                         {% else %}
-                                            <div class="headline">    
+                                            <div class="headline">
                                                 <h3 >{{ event.headline|safe }}</h3>
                                         </div>
                                         {% endif %}
@@ -172,9 +161,9 @@
                                                     {% else %}
                                                         <a href="{% url 'tougcomsys:article' pk=event.pk %}">{{ event.readmore }}</a>
                                                     {% endif %}
-                                                </div>        
+                                                </div>
                                             {% endif %}
-    
+
                                         </div>
                                         <div class="summary">
                                             {{ articleplacement.article.summary|safe }}
@@ -185,9 +174,9 @@
                                                     {% else %}
                                                         <a href="{% url 'tougcomsys:article' pk=articleplacement.article.pk %}">{{ articleplacement.article.readmore }}</a>
                                                     {% endif %}
-                                                    </div>        
+                                                    </div>
                                             {% endif %}
-    
+
                                         </div>
                                     </div>
 
@@ -213,7 +202,7 @@
 
                                     <a href="{{ feedpost.link }}">
                                         <div class="headline">
-                                            {% if feedpost.title > '' %}    
+                                            {% if feedpost.title > '' %}
                                                 <h3>{{ feedpost.title }}</h3>
                                             {% else %}
                                                 <p>{{ feedpost.link }}</p>
@@ -222,7 +211,7 @@
                                     </a>
 
                                     {% if placement.show_created %}
-                                        <div class="metafields">    
+                                        <div class="metafields">
                                             {{ feedpost.created }}
                                         </div>
                                     {% endif %}

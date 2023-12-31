@@ -42,9 +42,9 @@
                         <td>
                             <div>
                                 {% if article.slug > "" %}
-                                    <a href="{% url 'tougcomsys:article' pk=article.pk slug=article.slug %}">{{ article.headline }}</a>
+                                    <a href="{% url 'tougcomsys:article' article.slug %}">{{ article.headline }}</a>
                                 {% else %}
-                                    <a href="{% url 'tougcomsys:article' pk=article.pk %}">{{ article.headline }}</a>
+                                    <a href="{% url 'tougcomsys:article' article.pk %}">{{ article.headline }}</a>
                                 {% endif %}
                             </div>
                             <div>{{ article.subheadline }}</div>
