@@ -25,7 +25,7 @@
         <title>{{ tougcomsys.SITE_NAME }}</title>
         <link rel="stylesheet" href="{% static tougcomsys.STATIC_DIR|add:'/tougcomsys.css' %}">
         {% if tougcomsys.COLORSCHEME %}
-          <link rel="stylesheet" href="{% static tougcomsys.STATIC_DIR|add:tougcomsys.COLORSCHEME|add:'.css' %}">
+          <link rel="stylesheet" href="{% static tougcomsys.STATIC_DIR|add:'/'|add:tougcomsys.COLORSCHEME|add:'.css' %}">
         {% endif %}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
