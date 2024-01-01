@@ -120,7 +120,7 @@ class Page(models.Model):
         return "{}{}".format(self.name, " (Home)" if self.is_home else "")
 
     def get_absolute_url(self):
-        return reverse("tougcomsys:page", kwargs={"page": self.pk})
+        return reverse("tougcomsys:article", kwargs={"pk_or_slug": self.slug})
 
     class Meta:
         ordering = (

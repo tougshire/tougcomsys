@@ -14,6 +14,11 @@ urlpatterns = [
         views.HomePage.as_view(),
         name="page",
     ),
+    path(
+        "page/<slug:pk_or_slug>/",
+        views.HomePage.as_view(),
+        name="page",
+    ),
     path("article/list/", views.ArticleList.as_view(), name="article_list"),
     path(
         "article/<slug:pk_or_slug>/view/",
@@ -25,9 +30,6 @@ urlpatterns = [
         views.ArticleCrudeView.as_view(),
         name="article_crude",
     ),
-    # path(
-    #     "article/<int:pk>-<slug:slug>/", views.ArticleDetail.as_view(), name="article"
-    # ),
     path("articles/", views.ArticleList.as_view(), name="article_list"),
     path(
         "article/<int:pk>/update/",
@@ -70,6 +72,11 @@ urlpatterns = [
         "article/<int:pk>/subscription/create/",
         views.SubscriptionCreate.as_view(),
         name="subscription_create",
+    ),
+    path(
+        "article/<slug:pk_or_slug>/",
+        views.ArticleDetail.as_view(),
+        name="article",
     ),
     path(
         "subscription/<int:pk>/delete/",
