@@ -84,6 +84,38 @@ class Page(models.Model):
         help_text="If this is the home page.  Only one will be used as home page even if more than one is chosen",
     )
 
+    slug = models.SlugField(
+        "slug",
+        max_length=150,
+        blank=True,
+        unique=True,
+        help_text="A URL friendly representation - usually a variation of the name",
+    )
+
+    def clean(self):
+        if not self.slug > "":
+            self.slug = slugify(self.name)
+
+        # check that slug is unique
+        found_slugs = Page.objects.filter(slug=self.slug)
+        if self.pk:
+            found_slugs = found_slugs.exclude(pk=self.pk)
+
+        if found_slugs.exists():
+            slug_base = re.match(r"((.(?!_\d+$))*(.(?=_\d+$){0,1}))", self.slug)[0]
+            if re.match("^\d$", slug_base):
+                slug_base = "_" + slug_base
+            slug_number = 1
+            # if slug is not unique, add "_n" to the end, n being a number from 1 to 1000
+            # give up after 1000 tries
+            while found_slugs.count() > 0 and slug_number < 1001:
+                self.slug = "{}_{}".format(slug_base, slug_number)
+                found_slugs = Page.objects.filter(slug=self.slug)
+                if self.pk:
+                    found_slugs = found_slugs.exclude(pk=self.pk)
+
+                slug_number = slug_number + 1
+
     def __str__(self):
         return "{}{}".format(self.name, " (Home)" if self.is_home else "")
 
